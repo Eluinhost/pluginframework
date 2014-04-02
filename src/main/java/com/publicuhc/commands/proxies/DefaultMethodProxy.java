@@ -7,7 +7,7 @@ import java.lang.reflect.Method;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public abstract class AbstractMethodProxy implements MethodProxy {
+public class DefaultMethodProxy implements MethodProxy {
 
     private Pattern m_pattern;
     private Method m_method;

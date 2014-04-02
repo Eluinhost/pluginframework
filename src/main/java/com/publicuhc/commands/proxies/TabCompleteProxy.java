@@ -5,7 +5,7 @@ import com.publicuhc.commands.requests.CommandRequest;
 import java.lang.reflect.Method;
 import java.util.List;
 
-public class TabCompleteProxy extends AbstractMethodProxy {
+public class TabCompleteProxy extends DefaultMethodProxy {
 
     /**
      * @return the list of strings from triggering the tab complete

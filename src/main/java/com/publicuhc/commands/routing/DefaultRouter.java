@@ -6,6 +6,7 @@ import com.google.inject.Provider;
 import com.publicuhc.commands.annotation.CommandMethod;
 import com.publicuhc.commands.annotation.RouteInfo;
 import com.publicuhc.commands.annotation.TabCompletion;
+import com.publicuhc.commands.proxies.DefaultMethodProxy;
 import com.publicuhc.commands.proxies.CommandProxy;
 import com.publicuhc.commands.proxies.ProxyTriggerException;
 import com.publicuhc.commands.proxies.TabCompleteProxy;
@@ -18,7 +19,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.PluginCommand;
 
 import javax.annotation.Nullable;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
@@ -138,16 +138,27 @@ public class DefaultRouter implements Router {
                 command.setExecutor(this);
                 command.setTabCompleter(this);
 
+                DefaultMethodProxy proxy = null;
+
                 if(isCommandMethod(method)){
-                    CommandProxy proxy = new CommandProxy();
-                    proxy.setPattern(methodRoute.getRoute());
-                    proxy.setBaseCommand(command);
-                    proxy.setCommandMethod(method);
-                    proxy.setInstance(object);
-                    proxy.setPermission(methodRoute.getPermission());
-                    proxy.setAllowedSenders(methodRoute.getAllowedTypes());
-                    m_commands.add(proxy);
+                    CommandProxy commandProxy = new CommandProxy();
+                    m_commands.add(commandProxy);
+                    proxy = commandProxy;
                 }
+                if(isTabComplete(method)){
+                    TabCompleteProxy tabCompleteProxy = new TabCompleteProxy();
+                    m_tabCompletes.add(tabCompleteProxy);
+                    proxy = tabCompleteProxy;
+                }
+
+                assert proxy != null;
+
+                proxy.setPattern(methodRoute.getRoute());
+                proxy.setBaseCommand(command);
+                proxy.setCommandMethod(method);
+                proxy.setInstance(object);
+                proxy.setPermission(methodRoute.getPermission());
+                proxy.setAllowedSenders(methodRoute.getAllowedTypes());
             }
         }
     }

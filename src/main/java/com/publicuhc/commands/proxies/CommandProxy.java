@@ -4,7 +4,7 @@ import com.publicuhc.commands.requests.CommandRequest;
 
 import java.lang.reflect.Method;
 
-public class CommandProxy extends AbstractMethodProxy {
+public class CommandProxy extends DefaultMethodProxy {
 
     /**
      * Trigger this command
