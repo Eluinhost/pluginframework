@@ -13,9 +13,29 @@ public interface MethodProxy {
     void setPattern(Pattern pattern);
 
     /**
+     * @return the pattern to be matched on
+     */
+    Pattern getPattern();
+
+    /**
+     * @param object the instance to run against
+     */
+    void setInstance(Object object);
+
+    /**
+     * @return the instance to run with
+     */
+    Object getInstance();
+
+    /**
      * @param method the method to run on command run
      */
     void setCommandMethod(Method method);
+
+    /**
+     * @return the method to run the command on
+     */
+    Method getCommandMethod();
 
     /**
      * @param command the base command

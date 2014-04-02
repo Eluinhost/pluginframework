@@ -4,10 +4,12 @@ import com.publicuhc.commands.requests.CommandRequest;
 
 import java.util.List;
 
-public interface TabCompleteProxy extends MethodProxy {
+public class TabCompleteProxy extends AbstractMethodProxy {
 
     /**
      * @return the list of strings from triggering the tab complete
      */
-    List<String> trigger(CommandRequest request);
+    public List<String> trigger(CommandRequest request){
+        return null;//TODO trigger the method
+    }
 }
