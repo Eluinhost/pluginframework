@@ -1,18 +1,34 @@
 package com.publicuhc;
 
-import java.util.regex.Pattern;
+import org.bukkit.command.Command;
+import org.bukkit.command.TabExecutor;
 
-public interface Router {
+import javax.annotation.Nullable;
+import java.util.List;
 
-    /**
-     * Register the a path to a command
-     * @param pattern the pattern to match
-     * @param proxy the command to run
-     */
-    void registerRoute(Pattern pattern , CommandProxy proxy);
+public interface Router extends TabExecutor {
 
     /**
-     * @return the route that matches the string given
+     * @return the route for the base command
      */
-    CommandProxy getCommand(String command);
+    @Nullable
+    CommandProxy getForBaseCommand(String command);
+
+    /**
+     * @param command the command string
+     * @return the commandproxy if found or null if not
+     */
+    @Nullable
+    List<CommandProxy> getCommand(Command command, String parameters);
+
+    /**
+     * Register a class for commands, makes an instance
+     * @param clazz the class to register commands for
+     */
+    void registerCommands(Class clazz);
+
+    /**
+     * @param object the object to register commands for
+     */
+    void registerCommands(Object object);
 }

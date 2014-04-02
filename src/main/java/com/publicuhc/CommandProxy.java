@@ -21,4 +21,21 @@ public interface CommandProxy {
      * @param command the base command
      */
     void setBaseCommand(Command command);
+
+    /**
+     * @return the base command
+     */
+    Command getBaseCommand();
+
+    /**
+     * @param params the parameters to check
+     * @return true if matches route, false otherwise
+     */
+    boolean doParamsMatch(String params);
+
+    /**
+     * Trigger this command
+     * @param request the request params
+     */
+    void trigger(CommandRequest request);
 }
