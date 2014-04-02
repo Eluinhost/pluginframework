@@ -1,8 +1,6 @@
 package com.publicuhc.commands.routing;
 
 import com.publicuhc.commands.requests.SenderType;
-import org.bukkit.permissions.Permission;
-import org.bukkit.permissions.PermissionDefault;
 
 import java.util.regex.Pattern;
 
