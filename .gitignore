@@ -1,5 +1,6 @@
 # Project Files #
 #################
+/target/*
 
 # IDE files #
 #############
