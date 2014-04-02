@@ -2,6 +2,7 @@ package com.publicuhc.commands.routing;
 
 import com.google.common.collect.MutableClassToInstanceMap;
 import com.google.inject.Inject;
+import com.google.inject.Injector;
 import com.google.inject.Provider;
 import com.publicuhc.commands.proxies.CommandProxy;
 import com.publicuhc.commands.proxies.ProxyTriggerException;
@@ -33,9 +34,15 @@ public class DefaultRouter implements Router {
      */
     private final Provider<CommandRequestBuilder> m_requestProvider;
 
+    /**
+     * Used to inject all parameters needed to the command classes when added
+     */
+    private final Injector m_injector;
+
     @Inject
-    public DefaultRouter(Provider<CommandRequestBuilder> requestProvider){
+    public DefaultRouter(Provider<CommandRequestBuilder> requestProvider, Injector injector){
         m_requestProvider = requestProvider;
+        m_injector = injector;
     }
 
     @Nullable
