@@ -1,12 +1,13 @@
-package com.publicuhc;
+package com.publicuhc.commands;
 
 import com.google.common.collect.MutableClassToInstanceMap;
+import com.google.inject.Inject;
+import com.google.inject.Provider;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class DefaultRouter implements Router {
@@ -20,6 +21,16 @@ public class DefaultRouter implements Router {
      * Store the instances of the classes to use
      */
     private final MutableClassToInstanceMap m_instances = MutableClassToInstanceMap.create();
+
+    /**
+     * Used to build requests
+     */
+    private final Provider<CommandRequestBuilder> m_requestProvider;
+
+    @Inject
+    public DefaultRouter(Provider<CommandRequestBuilder> requestProvider){
+        m_requestProvider = requestProvider;
+    }
 
 
     @Override
@@ -77,7 +88,12 @@ public class DefaultRouter implements Router {
 
         //trigger all the proxies
         for(CommandProxy proxy : proxies){
-            proxy.trigger(new CommandRequest(command, Arrays.asList(args),sender));
+            CommandRequestBuilder builder = m_requestProvider.get();
+            CommandRequest request = builder.setCommand(command)
+                    .setArguments(args)
+                    .setSender(sender)
+                    .build();
+            proxy.trigger(request);
         }
 
         //don't print the error message

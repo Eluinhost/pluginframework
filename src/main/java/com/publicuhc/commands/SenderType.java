@@ -1,4 +1,4 @@
-package com.publicuhc;
+package com.publicuhc.commands;
 
 import org.bukkit.command.BlockCommandSender;
 import org.bukkit.command.CommandSender;
