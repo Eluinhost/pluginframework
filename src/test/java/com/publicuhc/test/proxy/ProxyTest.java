@@ -12,7 +12,7 @@ import java.util.regex.Pattern;
 public class ProxyTest {
 
     @Test
-    public void testParamMatcher(){
+    public void testSuccessfulPatternMatch(){
         TestMethodProxy proxy = new TestMethodProxy();
 
         proxy.setPattern(Pattern.compile("[\\d]++"));
@@ -21,7 +21,7 @@ public class ProxyTest {
     }
 
     @Test
-    public void testParamMatcherFail(){
+    public void testPatternMatchFail(){
         TestMethodProxy proxy = new TestMethodProxy();
 
         proxy.setPattern(Pattern.compile("[\\d]++"));
@@ -30,7 +30,7 @@ public class ProxyTest {
     }
 
     @Test
-    public void testParamMatcherMulti(){
+    public void testMatcherReuse(){
         TestMethodProxy proxy = new TestMethodProxy();
 
         proxy.setPattern(Pattern.compile("[\\d]++"));
