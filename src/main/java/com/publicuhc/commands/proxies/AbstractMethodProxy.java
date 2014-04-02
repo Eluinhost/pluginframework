@@ -1,5 +1,6 @@
 package com.publicuhc.commands.proxies;
 
+import com.publicuhc.commands.requests.SenderType;
 import org.bukkit.command.Command;
 
 import java.lang.reflect.Method;
@@ -13,6 +14,8 @@ public abstract class AbstractMethodProxy implements MethodProxy {
     private Command m_command;
     private Object m_instance;
     private Matcher m_matcher;
+    private String m_permission;
+    private SenderType[] m_allowedSenders;
 
     @Override
     public void setPattern(Pattern pattern) {
@@ -62,5 +65,21 @@ public abstract class AbstractMethodProxy implements MethodProxy {
             m_matcher.reset(params);
         }
         return m_matcher.matches();
+    }
+
+    public String getPermission() {
+        return m_permission;
+    }
+
+    public void setPermission(String permission) {
+        m_permission = permission;
+    }
+
+    public SenderType[] getAllowedSenders() {
+        return m_allowedSenders;
+    }
+
+    public void setAllowedSenders(SenderType[] allowedSenders) {
+        m_allowedSenders = allowedSenders;
     }
 }

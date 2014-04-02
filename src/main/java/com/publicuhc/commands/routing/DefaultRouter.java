@@ -1,21 +1,29 @@
 package com.publicuhc.commands.routing;
 
-import com.google.common.collect.MutableClassToInstanceMap;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
 import com.google.inject.Provider;
+import com.publicuhc.commands.annotation.CommandMethod;
+import com.publicuhc.commands.annotation.RouteInfo;
+import com.publicuhc.commands.annotation.TabCompletion;
 import com.publicuhc.commands.proxies.CommandProxy;
 import com.publicuhc.commands.proxies.ProxyTriggerException;
 import com.publicuhc.commands.proxies.TabCompleteProxy;
 import com.publicuhc.commands.requests.CommandRequest;
 import com.publicuhc.commands.requests.CommandRequestBuilder;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.PluginCommand;
 
 import javax.annotation.Nullable;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class DefaultRouter implements Router {
 
@@ -39,10 +47,15 @@ public class DefaultRouter implements Router {
      */
     private final Injector m_injector;
 
+    private final Logger m_logger;
+
+    private static final String ROUTE_INFO_SUFFIX = "Details";
+
     @Inject
-    public DefaultRouter(Provider<CommandRequestBuilder> requestProvider, Injector injector){
+    public DefaultRouter(Provider<CommandRequestBuilder> requestProvider, Injector injector, Logger logger){
         m_requestProvider = requestProvider;
         m_injector = injector;
+        m_logger = logger;
     }
 
     @Nullable
@@ -73,13 +86,94 @@ public class DefaultRouter implements Router {
     }
 
     @Override
-    public void registerCommands(Class clazz) {
-        //TODO
+    public void registerCommands(Class klass) {
+        registerCommands(m_injector.getInstance(klass), false);
     }
 
     @Override
-    public void registerCommands(Object object) {
-        //TODO
+    public void registerCommands(Object object, boolean inject) {
+        if(inject){
+            m_injector.injectMembers(object);
+        }
+        //the class of our object
+        Class klass = object.getClass();
+
+        Method[] methods = klass.getDeclaredMethods();
+        for(Method method : methods){
+            if(isCommandMethod(method) || isTabComplete(method)){
+
+                //get the method with the details we need
+                Method routeInfo;
+                try {
+                    routeInfo = klass.getMethod(method.getName());
+                } catch (NoSuchMethodException e) {
+                    m_logger.log(Level.SEVERE,"No method found with the name "+method.getName()+ROUTE_INFO_SUFFIX);
+                    continue;
+                }
+
+                //check it is valid method
+                if(!isRouteInfo(routeInfo)) {
+                    m_logger.log(Level.SEVERE, "Route info method " + routeInfo.getName() + " is not valid. (check annotation, parameters and return type are correct");
+                    continue;
+                }
+
+                //get the details
+                MethodRoute methodRoute;
+                try {
+                    methodRoute = (MethodRoute) routeInfo.invoke(object);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    m_logger.log(Level.SEVERE, "Error getting route info from the method "+routeInfo.getName());
+                    continue;
+                }
+
+                //some validation
+                PluginCommand command = Bukkit.getPluginCommand(methodRoute.getBaseCommand());
+                if(command == null){
+                    m_logger.log(Level.SEVERE, "Couldn't find the command "+methodRoute.getBaseCommand()+" for the method "+method.getName());
+                    continue;
+                }
+
+                //register ourselves
+                command.setExecutor(this);
+                command.setTabCompleter(this);
+
+                if(isCommandMethod(method)){
+                    CommandProxy proxy = new CommandProxy();
+                    proxy.setPattern(methodRoute.getRoute());
+                    proxy.setBaseCommand(command);
+                    proxy.setCommandMethod(method);
+                    proxy.setInstance(object);
+                    proxy.setPermission(methodRoute.getPermission());
+                    proxy.setAllowedSenders(methodRoute.getAllowedTypes());
+                    m_commands.add(proxy);
+                }
+            }
+        }
+    }
+
+    /**
+     * @param method the method to check
+     * @return true if has commandmethod annotation
+     */
+    private boolean isCommandMethod(Method method){
+        return method.getAnnotation(CommandMethod.class) != null;
+    }
+
+    /**
+     * @param method the method to check
+     * @return true if has tabcompletion annotation
+     */
+    private boolean isTabComplete(Method method){
+        return method.getAnnotation(TabCompletion.class) != null;
+    }
+
+    /**
+     * @param method the method to check
+     * @return true if has routeinfo annotation
+     */
+    private boolean isRouteInfo(Method method){
+        return null != method.getAnnotation(RouteInfo.class) && method.getParameterTypes().length <= 0 && MethodRoute.class.isAssignableFrom(method.getReturnType());
     }
 
     @Override

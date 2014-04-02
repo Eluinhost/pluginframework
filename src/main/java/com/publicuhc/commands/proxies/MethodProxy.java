@@ -1,5 +1,6 @@
 package com.publicuhc.commands.proxies;
 
+import com.publicuhc.commands.requests.SenderType;
 import org.bukkit.command.Command;
 
 import java.lang.reflect.Method;
@@ -52,4 +53,24 @@ public interface MethodProxy {
      * @return true if matches route, false otherwise
      */
     boolean doParamsMatch(String params);
+
+    /**
+     * @return the permission, null if any allowed
+     */
+    String getPermission();
+
+    /**
+     * @param permission the permission to use
+     */
+    void setPermission(String permission);
+
+    /**
+     * @return the allowed senders
+     */
+    SenderType[] getAllowedSenders();
+
+    /**
+     * @param allowedSenders the allowed senders
+     */
+    void setAllowedSenders(SenderType[] allowedSenders);
 }

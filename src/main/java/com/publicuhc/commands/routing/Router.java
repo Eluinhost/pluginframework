@@ -27,12 +27,13 @@ public interface Router extends TabExecutor {
 
     /**
      * Register a class for commands, makes an instance
-     * @param clazz the class to register commands for
+     * @param klass the class to register commands for
      */
-    void registerCommands(Class clazz);
+    void registerCommands(Class klass);
 
     /**
      * @param object the object to register commands for
+     * @param inject whether to inject dependencies or not
      */
-    void registerCommands(Object object);
+    void registerCommands(Object object, boolean inject);
 }
