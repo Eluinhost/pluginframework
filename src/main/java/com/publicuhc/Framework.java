@@ -1,7 +1,7 @@
 package com.publicuhc;
 
 import com.google.inject.Inject;
-import com.publicuhc.commands.Router;
+import com.publicuhc.commands.routing.Router;
 
 public class Framework {
 

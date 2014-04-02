@@ -1,5 +1,6 @@
-package com.publicuhc.commands;
+package com.publicuhc.commands.routing;
 
+import com.publicuhc.commands.CommandProxy;
 import org.bukkit.command.Command;
 import org.bukkit.command.TabExecutor;
 

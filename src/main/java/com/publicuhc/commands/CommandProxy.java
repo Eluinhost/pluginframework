@@ -1,5 +1,6 @@
 package com.publicuhc.commands;
 
+import com.publicuhc.commands.requests.CommandRequest;
 import org.bukkit.command.Command;
 
 import java.lang.reflect.Method;

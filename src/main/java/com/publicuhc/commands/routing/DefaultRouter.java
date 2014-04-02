@@ -1,8 +1,11 @@
-package com.publicuhc.commands;
+package com.publicuhc.commands.routing;
 
 import com.google.common.collect.MutableClassToInstanceMap;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
+import com.publicuhc.commands.CommandProxy;
+import com.publicuhc.commands.requests.CommandRequest;
+import com.publicuhc.commands.requests.CommandRequestBuilder;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 

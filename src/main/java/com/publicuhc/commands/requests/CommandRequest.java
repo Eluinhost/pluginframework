@@ -1,4 +1,4 @@
-package com.publicuhc.commands;
+package com.publicuhc.commands.requests;
 
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.math.NumberUtils;
