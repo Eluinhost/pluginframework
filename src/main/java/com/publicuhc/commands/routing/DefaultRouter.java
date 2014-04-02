@@ -27,11 +27,6 @@ public class DefaultRouter implements Router {
     private final ArrayList<TabCompleteProxy> m_tabCompletes = new ArrayList<TabCompleteProxy>();
 
     /**
-     * Store the instances of the classes to use
-     */
-    private final MutableClassToInstanceMap m_instances = MutableClassToInstanceMap.create();
-
-    /**
      * Used to build requests
      */
     private final Provider<CommandRequestBuilder> m_requestProvider;
