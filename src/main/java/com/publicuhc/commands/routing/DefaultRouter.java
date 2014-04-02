@@ -4,9 +4,11 @@ import com.google.common.collect.MutableClassToInstanceMap;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import com.publicuhc.commands.proxies.CommandProxy;
+import com.publicuhc.commands.proxies.ProxyTriggerException;
 import com.publicuhc.commands.proxies.TabCompleteProxy;
 import com.publicuhc.commands.requests.CommandRequest;
 import com.publicuhc.commands.requests.CommandRequestBuilder;
+import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 
@@ -94,11 +96,17 @@ public class DefaultRouter implements Router {
         //trigger all the proxies
         for(CommandProxy proxy : proxies){
             CommandRequestBuilder builder = m_requestProvider.get();
-            CommandRequest request = builder.setCommand(command)
-                    .setArguments(args)
-                    .setSender(sender)
-                    .build();
-            proxy.trigger(request);
+            CommandRequest request =
+                    builder.setCommand(command)
+                            .setArguments(args)
+                            .setSender(sender)
+                            .build();
+            try {
+                proxy.trigger(request);
+            } catch (ProxyTriggerException e) {
+                e.getActualException().printStackTrace();
+                sender.sendMessage(ChatColor.RED+"Error running command, check console for more information"); //TODO translate with API
+            }
         }
 
         //don't print the error message
@@ -129,7 +137,12 @@ public class DefaultRouter implements Router {
                     .setArguments(args)
                     .setSender(sender)
                     .build();
-            results.addAll(proxy.trigger(request));
+            try {
+                results.addAll(proxy.trigger(request));
+            } catch (ProxyTriggerException e) {
+                e.getActualException().printStackTrace();
+                sender.sendMessage(ChatColor.RED+"Error with tab completion, check the console for more information"); //TODO translate with API
+            }
         }
 
         return results;
