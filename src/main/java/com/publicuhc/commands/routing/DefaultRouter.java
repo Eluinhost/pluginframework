@@ -3,7 +3,8 @@ package com.publicuhc.commands.routing;
 import com.google.common.collect.MutableClassToInstanceMap;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
-import com.publicuhc.commands.CommandProxy;
+import com.publicuhc.commands.proxies.CommandProxy;
+import com.publicuhc.commands.proxies.TabCompleteProxy;
 import com.publicuhc.commands.requests.CommandRequest;
 import com.publicuhc.commands.requests.CommandRequestBuilder;
 import org.bukkit.command.Command;
@@ -21,6 +22,11 @@ public class DefaultRouter implements Router {
     private final ArrayList<CommandProxy> m_commands = new ArrayList<CommandProxy>();
 
     /**
+     * Stores all the tab complete proxies
+     */
+    private final ArrayList<TabCompleteProxy> m_tabCompletes = new ArrayList<TabCompleteProxy>();
+
+    /**
      * Store the instances of the classes to use
      */
     private final MutableClassToInstanceMap m_instances = MutableClassToInstanceMap.create();
@@ -35,23 +41,24 @@ public class DefaultRouter implements Router {
         m_requestProvider = requestProvider;
     }
 
-
-    @Override
-    @Nullable
-    public CommandProxy getForBaseCommand(String command) {
-        for(CommandProxy proxy : m_commands){
-            if(command.equals(proxy.getBaseCommand().getName())){
-                return proxy;
-            }
-        }
-        return null;
-    }
-
     @Nullable
     @Override
-    public List<CommandProxy> getCommand(Command command, String parameters) {
+    public List<CommandProxy> getCommandProxy(Command command, String parameters) {
         List<CommandProxy> proxies = new ArrayList<CommandProxy>();
         for(CommandProxy proxy : m_commands){
+            if(command.getName().equals(proxy.getBaseCommand().getName())){
+                if(proxy.doParamsMatch(parameters)){
+                    proxies.add(proxy);
+                }
+            }
+        }
+        return proxies;
+    }
+
+    @Override
+    public List<TabCompleteProxy> getTabCompleteProxy(Command command, String parameters) {
+        List<TabCompleteProxy> proxies = new ArrayList<TabCompleteProxy>();
+        for(TabCompleteProxy proxy : m_tabCompletes){
             if(command.getName().equals(proxy.getBaseCommand().getName())){
                 if(proxy.doParamsMatch(parameters)){
                     proxies.add(proxy);
@@ -81,7 +88,7 @@ public class DefaultRouter implements Router {
         }
 
         //get all the proxies that match the route
-        List<CommandProxy> proxies = getCommand(command,stringBuilder.toString());
+        List<CommandProxy> proxies = getCommandProxy(command, stringBuilder.toString());
 
         //no proxies found that matched the route
         if(proxies == null){
@@ -104,8 +111,32 @@ public class DefaultRouter implements Router {
     }
 
     @Override
-    public List<String> onTabComplete(CommandSender sender, Command command, String s, String[] strings) {
-        //TODO
-        return null;
+    public List<String> onTabComplete(CommandSender sender, Command command, String label, String[] args) {
+        //Put all of the arguments into a string to match
+        StringBuilder stringBuilder = new StringBuilder();
+        for(String arg : args){
+            stringBuilder.append(arg).append(" ");
+        }
+
+        //get all the proxies that match the route
+        List<TabCompleteProxy> proxies = getTabCompleteProxy(command, stringBuilder.toString());
+
+        //no proxies found that matched the route
+        if(proxies == null){
+            return new ArrayList<String>(0);
+        }
+
+        //trigger all the proxies and merge them
+        List<String> results = new ArrayList<String>();
+        for(TabCompleteProxy proxy : proxies){
+            CommandRequestBuilder builder = m_requestProvider.get();
+            CommandRequest request = builder.setCommand(command)
+                    .setArguments(args)
+                    .setSender(sender)
+                    .build();
+            results.addAll(proxy.trigger(request));
+        }
+
+        return results;
     }
 }

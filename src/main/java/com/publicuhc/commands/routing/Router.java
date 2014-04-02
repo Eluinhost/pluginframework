@@ -1,6 +1,7 @@
 package com.publicuhc.commands.routing;
 
-import com.publicuhc.commands.CommandProxy;
+import com.publicuhc.commands.proxies.CommandProxy;
+import com.publicuhc.commands.proxies.TabCompleteProxy;
 import org.bukkit.command.Command;
 import org.bukkit.command.TabExecutor;
 
@@ -10,17 +11,19 @@ import java.util.List;
 public interface Router extends TabExecutor {
 
     /**
-     * @return the route for the base command
-     */
-    @Nullable
-    CommandProxy getForBaseCommand(String command);
-
-    /**
      * @param command the command string
+     * @param parameters the parameters
      * @return the commandproxy if found or null if not
      */
     @Nullable
-    List<CommandProxy> getCommand(Command command, String parameters);
+    List<CommandProxy> getCommandProxy(Command command, String parameters);
+
+    /**
+     * @param command the command string
+     * @param parameters the parameters
+     * @return the tabcompleteproxy if found or null if not
+     */
+    List<TabCompleteProxy> getTabCompleteProxy(Command command, String parameters);
 
     /**
      * Register a class for commands, makes an instance

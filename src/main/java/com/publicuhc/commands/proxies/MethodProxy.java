@@ -1,12 +1,11 @@
-package com.publicuhc.commands;
+package com.publicuhc.commands.proxies;
 
-import com.publicuhc.commands.requests.CommandRequest;
 import org.bukkit.command.Command;
 
 import java.lang.reflect.Method;
 import java.util.regex.Pattern;
 
-public interface CommandProxy {
+public interface MethodProxy {
 
     /**
      * @param pattern the pattern to be matched to run
@@ -33,10 +32,4 @@ public interface CommandProxy {
      * @return true if matches route, false otherwise
      */
     boolean doParamsMatch(String params);
-
-    /**
-     * Trigger this command
-     * @param request the request params
-     */
-    void trigger(CommandRequest request);
 }
