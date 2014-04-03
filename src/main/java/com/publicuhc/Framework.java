@@ -1,11 +1,12 @@
 package com.publicuhc;
 
-import com.google.inject.Inject;
+import com.google.inject.*;
 import com.publicuhc.commands.routing.Router;
 
+@Singleton
 public class Framework {
 
-    private final Router m_router;
+    private Router m_router;
 
     @Inject
     private Framework(Router router){

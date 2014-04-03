@@ -3,13 +3,12 @@ package com.publicuhc.test.proxy;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.powermock.modules.junit4.PowerMockRunner;
-import static org.powermock.api.mockito.PowerMockito.*;
 import static org.junit.Assert.*;
 
 import java.util.regex.Pattern;
 
 @RunWith(PowerMockRunner.class)
-public class ProxyTest {
+public class RouteMatchingTest {
 
     @Test
     public void testSuccessfulPatternMatch(){
