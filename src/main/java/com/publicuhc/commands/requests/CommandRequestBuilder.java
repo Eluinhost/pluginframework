@@ -4,6 +4,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 
 import java.util.List;
+import java.util.regex.MatchResult;
 
 public interface CommandRequestBuilder {
 
@@ -35,6 +36,12 @@ public interface CommandRequestBuilder {
      * @return this
      */
     CommandRequestBuilder setSender(CommandSender sender);
+
+    /**
+     * @param result the match results
+     * @return this
+     */
+    CommandRequestBuilder setMatchResult(MatchResult result);
 
     /**
      * @return whether the state is valid or not

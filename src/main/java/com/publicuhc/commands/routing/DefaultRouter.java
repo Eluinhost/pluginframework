@@ -297,6 +297,7 @@ public class DefaultRouter implements Router {
             CommandRequest request = builder.setCommand(command)
                     .setArguments(args)
                     .setSender(sender)
+                    .setMatchResult()//TODO
                     .build();
             try {
                 results.addAll(proxy.trigger(request));
