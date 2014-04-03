@@ -5,7 +5,6 @@ import com.publicuhc.commands.proxies.TabCompleteProxy;
 import org.bukkit.command.Command;
 import org.bukkit.command.TabExecutor;
 
-import javax.annotation.Nullable;
 import java.util.List;
 
 public interface Router extends TabExecutor {
@@ -13,15 +12,14 @@ public interface Router extends TabExecutor {
     /**
      * @param command the command string
      * @param parameters the parameters
-     * @return the commandproxy if found or null if not
+     * @return the list of matched commandproxy
      */
-    @Nullable
     List<CommandProxy> getCommandProxy(Command command, String parameters);
 
     /**
      * @param command the command string
      * @param parameters the parameters
-     * @return the tabcompleteproxy if found or null if not
+     * @return the list of matched tabcompleteproxy
      */
     List<TabCompleteProxy> getTabCompleteProxy(Command command, String parameters);
 

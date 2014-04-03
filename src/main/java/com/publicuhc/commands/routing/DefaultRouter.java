@@ -18,9 +18,9 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.PluginCommand;
 
-import javax.annotation.Nullable;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -36,6 +36,11 @@ public class DefaultRouter implements Router {
      * Stores all the tab complete proxies
      */
     private final ArrayList<TabCompleteProxy> m_tabCompletes = new ArrayList<TabCompleteProxy>();
+
+    /**
+     * Stores the message to send a player if a route wasn't found for the given command and parameters
+     */
+    private final HashMap<Command, List<String>> m_noRouteMessages = new HashMap<Command, List<String>>();
 
     /**
      * Used to build requests
@@ -58,7 +63,6 @@ public class DefaultRouter implements Router {
         m_logger = logger;
     }
 
-    @Nullable
     @Override
     public List<CommandProxy> getCommandProxy(Command command, String parameters) {
         List<CommandProxy> proxies = new ArrayList<CommandProxy>();
@@ -200,9 +204,16 @@ public class DefaultRouter implements Router {
         List<CommandProxy> proxies = getCommandProxy(command, stringBuilder.toString());
 
         //no proxies found that matched the route
-        if(proxies == null){
-            //TODO have a way to set message per command if no route exists
-            return false;
+        if(proxies.isEmpty()){
+            List<String> messages = m_noRouteMessages.get(command);
+            //if there isn't any messages send the usage message
+            if(messages.isEmpty()){
+                return false;
+            }
+            for(String message : messages){
+                sender.sendMessage(message);
+            }
+            return true;
         }
 
         //trigger all the proxies
