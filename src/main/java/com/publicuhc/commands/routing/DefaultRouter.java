@@ -41,7 +41,7 @@ public class DefaultRouter implements Router {
     /**
      * Stores the message to send a player if a route wasn't found for the given command and parameters
      */
-    private final HashMap<Command, List<String>> m_noRouteMessages = new HashMap<Command, List<String>>();
+    private final HashMap<Command, List<String>> m_noRouteMessages = new HashMap<Command, List<String>>(); //TODO be able to set the defaults
 
     /**
      * Used to build requests
