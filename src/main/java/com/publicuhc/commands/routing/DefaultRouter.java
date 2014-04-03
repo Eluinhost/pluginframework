@@ -6,7 +6,7 @@ import com.google.inject.Provider;
 import com.publicuhc.commands.annotation.CommandMethod;
 import com.publicuhc.commands.annotation.RouteInfo;
 import com.publicuhc.commands.annotation.TabCompletion;
-import com.publicuhc.commands.exceptions.CommandClassParseException;
+import com.publicuhc.commands.exceptions.*;
 import com.publicuhc.commands.proxies.DefaultMethodProxy;
 import com.publicuhc.commands.proxies.CommandProxy;
 import com.publicuhc.commands.proxies.ProxyTriggerException;
@@ -20,6 +20,8 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.PluginCommand;
 
 import java.lang.reflect.Method;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -95,6 +97,13 @@ public class DefaultRouter implements Router {
         registerCommands(m_injector.getInstance(klass), false);
     }
 
+    private void checkParameters(Method method) throws InvalidMethodParametersException {
+        if(method.getParameterTypes().length != 1 || !CommandRequest.class.isAssignableFrom(method.getParameterTypes()[0])){
+            m_logger.log(Level.SEVERE,"Method "+method.getName()+" has incorrect parameters");
+            throw new InvalidMethodParametersException();
+        }
+    }
+
     @Override
     public void registerCommands(Object object, boolean inject) throws CommandClassParseException {
         if(inject){
@@ -105,22 +114,29 @@ public class DefaultRouter implements Router {
 
         Method[] methods = klass.getDeclaredMethods();
         for(Method method : methods){
-            if(isCommandMethod(method) || isTabComplete(method)){
+            boolean isCommandMethod = isCommandMethod(method);
+            boolean isTabComplete = isTabComplete(method);
+
+            if(isCommandMethod || isTabComplete){
+
+                //check the method parameters are correct
+                checkParameters(method);
+
+                if(isTabComplete){
+                    //TODO check return type is correct
+                }
 
                 //get the method with the details we need
                 Method routeInfo;
                 try {
-                    routeInfo = klass.getMethod(method.getName());
+                    routeInfo = klass.getMethod(method.getName()+ROUTE_INFO_SUFFIX);
                 } catch (NoSuchMethodException e) {
                     m_logger.log(Level.SEVERE,"No method found with the name "+method.getName()+ROUTE_INFO_SUFFIX);
-                    throw new CommandClassParseException();
+                    throw new DetailsMethodNotFoundException();
                 }
 
-                //check it is valid method
-                if(!isRouteInfo(routeInfo)) {
-                    m_logger.log(Level.SEVERE, "Route info method " + routeInfo.getName() + " is not valid. (check annotation, parameters and return type are correct");
-                    throw new CommandClassParseException();
-                }
+                //throws exceptions if not valid
+                checkRouteInfo(routeInfo);
 
                 //get the details
                 MethodRoute methodRoute;
@@ -136,7 +152,7 @@ public class DefaultRouter implements Router {
                 PluginCommand command = Bukkit.getPluginCommand(methodRoute.getBaseCommand());
                 if(command == null){
                     m_logger.log(Level.SEVERE, "Couldn't find the command "+methodRoute.getBaseCommand()+" for the method "+method.getName());
-                    throw new CommandClassParseException();
+                    throw new BaseCommandNotFoundException();
                 }
 
                 //register ourselves
@@ -145,18 +161,16 @@ public class DefaultRouter implements Router {
 
                 DefaultMethodProxy proxy = null;
 
-                if(isCommandMethod(method)){
+                if(isCommandMethod){
                     CommandProxy commandProxy = new CommandProxy();
                     m_commands.add(commandProxy);
                     proxy = commandProxy;
                 }
-                if(isTabComplete(method)){
+                if(isTabComplete){
                     TabCompleteProxy tabCompleteProxy = new TabCompleteProxy();
                     m_tabCompletes.add(tabCompleteProxy);
                     proxy = tabCompleteProxy;
                 }
-
-                assert proxy != null;
 
                 proxy.setPattern(methodRoute.getRoute());
                 proxy.setBaseCommand(command);
@@ -165,6 +179,19 @@ public class DefaultRouter implements Router {
                 proxy.setPermission(methodRoute.getPermission());
                 proxy.setAllowedSenders(methodRoute.getAllowedTypes());
             }
+        }
+    }
+
+    private void checkTabCompleteReturn(Method method) throws InvalidReturnTypeException {
+
+        Type type = method.getGenericReturnType();
+        if(!(type instanceof ParameterizedType)){
+           throw new InvalidReturnTypeException();
+        }
+        ParameterizedType ptype = (ParameterizedType) type;
+        Class[] types = (Class[]) ptype.getActualTypeArguments();
+        if(types.length != 1 || String.class.isAssignableFrom(types[0])){
+
         }
     }
 
@@ -186,10 +213,20 @@ public class DefaultRouter implements Router {
 
     /**
      * @param method the method to check
-     * @return true if has routeinfo annotation
      */
-    private boolean isRouteInfo(Method method){
-        return null != method.getAnnotation(RouteInfo.class) && method.getParameterTypes().length <= 0 && MethodRoute.class.isAssignableFrom(method.getReturnType());
+    private void checkRouteInfo(Method method) throws CommandClassParseException {
+        if(null == method.getAnnotation(RouteInfo.class)){
+            m_logger.log(Level.SEVERE, "Route info method " + method.getName() + " does not have the @RouteInfo annotation");
+            throw new AnnotationMissingException();
+        }
+        if(MethodRoute.class.isAssignableFrom(method.getReturnType())){
+            m_logger.log(Level.SEVERE, "Route info method " + method.getName() + " does not have the correct return type");
+            throw new InvalidReturnTypeException();
+        }
+        if(method.getParameterTypes().length != 1 || !CommandRequest.class.isAssignableFrom(method.getParameterTypes()[0])){
+            m_logger.log(Level.SEVERE, "Route info method " + method.getName() + " does not have the correct parameters");
+            throw new InvalidMethodParametersException();
+        }
     }
 
     @Override
