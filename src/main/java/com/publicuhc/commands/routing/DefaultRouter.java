@@ -6,6 +6,7 @@ import com.google.inject.Provider;
 import com.publicuhc.commands.annotation.CommandMethod;
 import com.publicuhc.commands.annotation.RouteInfo;
 import com.publicuhc.commands.annotation.TabCompletion;
+import com.publicuhc.commands.exceptions.CommandClassParseException;
 import com.publicuhc.commands.proxies.DefaultMethodProxy;
 import com.publicuhc.commands.proxies.CommandProxy;
 import com.publicuhc.commands.proxies.ProxyTriggerException;
@@ -90,12 +91,12 @@ public class DefaultRouter implements Router {
     }
 
     @Override
-    public void registerCommands(Class klass) {
+    public void registerCommands(Class klass) throws CommandClassParseException {
         registerCommands(m_injector.getInstance(klass), false);
     }
 
     @Override
-    public void registerCommands(Object object, boolean inject) {
+    public void registerCommands(Object object, boolean inject) throws CommandClassParseException {
         if(inject){
             m_injector.injectMembers(object);
         }
@@ -112,13 +113,13 @@ public class DefaultRouter implements Router {
                     routeInfo = klass.getMethod(method.getName());
                 } catch (NoSuchMethodException e) {
                     m_logger.log(Level.SEVERE,"No method found with the name "+method.getName()+ROUTE_INFO_SUFFIX);
-                    continue;
+                    throw new CommandClassParseException();
                 }
 
                 //check it is valid method
                 if(!isRouteInfo(routeInfo)) {
                     m_logger.log(Level.SEVERE, "Route info method " + routeInfo.getName() + " is not valid. (check annotation, parameters and return type are correct");
-                    continue;
+                    throw new CommandClassParseException();
                 }
 
                 //get the details
@@ -128,14 +129,14 @@ public class DefaultRouter implements Router {
                 } catch (Exception e) {
                     e.printStackTrace();
                     m_logger.log(Level.SEVERE, "Error getting route info from the method "+routeInfo.getName());
-                    continue;
+                    throw new CommandClassParseException();
                 }
 
                 //some validation
                 PluginCommand command = Bukkit.getPluginCommand(methodRoute.getBaseCommand());
                 if(command == null){
                     m_logger.log(Level.SEVERE, "Couldn't find the command "+methodRoute.getBaseCommand()+" for the method "+method.getName());
-                    continue;
+                    throw new CommandClassParseException();
                 }
 
                 //register ourselves

@@ -1,5 +1,6 @@
 package com.publicuhc.commands.routing;
 
+import com.publicuhc.commands.exceptions.CommandClassParseException;
 import com.publicuhc.commands.proxies.CommandProxy;
 import com.publicuhc.commands.proxies.TabCompleteProxy;
 import org.bukkit.command.Command;
@@ -27,11 +28,11 @@ public interface Router extends TabExecutor {
      * Register a class for commands, makes an instance
      * @param klass the class to register commands for
      */
-    void registerCommands(Class klass);
+    void registerCommands(Class klass) throws CommandClassParseException;
 
     /**
      * @param object the object to register commands for
      * @param inject whether to inject dependencies or not
      */
-    void registerCommands(Object object, boolean inject);
+    void registerCommands(Object object, boolean inject) throws CommandClassParseException;
 }
