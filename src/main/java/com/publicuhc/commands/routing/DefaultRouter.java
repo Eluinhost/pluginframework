@@ -57,7 +57,7 @@ public class DefaultRouter implements Router {
     private static final String ROUTE_INFO_SUFFIX = "Details";
 
     @Inject
-    public DefaultRouter(Provider<CommandRequestBuilder> requestProvider, Injector injector, Logger logger){
+    protected DefaultRouter(Provider<CommandRequestBuilder> requestProvider, Injector injector, Logger logger){
         m_requestProvider = requestProvider;
         m_injector = injector;
         m_logger = logger;
