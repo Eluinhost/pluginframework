@@ -8,6 +8,7 @@ import com.publicuhc.commands.annotation.RouteInfo;
 import com.publicuhc.commands.annotation.TabCompletion;
 import com.publicuhc.commands.exceptions.AnnotationMissingException;
 import com.publicuhc.commands.exceptions.CommandClassParseException;
+import com.publicuhc.commands.exceptions.InvalidMethodParametersException;
 import com.publicuhc.commands.exceptions.InvalidReturnTypeException;
 import com.publicuhc.commands.requests.CommandRequest;
 import com.publicuhc.commands.requests.CommandRequestBuilder;
@@ -145,6 +146,23 @@ public class DefaultRouterTest {
         router.checkRouteInfo(routeInfo);
     }
 
+    /*#############################
+     *  Tests for checkParameters #
+     *###########################*/
+
+    @Test
+    public void testValidParameters() throws NoSuchMethodException, CommandClassParseException {
+        Method valid = TestCommandClass.class.getMethod("onValidCommandMethod", CommandRequest.class);
+        router.checkParameters(valid);
+    }
+
+    @Test
+    public void testInvalidParameters() throws NoSuchMethodException, CommandClassParseException {
+        Method invalid = TestCommandClass.class.getMethod("onInvalidParameters", String.class);
+        thrown.expect(InvalidMethodParametersException.class);
+        router.checkParameters(invalid);
+    }
+
     @SuppressWarnings("unused")
     private static class TestCommandClass {
 
@@ -211,6 +229,14 @@ public class DefaultRouterTest {
          */
         @CommandMethod
         public void onValidCommandMethod(CommandRequest request) {
+        }
+
+        /**
+         * Test for invalid parameters
+         * @param string n/a
+         */
+        @CommandMethod
+        public void onInvalidParameters(String string) {
         }
 
         /**
