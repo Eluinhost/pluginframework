@@ -220,7 +220,11 @@ public class DefaultRouter implements Router {
     }
 
     /**
+     * Check the method to see if it is a valid routeinfo method
+     *
      * @param method the method to check
+     * @throws com.publicuhc.commands.exceptions.AnnotationMissingException if the method doesn't have the @RouteInfo annotation
+     * @throws com.publicuhc.commands.exceptions.InvalidReturnTypeException if the method doesn't return a MethodRoute
      */
     protected void checkRouteInfo(Method method) throws CommandClassParseException {
         if (null == method.getAnnotation(RouteInfo.class)) {
@@ -230,10 +234,6 @@ public class DefaultRouter implements Router {
         if (MethodRoute.class.isAssignableFrom(method.getReturnType())) {
             m_logger.log(Level.SEVERE, "Route info method " + method.getName() + " does not have the correct return type");
             throw new InvalidReturnTypeException();
-        }
-        if (method.getParameterTypes().length != 1 || !CommandRequest.class.isAssignableFrom(method.getParameterTypes()[0])) {
-            m_logger.log(Level.SEVERE, "Route info method " + method.getName() + " does not have the correct parameters");
-            throw new InvalidMethodParametersException();
         }
     }
 
