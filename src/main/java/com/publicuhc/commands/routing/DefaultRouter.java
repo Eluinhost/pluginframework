@@ -231,7 +231,7 @@ public class DefaultRouter implements Router {
             m_logger.log(Level.SEVERE, "Route info method " + method.getName() + " does not have the @RouteInfo annotation");
             throw new AnnotationMissingException();
         }
-        if (MethodRoute.class.isAssignableFrom(method.getReturnType())) {
+        if (!MethodRoute.class.isAssignableFrom(method.getReturnType())) {
             m_logger.log(Level.SEVERE, "Route info method " + method.getName() + " does not have the correct return type");
             throw new InvalidReturnTypeException();
         }
