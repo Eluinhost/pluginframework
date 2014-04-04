@@ -4,7 +4,10 @@ import com.google.inject.AbstractModule;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.publicuhc.commands.annotation.CommandMethod;
+import com.publicuhc.commands.annotation.RouteInfo;
 import com.publicuhc.commands.annotation.TabCompletion;
+import com.publicuhc.commands.exceptions.AnnotationMissingException;
+import com.publicuhc.commands.exceptions.CommandClassParseException;
 import com.publicuhc.commands.exceptions.InvalidReturnTypeException;
 import com.publicuhc.commands.requests.CommandRequest;
 import com.publicuhc.commands.requests.CommandRequestBuilder;
@@ -111,6 +114,36 @@ public class DefaultRouterTest {
         assertFalse(router.isCommandMethod(missingAnnotation));
     }
 
+    /*############################
+     *  Tests for checkRouteInfo #
+     *##########################*/
+
+    @Test
+    public void testValidRouteInfo() throws NoSuchMethodException, CommandClassParseException {
+        Method validRouteInfo = TestCommandClass.class.getMethod("onValidRouteInfo");
+        router.checkRouteInfo(validRouteInfo);
+    }
+
+    @Test
+    public void testMissingAnnotationRouteInfo() throws NoSuchMethodException, CommandClassParseException {
+        Method routeInfo = TestCommandClass.class.getMethod("onMissingAnnotationRouteInfo");
+        thrown.expect(AnnotationMissingException.class);
+        router.checkRouteInfo(routeInfo);
+    }
+
+    @Test
+    public void testMissingReturnRouteInfo() throws NoSuchMethodException, CommandClassParseException {
+        Method routeInfo = TestCommandClass.class.getMethod("onMissingReturnRouteInfo");
+        thrown.expect(InvalidReturnTypeException.class);
+        router.checkRouteInfo(routeInfo);
+    }
+
+    @Test
+    public void testInvalidReturnRouteInfo() throws NoSuchMethodException, CommandClassParseException {
+        Method routeInfo = TestCommandClass.class.getMethod("onInvalidReturnRouteInfo");
+        thrown.expect(InvalidReturnTypeException.class);
+        router.checkRouteInfo(routeInfo);
+    }
 
     @SuppressWarnings("unused")
     private static class TestCommandClass {
@@ -185,6 +218,39 @@ public class DefaultRouterTest {
          * @param request n/a
          */
         public void onMissingAnnotationCommandMethod(CommandRequest request) {
+        }
+
+        /**
+         * Test for a valid route info
+         * @return n/a
+         */
+        @RouteInfo
+        public MethodRoute onValidRouteInfo() {
+            return null;
+        }
+
+        /**
+         * Test for missing annotation
+         * @return n/a
+         */
+        public MethodRoute onMissingAnnotationRouteInfo() {
+            return null;
+        }
+
+        /**
+         * Test for missing return type
+         */
+        @RouteInfo
+        public void onMissingReturnRouteInfo() {
+        }
+
+        /**
+         * Test for invalid return type
+         * @return n/a
+         */
+        @RouteInfo
+        public String onInvalidReturnRouteInfo() {
+            return null;
         }
     }
 }
