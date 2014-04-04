@@ -97,7 +97,7 @@ public class DefaultRouter implements Router {
         registerCommands(m_injector.getInstance(klass), false);
     }
 
-    private void checkParameters(Method method) throws InvalidMethodParametersException {
+    protected void checkParameters(Method method) throws InvalidMethodParametersException {
         if (method.getParameterTypes().length != 1 || !CommandRequest.class.isAssignableFrom(method.getParameterTypes()[0])) {
             m_logger.log(Level.SEVERE, "Method " + method.getName() + " has incorrect parameters");
             throw new InvalidMethodParametersException();
@@ -182,16 +182,24 @@ public class DefaultRouter implements Router {
         }
     }
 
-    private void checkTabCompleteReturn(Method method) throws InvalidReturnTypeException {
+    protected void checkTabCompleteReturn(Method method) throws InvalidReturnTypeException {
+        //only allow list returns
+        if(!List.class.isAssignableFrom(method.getReturnType())){
+            throw new InvalidReturnTypeException();
+        }
 
         Type type = method.getGenericReturnType();
+
+        //only allow generics returned
         if (!(type instanceof ParameterizedType)) {
             throw new InvalidReturnTypeException();
         }
-        ParameterizedType ptype = (ParameterizedType) type;
-        Class[] types = (Class[]) ptype.getActualTypeArguments();
-        if (types.length != 1 || String.class.isAssignableFrom(types[0])) {
 
+        //make sure its a string parameter
+        ParameterizedType ptype = (ParameterizedType) type;
+        Type[] types = ptype.getActualTypeArguments();
+        if (types.length != 1 || !String.class.isAssignableFrom((Class) types[0])) {
+            throw new InvalidReturnTypeException();
         }
     }
 
@@ -199,7 +207,7 @@ public class DefaultRouter implements Router {
      * @param method the method to check
      * @return true if has commandmethod annotation
      */
-    private boolean isCommandMethod(Method method) {
+    protected boolean isCommandMethod(Method method) {
         return method.getAnnotation(CommandMethod.class) != null;
     }
 
@@ -207,14 +215,14 @@ public class DefaultRouter implements Router {
      * @param method the method to check
      * @return true if has tabcompletion annotation
      */
-    private boolean isTabComplete(Method method) {
+    protected boolean isTabComplete(Method method) {
         return method.getAnnotation(TabCompletion.class) != null;
     }
 
     /**
      * @param method the method to check
      */
-    private void checkRouteInfo(Method method) throws CommandClassParseException {
+    protected void checkRouteInfo(Method method) throws CommandClassParseException {
         if (null == method.getAnnotation(RouteInfo.class)) {
             m_logger.log(Level.SEVERE, "Route info method " + method.getName() + " does not have the @RouteInfo annotation");
             throw new AnnotationMissingException();
@@ -297,7 +305,7 @@ public class DefaultRouter implements Router {
             CommandRequest request = builder.setCommand(command)
                     .setArguments(args)
                     .setSender(sender)
-                    .setMatchResult()//TODO
+                    //.setMatchResult() TODO
                     .build();
             try {
                 results.addAll(proxy.trigger(request));
