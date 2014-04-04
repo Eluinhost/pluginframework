@@ -1,4 +1,4 @@
-package com.publicuhc.test.proxy;
+package com.publicuhc.commands;
 
 import com.publicuhc.commands.proxies.DefaultMethodProxy;
 
