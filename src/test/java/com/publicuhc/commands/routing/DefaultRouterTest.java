@@ -3,6 +3,7 @@ package com.publicuhc.commands.routing;
 import com.google.inject.AbstractModule;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
+import com.publicuhc.commands.annotation.CommandMethod;
 import com.publicuhc.commands.annotation.TabCompletion;
 import com.publicuhc.commands.exceptions.InvalidReturnTypeException;
 import com.publicuhc.commands.requests.CommandRequest;
@@ -18,6 +19,9 @@ import org.powermock.modules.junit4.PowerMockRunner;
 
 import java.lang.reflect.Method;
 import java.util.List;
+
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 @RunWith(PowerMockRunner.class)
 public class DefaultRouterTest {
@@ -44,8 +48,12 @@ public class DefaultRouterTest {
         router = null;
     }
 
+    /*####################################
+     *  Tests for checkTabCompleteReturn #
+     *##################################*/
+
     @Test
-    public void testValidTabComplete() throws NoSuchMethodException, InvalidReturnTypeException {
+    public void testValidTabCompleteReturn() throws NoSuchMethodException, InvalidReturnTypeException {
         Method validTabComplete = TestCommandClass.class.getMethod("onValidTabComplete", CommandRequest.class);
         router.checkTabCompleteReturn(validTabComplete);
     }
@@ -70,6 +78,39 @@ public class DefaultRouterTest {
         thrown.expect(InvalidReturnTypeException.class);
         router.checkTabCompleteReturn(invalidReturn);
     }
+
+    /*###########################
+     *  Tests for isTabComplete #
+     *#########################*/
+
+    @Test
+    public void testValidTabCompleteAnnotation() throws NoSuchMethodException {
+        Method validAnnotation = TestCommandClass.class.getMethod("onValidTabComplete", CommandRequest.class);
+        assertTrue(router.isTabComplete(validAnnotation));
+    }
+
+    @Test
+    public void testMissingTabCompleteAnnotation() throws NoSuchMethodException {
+        Method missingAnnotation = TestCommandClass.class.getMethod("onMissingAnnotationTabComplete", CommandRequest.class);
+        assertFalse(router.isTabComplete(missingAnnotation));
+    }
+
+    /*#############################
+     *  Tests for isCommandMethod #
+     *###########################*/
+
+    @Test
+    public void testValidCommandMethodAnnotation() throws NoSuchMethodException {
+        Method validAnnotation = TestCommandClass.class.getMethod("onValidCommandMethod", CommandRequest.class);
+        assertTrue(router.isCommandMethod(validAnnotation));
+    }
+
+    @Test
+    public void testMissingCommandMethodAnnotation() throws NoSuchMethodException {
+        Method missingAnnotation = TestCommandClass.class.getMethod("onMissingAnnotationCommandMethod", CommandRequest.class);
+        assertFalse(router.isCommandMethod(missingAnnotation));
+    }
+
 
     @SuppressWarnings("unused")
     private static class TestCommandClass {
@@ -127,8 +168,23 @@ public class DefaultRouterTest {
          * @param request n/a
          * @return n/a
          */
-        public List<String> onMissingAnnotation(CommandRequest request) {
+        public List<String> onMissingAnnotationTabComplete(CommandRequest request) {
             return null;
+        }
+
+        /**
+         * Test for a valid command method
+         * @param request n/a
+         */
+        @CommandMethod
+        public void onValidCommandMethod(CommandRequest request) {
+        }
+
+        /**
+         * Test for missing annotation
+         * @param request n/a
+         */
+        public void onMissingAnnotationCommandMethod(CommandRequest request) {
         }
     }
 }
