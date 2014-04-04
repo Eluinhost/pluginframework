@@ -11,14 +11,14 @@ import java.util.List;
 public interface Router extends TabExecutor {
 
     /**
-     * @param command the command string
+     * @param command    the command string
      * @param parameters the parameters
      * @return the list of matched commandproxy
      */
     List<CommandProxy> getCommandProxy(Command command, String parameters);
 
     /**
-     * @param command the command string
+     * @param command    the command string
      * @param parameters the parameters
      * @return the list of matched tabcompleteproxy
      */
@@ -26,6 +26,7 @@ public interface Router extends TabExecutor {
 
     /**
      * Register a class for commands, makes an instance
+     *
      * @param klass the class to register commands for
      */
     void registerCommands(Class klass) throws CommandClassParseException;

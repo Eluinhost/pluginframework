@@ -1,3 +1,3 @@
 package com.publicuhc.commands.exceptions;
 
-public class BaseCommandNotFoundException extends CommandClassParseException {}
+public class BaseCommandNotFoundException extends CommandClassParseException { }

@@ -21,8 +21,8 @@ public class CommandRequest {
 
     /**
      * @param command the command
-     * @param args the arguements to use
-     * @param sender the sender for the request
+     * @param args    the arguements to use
+     * @param sender  the sender for the request
      */
     public CommandRequest(Command command, List<String> args, CommandSender sender, MatchResult result) {
         m_command = command;
@@ -31,15 +31,15 @@ public class CommandRequest {
         m_matchResult = result;
     }
 
-    public MatchResult getMatcherResult(){
+    public MatchResult getMatcherResult() {
         return m_matchResult;
     }
 
     /**
      * Remove the first element of the arguments
      */
-    public void removeFirstArg(){
-        if(!m_args.isEmpty()){
+    public void removeFirstArg() {
+        if (!m_args.isEmpty()) {
             m_args.remove(0);
         }
     }
@@ -47,22 +47,22 @@ public class CommandRequest {
     /**
      * @return unmodifiable list of the arguments supplied
      */
-    public List<String> getArgs(){
+    public List<String> getArgs() {
         return Collections.unmodifiableList(m_args);
     }
 
     /**
      * @return the sender involved
      */
-    public CommandSender getSender(){
+    public CommandSender getSender() {
         return m_sender;
     }
 
     /**
      * @return null if no args left or the arguement if exists
      */
-    public String getFirstArg(){
-        if(m_args.isEmpty()){
+    public String getFirstArg() {
+        if (m_args.isEmpty()) {
             return null;
         }
         return m_args.get(0);
@@ -71,11 +71,11 @@ public class CommandRequest {
     /**
      * @return the last arg or null if not exist
      */
-    public String getLastArg(){
-        if(m_args.isEmpty()){
+    public String getLastArg() {
+        if (m_args.isEmpty()) {
             return null;
         }
-        return m_args.get(m_args.size()-1);
+        return m_args.get(m_args.size() - 1);
     }
 
     /**
@@ -88,7 +88,7 @@ public class CommandRequest {
     /**
      * @return the type of the sender
      */
-    public SenderType getSenderType(){
+    public SenderType getSenderType() {
         return SenderType.getFromCommandSender(m_sender);
     }
 
@@ -96,7 +96,7 @@ public class CommandRequest {
      * @param index the index to look for
      * @return true if arg is an int, false otherwise
      */
-    public boolean isArgInt(int index){
+    public boolean isArgInt(int index) {
         try {
             //noinspection ResultOfMethodCallIgnored
             Integer.parseInt(m_args.get(index));
@@ -108,14 +108,16 @@ public class CommandRequest {
 
     /**
      * Get the int at the specified index
+     *
      * @param index the index to look for
      * @return -1 if not an int, int value otherwise
      */
-    public int getInt(int index){
+    public int getInt(int index) {
         int returnValue = -1;
-        try{
+        try {
             returnValue = Integer.parseInt(m_args.get(index));
-        }catch (NumberFormatException ignored){}
+        } catch (NumberFormatException ignored) {
+        }
         return returnValue;
     }
 
@@ -123,14 +125,14 @@ public class CommandRequest {
      * @param index the index to look for
      * @return null if not valid, world if valid
      */
-    public World getWorld(int index){
+    public World getWorld(int index) {
         return Bukkit.getWorld(m_args.get(index));
     }
 
     /**
      * @param message message to pass on to the sender
      */
-    public void sendMessage(String message){
+    public void sendMessage(String message) {
         m_sender.sendMessage(message);
     }
 
@@ -138,7 +140,7 @@ public class CommandRequest {
      * @param index the index to look for
      * @return the argument
      */
-    public String getArg(int index){
+    public String getArg(int index) {
         return m_args.get(index);
     }
 
@@ -146,7 +148,7 @@ public class CommandRequest {
      * @param index the index to look for
      * @return true if within list bounds, false otherwise
      */
-    public boolean isArgPresent(int index){
+    public boolean isArgPresent(int index) {
         return index > -1 && index < m_args.size();
     }
 
@@ -154,7 +156,7 @@ public class CommandRequest {
      * @param index the index to look for
      * @return player or null of not exists
      */
-    public Player getPlayer(int index){
+    public Player getPlayer(int index) {
         return Bukkit.getPlayer(m_args.get(index));
     }
 
@@ -162,25 +164,27 @@ public class CommandRequest {
      * @param index the index to look for
      * @return true if arg is an number, false otherwise
      */
-    public boolean isArgNumber(int index){
+    public boolean isArgNumber(int index) {
         return NumberUtils.isNumber(m_args.get(index));
     }
 
     /**
      * Get the Number at the specified index
+     *
      * @param index the index to look for
      * @return number
-     * */
-    public Number getNumber(int index){
+     */
+    public Number getNumber(int index) {
         return NumberUtils.createNumber(m_args.get(index));
     }
 
     /**
      * Is the index a boolean value, 'true', 'on' or 'yes' count as true and 'false', 'off' or 'no' count as false, case insensitive
+     *
      * @param index the index to look for
      * @return true if boolean false otherwise
      */
-    public boolean isArgBoolean(int index){
+    public boolean isArgBoolean(int index) {
         return BooleanUtils.toBooleanObject(m_args.get(index)) != null;
     }
 
@@ -188,7 +192,7 @@ public class CommandRequest {
      * @param index the index to look for
      * @return the boolean value at that index
      */
-    public boolean getBoolean(int index){
+    public boolean getBoolean(int index) {
         return BooleanUtils.toBoolean(m_args.get(index));
     }
 }

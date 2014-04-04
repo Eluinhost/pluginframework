@@ -5,4 +5,4 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Target(ElementType.METHOD)
-public @interface RouteInfo {}
+public @interface RouteInfo { }

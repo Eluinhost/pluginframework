@@ -17,16 +17,16 @@ public class DefaultCommandRequestBuilder implements CommandRequestBuilder {
 
     @Override
     public CommandRequest build() {
-        if(!isValid()){
+        if (!isValid()) {
             throw new IllegalStateException("Command request state is invalid");
         }
-        return new CommandRequest(m_command,m_arguments,m_commandSender,m_matchResult);
+        return new CommandRequest(m_command, m_arguments, m_commandSender, m_matchResult);
     }
 
     @Override
     @Nonnull
     public CommandRequestBuilder setCommand(Command command) {
-        if(null == command){
+        if (null == command) {
             throw new IllegalArgumentException("Command cannot be null");
         }
         m_command = command;
@@ -34,14 +34,14 @@ public class DefaultCommandRequestBuilder implements CommandRequestBuilder {
     }
 
     @Override
-    public CommandRequestBuilder setMatchResult(MatchResult result){
+    public CommandRequestBuilder setMatchResult(MatchResult result) {
         m_matchResult = result;
         return this;
     }
 
     @Override
     public CommandRequestBuilder setArguments(List<String> arguments) {
-        if(null == arguments){
+        if (null == arguments) {
             throw new IllegalArgumentException("Argument list cannot be null");
         }
         m_arguments = arguments;
@@ -55,7 +55,7 @@ public class DefaultCommandRequestBuilder implements CommandRequestBuilder {
 
     @Override
     public CommandRequestBuilder setSender(CommandSender sender) {
-        if(null == sender){
+        if (null == sender) {
             throw new IllegalArgumentException("Sender cannot be null");
         }
         m_commandSender = sender;

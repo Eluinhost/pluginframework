@@ -59,9 +59,9 @@ public class DefaultMethodProxy implements MethodProxy {
 
     @Override
     public boolean doParamsMatch(String params) {
-        if(m_matcher == null){
+        if (m_matcher == null) {
             m_matcher = m_pattern.matcher(params);
-        }else {
+        } else {
             m_matcher.reset(params);
         }
         return m_matcher.matches();

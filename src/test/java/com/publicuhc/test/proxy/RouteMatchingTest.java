@@ -3,6 +3,7 @@ package com.publicuhc.test.proxy;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.powermock.modules.junit4.PowerMockRunner;
+
 import static org.junit.Assert.*;
 
 import java.util.regex.Pattern;
@@ -11,7 +12,7 @@ import java.util.regex.Pattern;
 public class RouteMatchingTest {
 
     @Test
-    public void testSuccessfulPatternMatch(){
+    public void testSuccessfulPatternMatch() {
         TestMethodProxy proxy = new TestMethodProxy();
 
         proxy.setPattern(Pattern.compile("[\\d]++"));
@@ -20,7 +21,7 @@ public class RouteMatchingTest {
     }
 
     @Test
-    public void testPatternMatchFail(){
+    public void testPatternMatchFail() {
         TestMethodProxy proxy = new TestMethodProxy();
 
         proxy.setPattern(Pattern.compile("[\\d]++"));
@@ -29,7 +30,7 @@ public class RouteMatchingTest {
     }
 
     @Test
-    public void testMatcherReuse(){
+    public void testMatcherReuse() {
         TestMethodProxy proxy = new TestMethodProxy();
 
         proxy.setPattern(Pattern.compile("[\\d]++"));

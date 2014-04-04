@@ -8,22 +8,22 @@ import com.publicuhc.commands.requests.CommandRequest;
 public class TestCommand {
 
     @CommandMethod
-    public void testCommand(CommandRequest request){
+    public void testCommand(CommandRequest request) {
         //do stuff
     }
 
     @RouteInfo
-    public void testCommandDetails(){
+    public void testCommandDetails() {
 
     }
 
     @TabCompletion
-    public void testTabComplete(CommandRequest request){
+    public void testTabComplete(CommandRequest request) {
 
     }
 
     @RouteInfo
-    public void testTabCompleteDetails(){
+    public void testTabCompleteDetails() {
 
     }
 }

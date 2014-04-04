@@ -9,11 +9,11 @@ public class Framework {
     private Router m_router;
 
     @Inject
-    private Framework(Router router){
+    private Framework(Router router) {
         m_router = router;
     }
 
-    public Router getRouter(){
+    public Router getRouter() {
         return m_router;
     }
 }

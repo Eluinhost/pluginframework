@@ -18,18 +18,19 @@ public enum SenderType {
     /**
      * @param clazz the class representing
      */
-    SenderType(Class clazz){
+    SenderType(Class clazz) {
         m_clazz = clazz;
     }
 
     /**
      * Returns the enum value for the sender
+     *
      * @param sender the sender to parse
      * @return the SenderType or null if not known
      */
-    public static SenderType getFromCommandSender(CommandSender sender){
-        for(SenderType type : SenderType.values()){
-            if(type.getClassType().isAssignableFrom(sender.getClass())){
+    public static SenderType getFromCommandSender(CommandSender sender) {
+        for (SenderType type : SenderType.values()) {
+            if (type.getClassType().isAssignableFrom(sender.getClass())) {
                 return type;
             }
         }

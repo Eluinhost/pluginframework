@@ -48,14 +48,16 @@ public class RegisterCommandsTest {
 
     private static class FailCommandParameters {
         @CommandMethod
-        public void failCommand(){} //incorrect parameter
+        public void failCommand() {} //incorrect parameter
     }
+
     private static class FailTabCompleteParameters {
         @TabCompletion
-        public void failCommand(){} //incorrect parameter
+        public void failCommand() {} //incorrect parameter
     }
+
     private static class FailTabCompleteReturnType {
         @TabCompletion
-        public void failCommand(CommandRequest request){} //incorrect return type
+        public void failCommand(CommandRequest request) {} //incorrect return type
     }
 }

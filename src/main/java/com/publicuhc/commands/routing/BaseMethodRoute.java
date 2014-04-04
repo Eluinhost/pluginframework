@@ -12,10 +12,10 @@ public class BaseMethodRoute implements MethodRoute {
     private final String m_baseCommand;
 
     /**
-     * @param route the pattern to match to run
+     * @param route        the pattern to match to run
      * @param allowedTypes the allowed sender types for running
-     * @param permission the permission needed to run
-     * @param baseCommand the base command to run under
+     * @param permission   the permission needed to run
+     * @param baseCommand  the base command to run under
      */
     public BaseMethodRoute(Pattern route, SenderType[] allowedTypes, String permission, String baseCommand) {
         m_route = route;

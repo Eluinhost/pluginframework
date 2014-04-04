@@ -1,3 +1,3 @@
 package com.publicuhc.commands.exceptions;
 
-public class CommandClassParseException extends Exception {}
+public class CommandClassParseException extends Exception { }
