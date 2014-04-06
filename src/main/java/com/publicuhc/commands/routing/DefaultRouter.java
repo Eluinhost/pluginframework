@@ -123,7 +123,7 @@ public class DefaultRouter implements Router {
                 checkParameters(method);
 
                 if (isTabComplete) {
-                    //TODO check return type is correct
+                    checkTabCompleteReturn(method);
                 }
 
                 //get the method with the details we need
