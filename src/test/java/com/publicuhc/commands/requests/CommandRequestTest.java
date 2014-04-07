@@ -32,6 +32,8 @@ public class CommandRequestTest {
 
     private CommandRequest request;
     private CommandSender sender;
+    private Command command;
+    private MatchResult result;
 
     @Test
     public void testRemoveFirstArg() {
@@ -53,6 +55,22 @@ public class CommandRequestTest {
         CommandRequest request = new CommandRequest(command, args, sender, result);
 
         request.removeFirstArg();
+    }
+
+    @Test
+    public void testGetFirstArg() {
+        assertThat(request.getFirstArg(), is(equalTo("first")));
+    }
+
+    @Test
+    public void testGetFirstArgNoArgs() {
+        List<String> args = new ArrayList<String>();
+        CommandSender sender = mock(CommandSender.class);
+        Command command = mock(Command.class);
+        MatchResult result = mock(MatchResult.class);
+        CommandRequest request = new CommandRequest(command, args, sender, result);
+
+        assertThat(request.getFirstArg(), is(nullValue()));
     }
 
     @Test
@@ -109,6 +127,11 @@ public class CommandRequestTest {
         assertThat(request.getWorld(1), is(nullValue()));
         assertThat(request.getWorld(2), is(sameInstance(world)));
         assertThat(request.getWorld(3), is(nullValue()));
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testGetWorldOutOfBounds() {
+        request.getWorld(1002);
     }
 
     @Test
@@ -183,6 +206,11 @@ public class CommandRequestTest {
         request.getNumber(0);
     }
 
+    @Test(expected = IllegalArgumentException.class)
+    public void testGetNumberOutOfBounds() {
+        request.getNumber(2030);
+    }
+
     @Test
     public void testIsArgBoolean() {
         assertTrue(request.isArgBoolean(5));
@@ -207,6 +235,26 @@ public class CommandRequestTest {
         request.getBoolean(23);
     }
 
+    @Test
+    public void testGetMatchResult() {
+        assertThat(request.getMatcherResult(), is(sameInstance(result)));
+    }
+
+    @Test
+    public void testGetSender() {
+        assertThat(request.getSender(), is(sameInstance(sender)));
+    }
+
+    @Test
+    public void testGetCommand() {
+        assertThat(request.getCommand(), is(sameInstance(command)));
+    }
+
+    @Test
+    public void testGetSenderType() {
+        assertThat(request.getSenderType(), is(SenderType.PLAYER));
+    }
+
     @Before
     public void onStartUp() {
         List<String> args = new ArrayList<String>();
@@ -217,9 +265,9 @@ public class CommandRequestTest {
         args.add("true");
         args.add("no");
         args.add("last");
-        sender = mock(CommandSender.class);
-        Command command = mock(Command.class);
-        MatchResult result = mock(MatchResult.class);
+        sender = mock(Player.class);
+        command = mock(Command.class);
+        result = mock(MatchResult.class);
         request = new CommandRequest(command, args, sender, result);
     }
 }
