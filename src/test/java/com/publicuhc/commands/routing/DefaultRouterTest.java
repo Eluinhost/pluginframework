@@ -163,6 +163,8 @@ public class DefaultRouterTest {
         router.checkParameters(invalid);
     }
 
+    //TODO add tests for register commands and command invocation and get proxies
+
     @SuppressWarnings("unused")
     private static class TestCommandClass {
 
