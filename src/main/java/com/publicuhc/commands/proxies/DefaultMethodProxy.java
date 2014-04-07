@@ -20,6 +20,7 @@ public class DefaultMethodProxy implements MethodProxy {
     @Override
     public void setPattern(Pattern pattern) {
         m_pattern = pattern;
+        m_matcher = null;
     }
 
     @Override
