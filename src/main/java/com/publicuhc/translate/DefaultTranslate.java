@@ -27,11 +27,12 @@ public class DefaultTranslate implements Translate {
     public String translate(String key, String locale, Map<String, String> vars) {
         FileConfiguration configuration = m_config.getConfig("translations/"+locale);
 
-        String value = configuration.getString(key, "TRANSLATION KEY NOT SET FOR "+key);
-
-        if(null == value){
+        if(null == configuration){
             throw new LocaleNotFoundError();
         }
+
+        String value = configuration.getString(key, "TRANSLATION KEY NOT SET FOR "+key);
+
         for(String s : vars.keySet()){
             value = value.replaceAll("%"+s+"%", vars.get(s));
         }
