@@ -1,18 +1,13 @@
 package com.publicuhc.commands.proxies;
 
 import com.publicuhc.commands.requests.CommandRequest;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandSender;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.powermock.modules.junit4.PowerMockRunner;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.regex.MatchResult;
-
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.powermock.api.mockito.PowerMockito.mock;
 
 @RunWith(PowerMockRunner.class)

@@ -9,7 +9,6 @@ import org.bukkit.entity.Player;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
@@ -17,11 +16,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.MatchResult;
 
-import static junit.framework.Assert.*;
 import static org.hamcrest.CoreMatchers.*;
-import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.powermock.api.mockito.PowerMockito.*;
@@ -170,7 +168,7 @@ public class CommandRequestTest {
 
         assertThat(request.getPlayer(0), is(sameInstance(mockPlayer)));
 
-        verifyStatic(Mockito.times(1));
+        verifyStatic(times(1));
         Bukkit.getPlayer("first");
 
         assertThat(request.getPlayer(1), is(nullValue()));
