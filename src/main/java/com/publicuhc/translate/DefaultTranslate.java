@@ -2,7 +2,7 @@ package com.publicuhc.translate;
 
 import com.google.inject.Inject;
 import com.publicuhc.configuration.Config;
-import com.publicuhc.translate.exceptions.LocaleNotFoundException;
+import com.publicuhc.translate.exceptions.LocaleNotFoundError;
 import org.bukkit.command.CommandSender;
 
 import java.util.HashMap;
@@ -26,7 +26,7 @@ public class DefaultTranslate implements Translate {
     public String translate(String key, String locale, Map<String, String> vars) {
         String value = ""; //TODO read the key from the config file for the locale
         if(null == value){
-            throw new LocaleNotFoundException();
+            throw new LocaleNotFoundError();
         }
         for(String s : vars.keySet()){
             value = value.replaceAll("%"+s+"%", vars.get(s));

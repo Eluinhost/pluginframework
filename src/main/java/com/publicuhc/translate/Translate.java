@@ -20,7 +20,7 @@ public interface Translate {
      * @param locale the locale to use
      * @param vars the map of keys=>values to replace
      * @return the translated string
-     * @throws com.publicuhc.translate.exceptions.LocaleNotFoundException if the locale supplied is invalid
+     * @throws com.publicuhc.translate.exceptions.LocaleNotFoundError if the locale supplied is invalid
      */
     String translate(String key, String locale, Map<String, String> vars);
 
@@ -31,7 +31,7 @@ public interface Translate {
      * @param value the value for the var
      * @param locale the locale to use
      * @return the translated string
-     * @throws com.publicuhc.translate.exceptions.LocaleNotFoundException if the locale supplied is invalid
+     * @throws com.publicuhc.translate.exceptions.LocaleNotFoundError if the locale supplied is invalid
      */
     String translate(String key, String locale, String var, String value);
 
@@ -39,7 +39,7 @@ public interface Translate {
      * Get the locale for the sender or the default if not found
      * @param sender the sender
      * @return the locale name
-     * @throws com.publicuhc.translate.exceptions.LocaleNotFoundException if the locale supplied is invalid
+     * @throws com.publicuhc.translate.exceptions.LocaleNotFoundError if the locale supplied is invalid
      */
     String getLocaleForSender(CommandSender sender);
 }
