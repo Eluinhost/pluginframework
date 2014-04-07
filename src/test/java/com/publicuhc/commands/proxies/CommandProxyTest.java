@@ -29,11 +29,15 @@ public class CommandProxyTest {
         verify(trigger, times(1)).triggerCommandMethod(request);
     }
 
-    @Test(expected = ProxyTriggerException.class)
-    public void testExceptionMethod() throws NoSuchMethodException, ProxyTriggerException {
+    @Test(expected = IllegalAccessError.class)
+    public void testExceptionMethod() throws Exception {
         proxy.setCommandMethod(trigger.getClass().getMethod("triggerException", CommandRequest.class));
 
-        proxy.trigger(request);
+        try {
+            proxy.trigger(request);
+        }catch (ProxyTriggerException ex){
+            throw ex.getActualException();
+        }
     }
 
     @Before
