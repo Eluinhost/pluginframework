@@ -4,6 +4,7 @@ import com.publicuhc.commands.requests.CommandRequest;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.powermock.api.mockito.PowerMockito;
 import org.powermock.modules.junit4.PowerMockRunner;
 
 import static org.mockito.Mockito.times;
@@ -15,13 +16,12 @@ public class CommandProxyTest {
 
     private CommandProxy proxy;
     private TestTrigger trigger;
+    private CommandRequest request;
 
     @Test
     public void testTrigger() throws NoSuchMethodException, ProxyTriggerException {
         //set up the proxy
-        proxy.setCommandMethod(trigger.getClass().getMethod("triggerCommandMethod",CommandRequest.class));
-        //make a fake request
-        CommandRequest request = mock(CommandRequest.class);
+        proxy.setCommandMethod(trigger.getClass().getMethod("triggerCommandMethod", CommandRequest.class));
 
         //trigger the proxy
         proxy.trigger(request);
@@ -29,10 +29,19 @@ public class CommandProxyTest {
         verify(trigger, times(1)).triggerCommandMethod(request);
     }
 
+    @Test(expected = ProxyTriggerException.class)
+    public void testExceptionMethod() throws NoSuchMethodException, ProxyTriggerException {
+        proxy.setCommandMethod(trigger.getClass().getMethod("triggerException", CommandRequest.class));
+
+        proxy.trigger(request);
+    }
+
     @Before
     public void onStartUp() {
         proxy = new CommandProxy();
         trigger = mock(TestTrigger.class);
+        request = mock(CommandRequest.class);
+        PowerMockito.doThrow(new IllegalAccessError()).when(trigger).triggerException(request);
         proxy.setInstance(trigger);
     }
 }

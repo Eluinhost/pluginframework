@@ -9,9 +9,13 @@ public class TestTrigger {
 
     public static final List<String> args = Arrays.asList("a", "b", "c");
 
-    public void triggerCommandMethod(CommandRequest request){
+    public void triggerCommandMethod(CommandRequest request) {
     }
-    public List<String> triggerTabComplete(CommandRequest request){
-        return  args;
+
+    public List<String> triggerTabComplete(CommandRequest request) {
+        return args;
+    }
+
+    public void triggerException(CommandRequest request) {
     }
 }
