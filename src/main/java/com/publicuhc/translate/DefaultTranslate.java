@@ -1,6 +1,7 @@
 package com.publicuhc.translate;
 
 import com.google.inject.Inject;
+import com.google.inject.name.Named;
 import com.publicuhc.configuration.Config;
 import com.publicuhc.translate.exceptions.LocaleNotFoundError;
 import org.bukkit.command.CommandSender;
@@ -12,10 +13,12 @@ import java.util.Map;
 public class DefaultTranslate implements Translate {
 
     private final Config m_config;
+    private final String m_basePermission;
 
     @Inject
-    protected DefaultTranslate(Config config){
+    protected DefaultTranslate(Config config, @Named("base_locale_permission") String basePermission){
         m_config = config;
+        m_basePermission = basePermission;
     }
 
     @Override
