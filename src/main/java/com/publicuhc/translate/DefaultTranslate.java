@@ -4,6 +4,7 @@ import com.google.inject.Inject;
 import com.publicuhc.configuration.Config;
 import com.publicuhc.translate.exceptions.LocaleNotFoundError;
 import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.file.FileConfiguration;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -24,7 +25,10 @@ public class DefaultTranslate implements Translate {
 
     @Override
     public String translate(String key, String locale, Map<String, String> vars) {
-        String value = ""; //TODO read the key from the config file for the locale
+        FileConfiguration configuration = m_config.getConfig("translations/"+locale);
+
+        String value = configuration.getString(key, "TRANSLATION KEY NOT SET FOR "+key);
+
         if(null == value){
             throw new LocaleNotFoundError();
         }
