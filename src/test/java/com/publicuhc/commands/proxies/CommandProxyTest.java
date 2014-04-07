@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.MatchResult;
 
+import static org.mockito.Mockito.*;
 import static org.powermock.api.mockito.PowerMockito.mock;
 
 @RunWith(PowerMockRunner.class)
@@ -23,12 +24,14 @@ public class CommandProxyTest {
     @Test
     public void testTrigger() throws NoSuchMethodException, ProxyTriggerException {
         //set up the proxy
-        proxy.setCommandMethod(trigger.getClass().getMethod("triggerMethod",CommandRequest.class));
+        proxy.setCommandMethod(trigger.getClass().getMethod("triggerCommandMethod",CommandRequest.class));
         //make a fake request
         CommandRequest request = mock(CommandRequest.class);
 
         //trigger the proxy
         proxy.trigger(request);
+
+        verify(trigger, times(1)).triggerCommandMethod(request);
     }
 
     @Before
@@ -36,10 +39,5 @@ public class CommandProxyTest {
         proxy = new CommandProxy();
         trigger = mock(TestTrigger.class);
         proxy.setInstance(trigger);
-    }
-
-    private static class TestTrigger {
-        public void triggerMethod(CommandRequest request){
-        }
     }
 }
