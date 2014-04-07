@@ -191,6 +191,7 @@ public class CommandRequest {
      *
      * @param index the index to look for
      * @return number
+     * @throws java.lang.NumberFormatException if cannot be converted
      */
     public Number getNumber(int index) {
         if(!isArgPresent(index)){
@@ -214,7 +215,7 @@ public class CommandRequest {
 
     /**
      * @param index the index to look for
-     * @return the boolean value at that index
+     * @return the boolean value at that index, true if true/yes/on, false otherwise
      */
     public boolean getBoolean(int index) {
         if(!isArgPresent(index)){
