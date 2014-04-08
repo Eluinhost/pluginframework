@@ -190,11 +190,6 @@ public class DefaultRouter implements Router {
 
         Type type = method.getGenericReturnType();
 
-        //only allow generics returned
-        if (!(type instanceof ParameterizedType)) {
-            throw new InvalidReturnTypeException();
-        }
-
         //make sure its a string parameter
         ParameterizedType ptype = (ParameterizedType) type;
         Type[] types = ptype.getActualTypeArguments();
