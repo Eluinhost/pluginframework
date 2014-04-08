@@ -33,10 +33,21 @@ public class DefaultCommandRequestBuilder implements CommandRequestBuilder {
         return this;
     }
 
+    protected Command getCommand() {
+        return m_command;
+    }
+
     @Override
     public CommandRequestBuilder setMatchResult(MatchResult result) {
+        if (null == result) {
+            throw new IllegalArgumentException("Match result cannot be null");
+        }
         m_matchResult = result;
         return this;
+    }
+
+    protected MatchResult getMatchResult() {
+        return m_matchResult;
     }
 
     @Override
@@ -48,8 +59,15 @@ public class DefaultCommandRequestBuilder implements CommandRequestBuilder {
         return this;
     }
 
+    protected List<String> getArguments() {
+        return m_arguments;
+    }
+
     @Override
     public CommandRequestBuilder setArguments(String[] arguments) {
+        if (null == arguments) {
+            throw new IllegalArgumentException("Argument list cannot be null");
+        }
         return setArguments(Arrays.asList(arguments));
     }
 
@@ -62,9 +80,13 @@ public class DefaultCommandRequestBuilder implements CommandRequestBuilder {
         return this;
     }
 
+    protected CommandSender getSender() {
+        return m_commandSender;
+    }
+
     @Override
     public boolean isValid() {
-        return !(m_commandSender == null || m_command == null || m_arguments == null);
+        return !(m_commandSender == null || m_command == null || m_arguments == null || m_matchResult == null);
     }
 
     @Override
@@ -72,5 +94,6 @@ public class DefaultCommandRequestBuilder implements CommandRequestBuilder {
         m_command = null;
         m_commandSender = null;
         m_arguments = null;
+        m_matchResult = null;
     }
 }
