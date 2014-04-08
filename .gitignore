@@ -1,6 +1,7 @@
 # Project Files #
 #################
 /target/*
+atlassian-ide-plugin.xml
 
 # IDE files #
 #############
