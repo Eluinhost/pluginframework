@@ -16,9 +16,7 @@ import com.publicuhc.commands.requests.CommandRequestBuilder;
 import com.publicuhc.commands.requests.DefaultCommandRequestBuilder;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.powermock.modules.junit4.PowerMockRunner;
 
@@ -35,9 +33,6 @@ public class DefaultRouterTest {
 
     private DefaultRouter router;
     private Injector injector;
-
-    @Rule
-    public ExpectedException thrown = ExpectedException.none();
 
     @Before
     public void setup() throws NoSuchMethodException {
@@ -67,24 +62,21 @@ public class DefaultRouterTest {
         router.checkTabCompleteReturn(validTabComplete);
     }
 
-    @Test
+    @Test(expected = InvalidReturnTypeException.class)
     public void testVoidTabCompleteReturn() throws NoSuchMethodException, InvalidReturnTypeException {
         Method invalidReturn = TestCommandClass.class.getMethod("onTabCompleteNoReturn", CommandRequest.class);
-        thrown.expect(InvalidReturnTypeException.class);
         router.checkTabCompleteReturn(invalidReturn);
     }
 
-    @Test
+    @Test(expected = InvalidReturnTypeException.class)
     public void testInvalidTypeTabCompleteReturn() throws NoSuchMethodException, InvalidReturnTypeException {
         Method invalidReturn = TestCommandClass.class.getMethod("onInvalidReturnTypeTabComplete", CommandRequest.class);
-        thrown.expect(InvalidReturnTypeException.class);
         router.checkTabCompleteReturn(invalidReturn);
     }
 
-    @Test
+    @Test(expected = InvalidReturnTypeException.class)
     public void testInvalidGenericReturnTabCompleteReturn() throws NoSuchMethodException, InvalidReturnTypeException {
         Method invalidReturn = TestCommandClass.class.getMethod("onInvalidGenericReturnTypeTabComplete", CommandRequest.class);
-        thrown.expect(InvalidReturnTypeException.class);
         router.checkTabCompleteReturn(invalidReturn);
     }
 
@@ -130,24 +122,21 @@ public class DefaultRouterTest {
         router.checkRouteInfo(validRouteInfo);
     }
 
-    @Test
+    @Test(expected = AnnotationMissingException.class)
     public void testMissingAnnotationRouteInfo() throws NoSuchMethodException, CommandClassParseException {
         Method routeInfo = TestCommandClass.class.getMethod("onMissingAnnotationRouteInfo");
-        thrown.expect(AnnotationMissingException.class);
         router.checkRouteInfo(routeInfo);
     }
 
-    @Test
+    @Test(expected = InvalidReturnTypeException.class)
     public void testMissingReturnRouteInfo() throws NoSuchMethodException, CommandClassParseException {
         Method routeInfo = TestCommandClass.class.getMethod("onMissingReturnRouteInfo");
-        thrown.expect(InvalidReturnTypeException.class);
         router.checkRouteInfo(routeInfo);
     }
 
-    @Test
+    @Test(expected = InvalidReturnTypeException.class)
     public void testInvalidReturnRouteInfo() throws NoSuchMethodException, CommandClassParseException {
         Method routeInfo = TestCommandClass.class.getMethod("onInvalidReturnRouteInfo");
-        thrown.expect(InvalidReturnTypeException.class);
         router.checkRouteInfo(routeInfo);
     }
 
@@ -161,10 +150,9 @@ public class DefaultRouterTest {
         router.checkParameters(valid);
     }
 
-    @Test
+    @Test(expected = InvalidMethodParametersException.class)
     public void testInvalidParameters() throws NoSuchMethodException, CommandClassParseException {
         Method invalid = TestCommandClass.class.getMethod("onInvalidParameters", String.class);
-        thrown.expect(InvalidMethodParametersException.class);
         router.checkParameters(invalid);
     }
 
