@@ -93,8 +93,10 @@ public class DefaultRouter implements Router {
     }
 
     @Override
-    public void registerCommands(Class klass) throws CommandClassParseException {
-        registerCommands(m_injector.getInstance(klass), false);
+    public Object registerCommands(Class klass) throws CommandClassParseException {
+        Object o = m_injector.getInstance(klass);
+        registerCommands(o, false);
+        return o;
     }
 
     protected void checkParameters(Method method) throws InvalidMethodParametersException {

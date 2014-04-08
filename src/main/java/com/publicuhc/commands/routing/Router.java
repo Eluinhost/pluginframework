@@ -28,8 +28,9 @@ public interface Router extends TabExecutor {
      * Register a class for commands, makes an instance
      *
      * @param klass the class to register commands for
+     * @return Object - the created class
      */
-    void registerCommands(Class klass) throws CommandClassParseException;
+    Object registerCommands(Class klass) throws CommandClassParseException;
 
     /**
      * @param object the object to register commands for
