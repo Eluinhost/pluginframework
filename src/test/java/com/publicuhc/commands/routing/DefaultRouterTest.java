@@ -2,6 +2,7 @@ package com.publicuhc.commands.routing;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.Guice;
+import com.google.inject.Inject;
 import com.google.inject.Injector;
 import com.publicuhc.commands.annotation.CommandMethod;
 import com.publicuhc.commands.annotation.RouteInfo;
@@ -24,24 +25,28 @@ import org.powermock.modules.junit4.PowerMockRunner;
 import java.lang.reflect.Method;
 import java.util.List;
 
+import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(PowerMockRunner.class)
 public class DefaultRouterTest {
 
     private DefaultRouter router;
+    private Injector injector;
 
     @Rule
     public ExpectedException thrown = ExpectedException.none();
 
     @Before
     public void setup() throws NoSuchMethodException {
-       Injector injector = Guice.createInjector(new AbstractModule() {
+       injector = Guice.createInjector(new AbstractModule() {
             @Override
             protected void configure() {
                 bind(Router.class).to(DefaultRouter.class);
                 bind(CommandRequestBuilder.class).to(DefaultCommandRequestBuilder.class);
+                bind(TestInterface.class).to(InjectorTest.class);
             }
         });
         router = (DefaultRouter) injector.getInstance(Router.class);
@@ -164,6 +169,24 @@ public class DefaultRouterTest {
     }
 
     //TODO add tests for register commands and command invocation and get proxies
+    @Test
+    public void testRegisterCommandsInjectionObject() throws CommandClassParseException {
+        TestObject object = new TestObject();
+        assertThat(object.getTestInterface(), is(nullValue()));
+
+        router.registerCommands(object, true);
+        assertThat(object.getTestInterface(), is(not(nullValue())));
+        assertThat(object.getTestInterface().getMessage(), is(equalTo("SUCCESS")));
+    }
+
+    @Test
+    public void testRegisterCommandsInjectionClass() throws CommandClassParseException {
+        Object object = router.registerCommands(TestObject.class);
+        assertTrue(object instanceof TestObject);
+        TestObject testObject = (TestObject) object;
+        assertThat(testObject.getTestInterface(), is(not(nullValue())));
+        assertThat(testObject.getTestInterface().getMessage(), is(equalTo("SUCCESS")));
+    }
 
     @SuppressWarnings("unused")
     private static class TestCommandClass {
@@ -279,6 +302,30 @@ public class DefaultRouterTest {
         @RouteInfo
         public String onInvalidReturnRouteInfo() {
             return null;
+        }
+    }
+
+    private static class TestObject {
+
+        private TestInterface testInterface = null;
+
+        @Inject
+        public void setInterface(TestInterface testInterface){
+            this.testInterface = testInterface;
+        }
+
+        public TestInterface getTestInterface() {
+            return testInterface;
+        }
+    }
+
+    private static interface TestInterface {
+        String getMessage();
+    }
+
+    private static class InjectorTest implements TestInterface {
+        public String getMessage() {
+            return "SUCCESS";
         }
     }
 }
