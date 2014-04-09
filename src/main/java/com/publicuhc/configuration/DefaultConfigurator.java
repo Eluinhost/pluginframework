@@ -8,18 +8,16 @@ import org.bukkit.plugin.Plugin;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
-public class DefaultConfig implements Config {
+public class DefaultConfigurator implements Configurator {
 
     private final Plugin m_plugin;
     private final Map<String, FileConfiguration> m_configs = new HashMap<String, FileConfiguration>();
 
     @Inject
-    public DefaultConfig(Plugin plugin){
+    public DefaultConfigurator(Plugin plugin){
         m_plugin = plugin;
     }
 
