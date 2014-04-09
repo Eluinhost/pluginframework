@@ -10,14 +10,15 @@ import com.publicuhc.configuration.Configurator;
 import com.publicuhc.configuration.ConfigurationModule;
 import com.publicuhc.translate.Translate;
 import com.publicuhc.translate.TranslateModule;
+import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.plugin.java.JavaPluginLoader;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
 public abstract class FrameworkJavaPlugin extends JavaPlugin {
-
-    private boolean m_useDefaultBindings = true;
 
     private Configurator m_configurator;
     private Translate m_translate;
@@ -28,7 +29,7 @@ public abstract class FrameworkJavaPlugin extends JavaPlugin {
         if(modules == null) {
             modules = new ArrayList<AbstractModule>();
         }
-        if(m_useDefaultBindings){
+        if(initUseDefaultBindings()){
             modules.add(new CommandModule());
             modules.add(new ConfigurationModule());
             modules.add(new TranslateModule());
@@ -56,10 +57,10 @@ public abstract class FrameworkJavaPlugin extends JavaPlugin {
     /**
      * If returns true will include default modules on init.
      * If false you must specify all the bindings for the framework
-     * @param useDefaultBindings whether to use the defaults or not
+     * @return whether to use the defaults or not
      */
-    public void initUseDefaultBindings(boolean useDefaultBindings) {
-        m_useDefaultBindings = useDefaultBindings;
+    public boolean initUseDefaultBindings() {
+        return true;
     }
 
     /**
