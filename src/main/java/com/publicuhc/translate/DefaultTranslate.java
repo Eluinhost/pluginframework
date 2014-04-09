@@ -2,7 +2,7 @@ package com.publicuhc.translate;
 
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
-import com.publicuhc.configuration.Config;
+import com.publicuhc.configuration.Configurator;
 import com.publicuhc.translate.exceptions.LocaleNotFoundError;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -12,12 +12,12 @@ import java.util.Map;
 
 public class DefaultTranslate implements Translate {
 
-    private final Config m_config;
+    private final Configurator m_configurator;
     private final String m_basePermission;
 
     @Inject
-    protected DefaultTranslate(Config config, @Named("base_locale_permission") String basePermission){
-        m_config = config;
+    protected DefaultTranslate(Configurator configurator, @Named("base_locale_permission") String basePermission){
+        m_configurator = configurator;
         m_basePermission = basePermission;
     }
 
@@ -28,7 +28,7 @@ public class DefaultTranslate implements Translate {
 
     @Override
     public String translate(String key, String locale, Map<String, String> vars) {
-        FileConfiguration configuration = m_config.getConfig("translations/"+locale);
+        FileConfiguration configuration = m_configurator.getConfig("translations/"+locale);
 
         if(null == configuration){
             throw new LocaleNotFoundError();
