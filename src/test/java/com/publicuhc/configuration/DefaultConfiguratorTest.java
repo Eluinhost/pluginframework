@@ -1,6 +1,6 @@
 package com.publicuhc.configuration;
 
-public class DefaultConfigTest {
+public class DefaultConfiguratorTest {
 
     //TODO fill out tests
 

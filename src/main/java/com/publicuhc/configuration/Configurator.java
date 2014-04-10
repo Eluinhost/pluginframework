@@ -4,7 +4,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 
 import java.io.IOException;
 
-public interface Config {
+public interface Configurator {
 
     /**
      * Get the config with the given name
