@@ -7,15 +7,11 @@ import com.google.inject.Injector;
 import com.publicuhc.commands.annotation.CommandMethod;
 import com.publicuhc.commands.annotation.RouteInfo;
 import com.publicuhc.commands.annotation.TabCompletion;
-import com.publicuhc.commands.exceptions.AnnotationMissingException;
-import com.publicuhc.commands.exceptions.CommandClassParseException;
-import com.publicuhc.commands.exceptions.InvalidMethodParametersException;
-import com.publicuhc.commands.exceptions.InvalidReturnTypeException;
+import com.publicuhc.commands.exceptions.*;
 import com.publicuhc.commands.requests.CommandRequest;
 import com.publicuhc.commands.requests.CommandRequestBuilder;
 import com.publicuhc.commands.requests.DefaultCommandRequestBuilder;
-import com.publicuhc.commands.routing.testcommands.TestEmptyCommands;
-import com.publicuhc.commands.routing.testcommands.TestValidCommands;
+import com.publicuhc.commands.routing.testcommands.*;
 import org.bukkit.Bukkit;
 import org.bukkit.command.PluginCommand;
 import org.junit.After;
@@ -184,15 +180,39 @@ public class DefaultRouterTest {
         assertThat(testObject.getTestInterface().getMessage(), is(equalTo("SUCCESS")));
     }
 
+    /*###############################
+     *#  Tests for registerCommands #
+     *#############################*/
+
     @Test
     public void testRegisterCommandsValid() throws CommandClassParseException {
         //no commands at all, should pass
         router.registerCommands(TestEmptyCommands.class);
+        router.registerCommands(new TestEmptyCommands(), true);
 
         mockStatic(Bukkit.class);
         when(Bukkit.getPluginCommand("test")).thenReturn(mock(PluginCommand.class));
 
         router.registerCommands(TestValidCommands.class);
+        router.registerCommands(new TestValidCommands(), true);
+    }
+
+    @Test(expected = BaseCommandNotFoundException.class)
+    public void testRegisterCommandsUnknownCommand() throws CommandClassParseException {
+        mockStatic(Bukkit.class);
+        when(Bukkit.getPluginCommand("unknowncommand")).thenReturn(null);
+
+        router.registerCommands(TestMissingBaseCommands.class);
+    }
+
+    @Test(expected = DetailsMethodNotFoundException.class)
+    public void testDetailsMissingCommand() throws CommandClassParseException {
+        router.registerCommands(TestDetailsMissingCommands.class);
+    }
+
+    @Test(expected = CommandClassParseException.class)
+    public void testExceptionRouteMethod() throws CommandClassParseException {
+        router.registerCommands(TestExceptionRouteInfoCommands.class);
     }
 
     @SuppressWarnings("unused")
