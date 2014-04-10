@@ -14,10 +14,15 @@ import com.publicuhc.commands.exceptions.InvalidReturnTypeException;
 import com.publicuhc.commands.requests.CommandRequest;
 import com.publicuhc.commands.requests.CommandRequestBuilder;
 import com.publicuhc.commands.requests.DefaultCommandRequestBuilder;
+import com.publicuhc.commands.routing.testcommands.TestEmptyCommands;
+import com.publicuhc.commands.routing.testcommands.TestValidCommands;
+import org.bukkit.Bukkit;
+import org.bukkit.command.PluginCommand;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
 import java.lang.reflect.Method;
@@ -27,8 +32,12 @@ import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.powermock.api.mockito.PowerMockito.mock;
+import static org.powermock.api.mockito.PowerMockito.mockStatic;
+import static org.powermock.api.mockito.PowerMockito.when;
 
 @RunWith(PowerMockRunner.class)
+@PrepareForTest({Bukkit.class, PluginCommand.class})
 public class DefaultRouterTest {
 
     private DefaultRouter router;
@@ -156,7 +165,6 @@ public class DefaultRouterTest {
         router.checkParameters(invalid);
     }
 
-    //TODO add tests for register commands and command invocation and get proxies
     @Test
     public void testRegisterCommandsInjectionObject() throws CommandClassParseException {
         TestObject object = new TestObject();
@@ -174,6 +182,17 @@ public class DefaultRouterTest {
         TestObject testObject = (TestObject) object;
         assertThat(testObject.getTestInterface(), is(not(nullValue())));
         assertThat(testObject.getTestInterface().getMessage(), is(equalTo("SUCCESS")));
+    }
+
+    @Test
+    public void testRegisterCommandsValid() throws CommandClassParseException {
+        //no commands at all, should pass
+        router.registerCommands(TestEmptyCommands.class);
+
+        mockStatic(Bukkit.class);
+        when(Bukkit.getPluginCommand("test")).thenReturn(mock(PluginCommand.class));
+
+        router.registerCommands(TestValidCommands.class);
     }
 
     @SuppressWarnings("unused")
