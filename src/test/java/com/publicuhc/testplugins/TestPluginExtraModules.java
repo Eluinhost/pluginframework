@@ -1,7 +1,8 @@
-package com.publicuhc;
+package com.publicuhc.testplugins;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.Inject;
+import com.publicuhc.FrameworkJavaPlugin;
 import org.bukkit.Server;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginLoader;
@@ -16,7 +17,7 @@ public class TestPluginExtraModules extends FrameworkJavaPlugin {
      * This method is intended for unit testing purposes. Its existence may be temporary.
      * @see org.bukkit.plugin.java.JavaPlugin
      */
-    protected TestPluginExtraModules(PluginLoader loader, Server server, PluginDescriptionFile pdf, File file1, File file2) {
+    public TestPluginExtraModules(PluginLoader loader, Server server, PluginDescriptionFile pdf, File file1, File file2) {
         super(loader, server, pdf, file1, file2);
     }
 
@@ -25,6 +26,7 @@ public class TestPluginExtraModules extends FrameworkJavaPlugin {
     public void setTest(TestInterface i) {
         this.i = i;
     }
+
     @Override
     public List<AbstractModule> initialModules() {
         List<AbstractModule> modules = new ArrayList<AbstractModule>();

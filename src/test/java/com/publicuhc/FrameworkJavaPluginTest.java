@@ -1,24 +1,21 @@
 package com.publicuhc;
 
-import com.google.inject.AbstractModule;
-import com.google.inject.Inject;
 import com.publicuhc.commands.routing.DefaultRouter;
 import com.publicuhc.configuration.DefaultConfigurator;
+import com.publicuhc.testplugins.TestPluginDefaultModules;
+import com.publicuhc.testplugins.TestPluginExtraModules;
 import com.publicuhc.translate.DefaultTranslate;
 import org.bukkit.Server;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginLoader;
 import org.bukkit.plugin.PluginLogger;
 import org.bukkit.plugin.java.JavaPluginLoader;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
 
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.assertThat;
@@ -39,7 +36,7 @@ public class FrameworkJavaPluginTest {
         PluginLogger logger = mock(PluginLogger.class);
         whenNew(PluginLogger.class).withAnyArguments().thenReturn(logger);
 
-        FrameworkJavaPlugin plugin = new FrameworkJavaPlugin(loader, server, pdf, file1, file1) { };
+        TestPluginDefaultModules plugin = new TestPluginDefaultModules(loader, server, pdf, file1, file1) { };
 
         assertThat(plugin.getConfigurator(), is(nullValue()));
         assertThat(plugin.getRouter(), is(nullValue()));
