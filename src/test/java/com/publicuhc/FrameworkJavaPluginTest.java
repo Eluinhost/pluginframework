@@ -7,6 +7,7 @@ import com.publicuhc.testplugins.TestPluginExtraModules;
 import com.publicuhc.testplugins.TestPluginReplaceModules;
 import com.publicuhc.translate.DefaultTranslate;
 import org.bukkit.Server;
+import org.bukkit.plugin.InvalidPluginException;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginLoader;
 import org.bukkit.plugin.PluginLogger;
@@ -104,4 +105,8 @@ public class FrameworkJavaPluginTest {
         assertThat(plugin.builder, is(instanceOf(TestPluginReplaceModules.TestConcreteCommandRequestBuilder.class)));
     }
 
+    @Test(expected = IllegalStateException.class)
+    public void testWrongClassloader() {
+        FrameworkJavaPlugin javaPlugin = new FrameworkJavaPlugin() { };
+    }
 }
