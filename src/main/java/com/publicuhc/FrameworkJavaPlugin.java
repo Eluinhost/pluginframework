@@ -35,6 +35,8 @@ public abstract class FrameworkJavaPlugin extends JavaPlugin {
         super(loader, server, pdf, file1, file2);
     }
 
+    public FrameworkJavaPlugin() {}
+
     @Override
     public final void onLoad() {
         List<AbstractModule> modules = initialModules();
