@@ -6,8 +6,8 @@ import com.google.inject.Inject;
 import com.google.inject.Injector;
 import com.publicuhc.commands.CommandModule;
 import com.publicuhc.commands.routing.Router;
-import com.publicuhc.configuration.Configurator;
 import com.publicuhc.configuration.ConfigurationModule;
+import com.publicuhc.configuration.Configurator;
 import com.publicuhc.translate.Translate;
 import com.publicuhc.translate.TranslateModule;
 import org.bukkit.Server;
@@ -15,7 +15,6 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginLoader;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.plugin.java.JavaPluginLoader;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -29,6 +28,7 @@ public abstract class FrameworkJavaPlugin extends JavaPlugin {
 
     /**
      * This method is intended for unit testing purposes. Its existence may be temporary.
+     *
      * @see org.bukkit.plugin.java.JavaPlugin
      */
     protected FrameworkJavaPlugin(PluginLoader loader, Server server, PluginDescriptionFile pdf, File file1, File file2) {
@@ -40,7 +40,7 @@ public abstract class FrameworkJavaPlugin extends JavaPlugin {
     @Override
     public final void onLoad() {
         List<AbstractModule> modules = initialModules();
-        if(modules == null) {
+        if (modules == null) {
             modules = new ArrayList<AbstractModule>();
         }
         final Plugin plugin = this;
@@ -50,7 +50,7 @@ public abstract class FrameworkJavaPlugin extends JavaPlugin {
                 bind(Plugin.class).toInstance(plugin);
             }
         });
-        if(initUseDefaultBindings()){
+        if (initUseDefaultBindings()) {
             modules.add(new CommandModule());
             modules.add(new ConfigurationModule());
             modules.add(new TranslateModule());
@@ -69,6 +69,7 @@ public abstract class FrameworkJavaPlugin extends JavaPlugin {
     /**
      * Return a list of extra modules to initialize DI with.
      * Override this method to change the extra modules to load with.
+     *
      * @return the list of modules
      */
     public List<AbstractModule> initialModules() {
@@ -78,6 +79,7 @@ public abstract class FrameworkJavaPlugin extends JavaPlugin {
     /**
      * If returns true will include default modules on init.
      * If false you must specify all the bindings for the framework
+     *
      * @return whether to use the defaults or not
      */
     public boolean initUseDefaultBindings() {
@@ -86,6 +88,7 @@ public abstract class FrameworkJavaPlugin extends JavaPlugin {
 
     /**
      * Set the router by injection
+     *
      * @param router the router object
      */
     @Inject
@@ -95,6 +98,7 @@ public abstract class FrameworkJavaPlugin extends JavaPlugin {
 
     /**
      * Set the configurator by injection
+     *
      * @param configurator the configurator object
      */
     @Inject
@@ -104,6 +108,7 @@ public abstract class FrameworkJavaPlugin extends JavaPlugin {
 
     /**
      * Set the translate by injection
+     *
      * @param translate the translate object
      */
     @Inject
@@ -113,13 +118,16 @@ public abstract class FrameworkJavaPlugin extends JavaPlugin {
 
     /**
      * <b>ONLY USE THIS AFTER onLoad HAS BEEN CALLED. (onFrameworkLoad and later) otherwise it will return null</b>
+     *
      * @return the router object
      */
     public Router getRouter() {
         return m_router;
     }
+
     /**
      * <b>ONLY USE THIS AFTER onLoad HAS BEEN CALLED. (onFrameworkLoad and later) otherwise it will return null</b>
+     *
      * @return the configurator object
      */
     public Configurator getConfigurator() {
@@ -128,6 +136,7 @@ public abstract class FrameworkJavaPlugin extends JavaPlugin {
 
     /**
      * <b>ONLY USE THIS AFTER onEnable HAS BEEN CALLED. (onFrameworkLoad and later) otherwise it will return null</b>
+     *
      * @return the translate object
      */
     public Translate getTranslate() {

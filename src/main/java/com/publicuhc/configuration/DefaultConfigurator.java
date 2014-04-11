@@ -17,20 +17,20 @@ public class DefaultConfigurator implements Configurator {
     private final Map<String, FileConfiguration> m_configs = new HashMap<String, FileConfiguration>();
 
     @Inject
-    public DefaultConfigurator(Plugin plugin){
+    public DefaultConfigurator(Plugin plugin) {
         m_plugin = plugin;
     }
 
     @Override
     public FileConfiguration getConfig(String id) {
         FileConfiguration config = m_configs.get(id);
-        if(config == null){
+        if (config == null) {
             try {
-                config = loadFromFile(id+".yml", true);
+                config = loadFromFile(id + ".yml", true);
                 m_configs.put(id, config);
             } catch (IOException e) {
                 e.printStackTrace();
-            } catch (IllegalArgumentException e){
+            } catch (IllegalArgumentException e) {
                 e.printStackTrace();
             }
         }
@@ -40,18 +40,19 @@ public class DefaultConfigurator implements Configurator {
     @Override
     public void saveConfig(String id) throws IOException {
         FileConfiguration configuration = m_configs.get(id);
-        if(configuration != null){
-            configuration.save(id+".yml");
+        if (configuration != null) {
+            configuration.save(id + ".yml");
         }
     }
 
     /**
      * Load the config from the data directory and save it
-     * @param path the path to load
+     *
+     * @param path        the path to load
      * @param setDefaults whether to set default values or not
      * @return the saved config
      * @throws IllegalArgumentException - if saving from the JAR failed after failed load from the data dir
-     * @throws java.io.IOException - if failed to save the config after options
+     * @throws java.io.IOException      - if failed to save the config after options
      */
     protected FileConfiguration loadFromFile(String path, boolean setDefaults) throws IOException {
         File configFile = new File(m_plugin.getDataFolder(), path);
@@ -60,7 +61,7 @@ public class DefaultConfigurator implements Configurator {
             configFile = new File(m_plugin.getDataFolder(), path);
         }
         FileConfiguration config = YamlConfiguration.loadConfiguration(configFile);
-        if(setDefaults){
+        if (setDefaults) {
             // Look for defaults in the jar
             InputStream defConfigStream = m_plugin.getResource(path);
             if (defConfigStream != null) {
@@ -75,8 +76,9 @@ public class DefaultConfigurator implements Configurator {
     /**
      * Save the file from the jar to the data directory
      * The resource is saved into the plugin's data folder using the same hierarchy as the .jar file (subdirectories are preserved).
-     * @param replace if true, the embedded resource will overwrite the contents of an existing file.
-     * @param path the file in the jar
+     *
+     * @param replace  if true, the embedded resource will overwrite the contents of an existing file.
+     * @param path     the file in the jar
      * @param filename the file name to save as
      * @throws IllegalArgumentException - if the resource path is null, empty, or points to a nonexistent resource.
      */

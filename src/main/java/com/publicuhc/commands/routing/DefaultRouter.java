@@ -7,8 +7,8 @@ import com.publicuhc.commands.annotation.CommandMethod;
 import com.publicuhc.commands.annotation.RouteInfo;
 import com.publicuhc.commands.annotation.TabCompletion;
 import com.publicuhc.commands.exceptions.*;
-import com.publicuhc.commands.proxies.DefaultMethodProxy;
 import com.publicuhc.commands.proxies.CommandProxy;
+import com.publicuhc.commands.proxies.DefaultMethodProxy;
 import com.publicuhc.commands.proxies.ProxyTriggerException;
 import com.publicuhc.commands.proxies.TabCompleteProxy;
 import com.publicuhc.commands.requests.CommandRequest;
@@ -187,7 +187,7 @@ public class DefaultRouter implements Router {
 
     protected void checkTabCompleteReturn(Method method) throws InvalidReturnTypeException {
         //only allow list returns
-        if(!List.class.isAssignableFrom(method.getReturnType())){
+        if (!List.class.isAssignableFrom(method.getReturnType())) {
             throw new InvalidReturnTypeException();
         }
 
@@ -244,7 +244,7 @@ public class DefaultRouter implements Router {
         while (argI.hasNext()) {
             String arg = argI.next();
             stringBuilder.append(arg);
-            if(argI.hasNext()){
+            if (argI.hasNext()) {
                 stringBuilder.append(" ");
             }
         }
@@ -294,7 +294,7 @@ public class DefaultRouter implements Router {
         while (argI.hasNext()) {
             String arg = argI.next();
             stringBuilder.append(arg);
-            if(argI.hasNext()){
+            if (argI.hasNext()) {
                 stringBuilder.append(" ");
             }
         }

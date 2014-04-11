@@ -16,7 +16,7 @@ public class DefaultTranslate implements Translate {
     private final String m_basePermission;
 
     @Inject
-    protected DefaultTranslate(Configurator configurator, @Named("base_locale_permission") String basePermission){
+    protected DefaultTranslate(Configurator configurator, @Named("base_locale_permission") String basePermission) {
         m_configurator = configurator;
         m_basePermission = basePermission;
     }
@@ -28,16 +28,16 @@ public class DefaultTranslate implements Translate {
 
     @Override
     public String translate(String key, String locale, Map<String, String> vars) {
-        FileConfiguration configuration = m_configurator.getConfig("translations/"+locale);
+        FileConfiguration configuration = m_configurator.getConfig("translations/" + locale);
 
-        if(null == configuration){
+        if (null == configuration) {
             throw new LocaleNotFoundError();
         }
 
-        String value = configuration.getString(key, "TRANSLATION KEY NOT SET FOR "+key);
+        String value = configuration.getString(key, "TRANSLATION KEY NOT SET FOR " + key);
 
-        for(String s : vars.keySet()){
-            value = value.replaceAll("%"+s+"%", vars.get(s));
+        for (String s : vars.keySet()) {
+            value = value.replaceAll("%" + s + "%", vars.get(s));
         }
         return value;
     }

@@ -97,7 +97,7 @@ public class CommandRequest {
      * @return true if arg is an int, false otherwise
      */
     public boolean isArgInt(int index) {
-        if(!isArgPresent(index)){
+        if (!isArgPresent(index)) {
             throw new IllegalArgumentException("Index must be within the size of the argument list");
         }
         try {
@@ -116,7 +116,7 @@ public class CommandRequest {
      * @return -1 if not an int, int value otherwise
      */
     public int getInt(int index) {
-        if(!isArgPresent(index)){
+        if (!isArgPresent(index)) {
             throw new IllegalArgumentException("Index must be within the size of the argument list");
         }
         int returnValue = -1;
@@ -132,7 +132,7 @@ public class CommandRequest {
      * @return null if not valid, world if valid
      */
     public World getWorld(int index) {
-        if(!isArgPresent(index)){
+        if (!isArgPresent(index)) {
             throw new IllegalArgumentException("Index must be within the size of the argument list");
         }
         return Bukkit.getWorld(m_args.get(index));
@@ -150,7 +150,7 @@ public class CommandRequest {
      * @return the argument
      */
     public String getArg(int index) {
-        if(!isArgPresent(index)){
+        if (!isArgPresent(index)) {
             throw new IllegalArgumentException("Index must be within the size of the argument list");
         }
         return m_args.get(index);
@@ -169,7 +169,7 @@ public class CommandRequest {
      * @return player or null of not exists
      */
     public Player getPlayer(int index) {
-        if(!isArgPresent(index)){
+        if (!isArgPresent(index)) {
             throw new IllegalArgumentException("Index must be within the size of the argument list");
         }
         return Bukkit.getPlayer(m_args.get(index));
@@ -180,7 +180,7 @@ public class CommandRequest {
      * @return true if arg is an number, false otherwise
      */
     public boolean isArgNumber(int index) {
-        if(!isArgPresent(index)){
+        if (!isArgPresent(index)) {
             throw new IllegalArgumentException("Index must be within the size of the argument list");
         }
         return NumberUtils.isNumber(m_args.get(index));
@@ -194,7 +194,7 @@ public class CommandRequest {
      * @throws java.lang.NumberFormatException if cannot be converted
      */
     public Number getNumber(int index) {
-        if(!isArgPresent(index)){
+        if (!isArgPresent(index)) {
             throw new IllegalArgumentException("Index must be within the size of the argument list");
         }
         return NumberUtils.createNumber(m_args.get(index));
@@ -207,7 +207,7 @@ public class CommandRequest {
      * @return true if boolean false otherwise
      */
     public boolean isArgBoolean(int index) {
-        if(!isArgPresent(index)){
+        if (!isArgPresent(index)) {
             throw new IllegalArgumentException("Index must be within the size of the argument list");
         }
         return BooleanUtils.toBooleanObject(m_args.get(index)) != null;
@@ -218,7 +218,7 @@ public class CommandRequest {
      * @return the boolean value at that index, true if true/yes/on, false otherwise
      */
     public boolean getBoolean(int index) {
-        if(!isArgPresent(index)){
+        if (!isArgPresent(index)) {
             throw new IllegalArgumentException("Index must be within the size of the argument list");
         }
         return BooleanUtils.toBoolean(m_args.get(index));
