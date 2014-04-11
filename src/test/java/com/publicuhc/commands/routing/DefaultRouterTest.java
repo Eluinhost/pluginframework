@@ -28,6 +28,7 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
 import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.MatchResult;
@@ -36,6 +37,7 @@ import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.powermock.api.mockito.PowerMockito.*;
 
@@ -315,6 +317,20 @@ public class DefaultRouterTest {
         router.onCommand(sender, command, "wtfisalabel", new String[]{});
 
         verify(sender).sendMessage(ChatColor.RED+"Error running command, check console for more information");
+    }
+
+    @Test
+    public void testOnTabCompleteSuccess() throws CommandClassParseException {
+        mockStatic(Bukkit.class);
+        CommandSender sender = mock(ConsoleCommandSender.class);
+        PluginCommand command = mock(PluginCommand.class);
+        when(command.getName()).thenReturn("banIP");
+        when(Bukkit.getPluginCommand("banIP")).thenReturn(command);
+        router.registerCommands(TestFullCommands.class);
+
+        List<String> complete = router.onTabComplete(sender, command, "wtfisalabel", new String[]{"192.168.0.1"});
+
+        assertThat(complete, is(equalTo(Arrays.asList("1","2","3"))));
     }
 
     @SuppressWarnings("unused")
