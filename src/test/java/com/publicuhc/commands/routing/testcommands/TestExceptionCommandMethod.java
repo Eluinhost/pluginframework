@@ -2,11 +2,13 @@ package com.publicuhc.commands.routing.testcommands;
 
 import com.publicuhc.commands.annotation.CommandMethod;
 import com.publicuhc.commands.annotation.RouteInfo;
+import com.publicuhc.commands.annotation.TabCompletion;
 import com.publicuhc.commands.requests.CommandRequest;
 import com.publicuhc.commands.requests.SenderType;
 import com.publicuhc.commands.routing.BaseMethodRoute;
 import com.publicuhc.commands.routing.MethodRoute;
 
+import java.util.List;
 import java.util.regex.Pattern;
 
 public class TestExceptionCommandMethod {
@@ -18,6 +20,16 @@ public class TestExceptionCommandMethod {
 
     @RouteInfo
     public MethodRoute exceptionDetails() {
+        return new BaseMethodRoute(Pattern.compile(".*"), new SenderType[]{SenderType.CONSOLE}, "perm", "test");
+    }
+
+    @TabCompletion
+    public List<String> tabexception(CommandRequest request){
+        throw new IllegalAccessError();
+    }
+
+    @RouteInfo
+    public MethodRoute tabexceptionDetails() {
         return new BaseMethodRoute(Pattern.compile(".*"), new SenderType[]{SenderType.CONSOLE}, "perm", "test");
     }
 }

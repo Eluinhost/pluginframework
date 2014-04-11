@@ -20,6 +20,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.command.PluginCommand;
+import org.hamcrest.CoreMatchers;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -28,6 +29,7 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -331,6 +333,31 @@ public class DefaultRouterTest {
         List<String> complete = router.onTabComplete(sender, command, "wtfisalabel", new String[]{"192.168.0.1"});
 
         assertThat(complete, is(equalTo(Arrays.asList("1","2","3"))));
+    }
+
+    @Test
+    public void testOnTabCompleteMissing() {
+        mockStatic(Bukkit.class);
+        CommandSender sender = mock(ConsoleCommandSender.class);
+        PluginCommand command = mock(PluginCommand.class);
+        when(command.getName()).thenReturn("test");
+        when(Bukkit.getPluginCommand("test")).thenReturn(command);
+        assertThat(router.onTabComplete(sender, command, "wtfisalabel", new String[]{"192.168.0.1"}), is(equalTo(Arrays.asList(new String[]{}))));
+        //TODO check for default command message if no route found
+    }
+
+    @Test
+    public void testExceptionRunningTabComplete() throws CommandClassParseException {
+        mockStatic(Bukkit.class);
+        CommandSender sender = mock(ConsoleCommandSender.class);
+        PluginCommand command = mock(PluginCommand.class);
+        when(command.getName()).thenReturn("test");
+        when(Bukkit.getPluginCommand("test")).thenReturn(command);
+
+        router.registerCommands(TestExceptionCommandMethod.class);
+        router.onTabComplete(sender, command, "wtfisalabel", new String[]{});
+
+        verify(sender).sendMessage(ChatColor.RED + "Error with tab completion, check the console for more information");
     }
 
     @SuppressWarnings("unused")
