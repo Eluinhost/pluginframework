@@ -291,6 +291,17 @@ public class DefaultRouterTest {
         Bukkit.banIP("192.168.0.1");
     }
 
+    @Test
+    public void testOnCommandMissing() {
+        mockStatic(Bukkit.class);
+        CommandSender sender = mock(ConsoleCommandSender.class);
+        PluginCommand command = mock(PluginCommand.class);
+        when(command.getName()).thenReturn("banIP");
+        when(Bukkit.getPluginCommand("banIP")).thenReturn(command);
+        assertFalse(router.onCommand(sender, command, "wtfisalabel", new String[]{"192.168.0.1", "some", "random", "message", "here"}));
+        //TODO check for default command message if no route found
+    }
+
     @SuppressWarnings("unused")
     private static class TestCommandClass {
 

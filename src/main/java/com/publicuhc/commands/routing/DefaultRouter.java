@@ -256,7 +256,7 @@ public class DefaultRouter implements Router {
         if (proxies.isEmpty()) {
             List<String> messages = m_noRouteMessages.get(command);
             //if there isn't any messages send the usage message
-            if (messages.isEmpty()) {
+            if (messages == null || messages.isEmpty()) {
                 return false;
             }
             for (String message : messages) {
@@ -290,8 +290,13 @@ public class DefaultRouter implements Router {
     public List<String> onTabComplete(CommandSender sender, Command command, String label, String[] args) {
         //Put all of the arguments into a string to match
         StringBuilder stringBuilder = new StringBuilder();
-        for (String arg : args) {
-            stringBuilder.append(arg).append(" ");
+        Iterator<String> argI = Arrays.asList(args).iterator();
+        while (argI.hasNext()) {
+            String arg = argI.next();
+            stringBuilder.append(arg);
+            if(argI.hasNext()){
+                stringBuilder.append(" ");
+            }
         }
 
         //get all the proxies that match the route
