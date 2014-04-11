@@ -9,12 +9,8 @@ import org.powermock.modules.junit4.PowerMockRunner;
 
 import java.util.regex.Pattern;
 
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.sameInstance;
-import static org.junit.Assert.assertFalse;
+import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 import static org.powermock.api.mockito.PowerMockito.mock;
 
 @RunWith(PowerMockRunner.class)
@@ -26,12 +22,12 @@ public class DefaultMethodProxyTest {
     public void testDoParamsMatch(){
 
         proxy.setPattern(Pattern.compile("[\\d]++"));
-        assertFalse(proxy.doParamsMatch("e09=324"));
-        assertTrue(proxy.doParamsMatch("3908420"));
+        assertThat(proxy.paramsMatch("e09=324"), is(nullValue()));
+        assertThat(proxy.paramsMatch("3908420"), is(not(nullValue())));
 
         proxy.setPattern(Pattern.compile("[\\D]++"));
-        assertFalse(proxy.doParamsMatch("3908420"));
-        assertTrue(proxy.doParamsMatch("eff=gdk"));
+        assertThat(proxy.paramsMatch("3908420"), is(nullValue()));
+        assertThat(proxy.paramsMatch("eff=gdk"), is(not(nullValue())));
     }
 
     @Test

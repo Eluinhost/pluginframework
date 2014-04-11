@@ -4,6 +4,7 @@ import com.publicuhc.commands.requests.SenderType;
 import org.bukkit.command.Command;
 
 import java.lang.reflect.Method;
+import java.util.regex.MatchResult;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -59,13 +60,13 @@ public class DefaultMethodProxy implements MethodProxy {
     }
 
     @Override
-    public boolean doParamsMatch(String params) {
+    public MatchResult paramsMatch(String params) {
         if (m_matcher == null) {
             m_matcher = m_pattern.matcher(params);
         } else {
             m_matcher.reset(params);
         }
-        return m_matcher.matches();
+        return m_matcher.matches() ? m_matcher.toMatchResult() : null;
     }
 
     public String getPermission() {

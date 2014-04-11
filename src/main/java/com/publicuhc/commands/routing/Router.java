@@ -7,6 +7,8 @@ import org.bukkit.command.Command;
 import org.bukkit.command.TabExecutor;
 
 import java.util.List;
+import java.util.Map;
+import java.util.regex.MatchResult;
 
 public interface Router extends TabExecutor {
 
@@ -15,14 +17,14 @@ public interface Router extends TabExecutor {
      * @param parameters the parameters
      * @return the list of matched commandproxy
      */
-    List<CommandProxy> getCommandProxy(Command command, String parameters);
+    Map<CommandProxy, MatchResult> getCommandProxy(Command command, String parameters);
 
     /**
      * @param command    the command string
      * @param parameters the parameters
      * @return the list of matched tabcompleteproxy
      */
-    List<TabCompleteProxy> getTabCompleteProxy(Command command, String parameters);
+    Map<TabCompleteProxy, MatchResult> getTabCompleteProxy(Command command, String parameters);
 
     /**
      * Register a class for commands, makes an instance

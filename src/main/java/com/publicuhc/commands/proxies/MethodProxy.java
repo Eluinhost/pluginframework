@@ -4,6 +4,7 @@ import com.publicuhc.commands.requests.SenderType;
 import org.bukkit.command.Command;
 
 import java.lang.reflect.Method;
+import java.util.regex.MatchResult;
 import java.util.regex.Pattern;
 
 public interface MethodProxy {
@@ -50,9 +51,9 @@ public interface MethodProxy {
 
     /**
      * @param params the parameters to check
-     * @return true if matches route, false otherwise
+     * @return the match result or null if no match
      */
-    boolean doParamsMatch(String params);
+    MatchResult paramsMatch(String params);
 
     /**
      * @return the permission, null if any allowed

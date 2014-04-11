@@ -16,6 +16,8 @@ import com.publicuhc.commands.requests.DefaultCommandRequestBuilder;
 import com.publicuhc.commands.routing.testcommands.*;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
+import org.bukkit.command.CommandSender;
+import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.command.PluginCommand;
 import org.junit.After;
 import org.junit.Before;
@@ -26,14 +28,15 @@ import org.powermock.modules.junit4.PowerMockRunner;
 
 import java.lang.reflect.Method;
 import java.util.List;
+import java.util.Map;
+import java.util.regex.MatchResult;
 
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
-import static org.powermock.api.mockito.PowerMockito.mock;
-import static org.powermock.api.mockito.PowerMockito.mockStatic;
-import static org.powermock.api.mockito.PowerMockito.when;
+import static org.mockito.Mockito.verify;
+import static org.powermock.api.mockito.PowerMockito.*;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({Bukkit.class, PluginCommand.class})
@@ -233,7 +236,7 @@ public class DefaultRouterTest {
         Command valid = mock(Command.class);
         when(valid.getName()).thenReturn("test");
 
-        List<CommandProxy> proxies = router.getCommandProxy(valid, "arg");
+        Map<CommandProxy, MatchResult> proxies = router.getCommandProxy(valid, "arg");
         assertThat(proxies.size(), is(1));
 
         Command invalid = mock(Command.class);
@@ -258,7 +261,7 @@ public class DefaultRouterTest {
         Command valid = mock(Command.class);
         when(valid.getName()).thenReturn("test");
 
-        List<TabCompleteProxy> proxies = router.getTabCompleteProxy(valid, "arg");
+        Map<TabCompleteProxy, MatchResult> proxies = router.getTabCompleteProxy(valid, "arg");
         assertThat(proxies.size(), is(1));
 
         Command invalid = mock(Command.class);
@@ -266,6 +269,24 @@ public class DefaultRouterTest {
 
         proxies = router.getTabCompleteProxy(invalid, "arg");
         assertThat(proxies.size(), is(0));
+    }
+
+    /*#############################
+     *#  test getTabCompleteProxy #
+     *###########################*/
+
+    @Test
+    public void testOnCommand() throws CommandClassParseException {
+        mockStatic(Bukkit.class);
+        PluginCommand command = mock(PluginCommand.class);
+        when(command.getName()).thenReturn("banIP");
+        when(Bukkit.getPluginCommand("banIP")).thenReturn(command);
+        router.registerCommands(TestFullCommands.class);
+
+        CommandSender sender = mock(ConsoleCommandSender.class);
+        router.onCommand(sender, command, "wtfisalabel", new String[]{"192.168.0.1 some random message here"});
+
+        verify(sender).sendMessage("banned with message some random message here");
     }
 
     @SuppressWarnings("unused")

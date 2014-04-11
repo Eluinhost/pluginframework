@@ -22,11 +22,10 @@ import org.bukkit.command.PluginCommand;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.MatchResult;
 
 public class DefaultRouter implements Router {
 
@@ -67,12 +66,13 @@ public class DefaultRouter implements Router {
     }
 
     @Override
-    public List<CommandProxy> getCommandProxy(Command command, String parameters) {
-        List<CommandProxy> proxies = new ArrayList<CommandProxy>();
+    public Map<CommandProxy, MatchResult> getCommandProxy(Command command, String parameters) {
+        Map<CommandProxy, MatchResult> proxies = new HashMap<CommandProxy, MatchResult>();
         for (CommandProxy proxy : m_commands) {
             if (command.getName().equals(proxy.getBaseCommand().getName())) {
-                if (proxy.doParamsMatch(parameters)) {
-                    proxies.add(proxy);
+                MatchResult result = proxy.paramsMatch(parameters);
+                if (result != null) {
+                    proxies.put(proxy, result);
                 }
             }
         }
@@ -80,12 +80,13 @@ public class DefaultRouter implements Router {
     }
 
     @Override
-    public List<TabCompleteProxy> getTabCompleteProxy(Command command, String parameters) {
-        List<TabCompleteProxy> proxies = new ArrayList<TabCompleteProxy>();
+    public Map<TabCompleteProxy, MatchResult> getTabCompleteProxy(Command command, String parameters) {
+        Map<TabCompleteProxy, MatchResult> proxies = new HashMap<TabCompleteProxy, MatchResult>();
         for (TabCompleteProxy proxy : m_tabCompletes) {
             if (command.getName().equals(proxy.getBaseCommand().getName())) {
-                if (proxy.doParamsMatch(parameters)) {
-                    proxies.add(proxy);
+                MatchResult result = proxy.paramsMatch(parameters);
+                if (result != null) {
+                    proxies.put(proxy, result);
                 }
             }
         }
@@ -239,12 +240,17 @@ public class DefaultRouter implements Router {
 
         //Put all of the arguments into a string to match
         StringBuilder stringBuilder = new StringBuilder();
-        for (String arg : args) {
-            stringBuilder.append(arg).append(" ");
+        Iterator<String> argI = Arrays.asList(args).iterator();
+        while (argI.hasNext()) {
+            String arg = argI.next();
+            stringBuilder.append(arg);
+            if(argI.hasNext()){
+                stringBuilder.append(" ");
+            }
         }
 
         //get all the proxies that match the route
-        List<CommandProxy> proxies = getCommandProxy(command, stringBuilder.toString());
+        Map<CommandProxy, MatchResult> proxies = getCommandProxy(command, stringBuilder.toString());
 
         //no proxies found that matched the route
         if (proxies.isEmpty()) {
@@ -260,12 +266,13 @@ public class DefaultRouter implements Router {
         }
 
         //trigger all the proxies
-        for (CommandProxy proxy : proxies) {
+        for (CommandProxy proxy : proxies.keySet()) {
             CommandRequestBuilder builder = m_requestProvider.get();
             CommandRequest request =
                     builder.setCommand(command)
                             .setArguments(args)
                             .setSender(sender)
+                            .setMatchResult(proxies.get(proxy))
                             .build();
             try {
                 proxy.trigger(request);
@@ -288,7 +295,7 @@ public class DefaultRouter implements Router {
         }
 
         //get all the proxies that match the route
-        List<TabCompleteProxy> proxies = getTabCompleteProxy(command, stringBuilder.toString());
+        Map<TabCompleteProxy, MatchResult> proxies = getTabCompleteProxy(command, stringBuilder.toString());
 
         //no proxies found that matched the route
         if (proxies == null) {
@@ -297,12 +304,12 @@ public class DefaultRouter implements Router {
 
         //trigger all the proxies and merge them
         List<String> results = new ArrayList<String>();
-        for (TabCompleteProxy proxy : proxies) {
+        for (TabCompleteProxy proxy : proxies.keySet()) {
             CommandRequestBuilder builder = m_requestProvider.get();
             CommandRequest request = builder.setCommand(command)
                     .setArguments(args)
                     .setSender(sender)
-                    //.setMatchResult() TODO
+                    .setMatchResult(proxies.get(proxy))
                     .build();
             try {
                 results.addAll(proxy.trigger(request));
