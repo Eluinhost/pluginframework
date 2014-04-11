@@ -15,6 +15,7 @@ import com.publicuhc.commands.requests.CommandRequestBuilder;
 import com.publicuhc.commands.requests.DefaultCommandRequestBuilder;
 import com.publicuhc.commands.routing.testcommands.*;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
@@ -300,6 +301,20 @@ public class DefaultRouterTest {
         when(Bukkit.getPluginCommand("banIP")).thenReturn(command);
         assertFalse(router.onCommand(sender, command, "wtfisalabel", new String[]{"192.168.0.1", "some", "random", "message", "here"}));
         //TODO check for default command message if no route found
+    }
+
+    @Test
+    public void testExceptionRunningCommand() throws CommandClassParseException {
+        mockStatic(Bukkit.class);
+        CommandSender sender = mock(ConsoleCommandSender.class);
+        PluginCommand command = mock(PluginCommand.class);
+        when(command.getName()).thenReturn("test");
+        when(Bukkit.getPluginCommand("test")).thenReturn(command);
+
+        router.registerCommands(TestExceptionCommandMethod.class);
+        router.onCommand(sender, command, "wtfisalabel", new String[]{});
+
+        verify(sender).sendMessage(ChatColor.RED+"Error running command, check console for more information");
     }
 
     @SuppressWarnings("unused")
