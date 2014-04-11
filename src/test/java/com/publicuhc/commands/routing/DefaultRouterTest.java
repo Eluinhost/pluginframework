@@ -271,12 +271,12 @@ public class DefaultRouterTest {
         assertThat(proxies.size(), is(0));
     }
 
-    /*#############################
-     *#  test getTabCompleteProxy #
-     *###########################*/
+    /*###################
+     *#  test onCommand #
+     *#################*/
 
     @Test
-    public void testOnCommand() throws CommandClassParseException {
+    public void testOnCommandSuccess() throws CommandClassParseException {
         mockStatic(Bukkit.class);
         PluginCommand command = mock(PluginCommand.class);
         when(command.getName()).thenReturn("banIP");
@@ -284,9 +284,11 @@ public class DefaultRouterTest {
         router.registerCommands(TestFullCommands.class);
 
         CommandSender sender = mock(ConsoleCommandSender.class);
-        router.onCommand(sender, command, "wtfisalabel", new String[]{"192.168.0.1 some random message here"});
+        router.onCommand(sender, command, "wtfisalabel", new String[]{"192.168.0.1", "some", "random", "message", "here"});
 
         verify(sender).sendMessage("banned with message some random message here");
+        verifyStatic();
+        Bukkit.banIP("192.168.0.1");
     }
 
     @SuppressWarnings("unused")
