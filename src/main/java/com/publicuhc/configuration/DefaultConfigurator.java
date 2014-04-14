@@ -77,8 +77,9 @@ public class DefaultConfigurator implements Configurator {
      */
     protected FileConfiguration loadFromFile(String path, boolean setDefaults) throws IOException {
         File configFile = new File(m_plugin.getDataFolder(), path);
+        System.out.print(configFile.getAbsoluteFile());
         if (!configFile.exists()) {
-            saveFromJar(path, path, false);
+            saveFromJar(path, false);
             configFile = new File(m_plugin.getDataFolder(), path);
         }
         FileConfiguration config = YamlConfiguration.loadConfiguration(configFile);
@@ -89,7 +90,7 @@ public class DefaultConfigurator implements Configurator {
                 YamlConfiguration defConfig = YamlConfiguration.loadConfiguration(defConfigStream);
                 config.setDefaults(defConfig);
             }
-            config.save(path);
+            config.save(configFile.getAbsoluteFile());
         }
         return config;
     }
@@ -100,10 +101,9 @@ public class DefaultConfigurator implements Configurator {
      *
      * @param replace  if true, the embedded resource will overwrite the contents of an existing file.
      * @param path     the file in the jar
-     * @param filename the file name to save as
      * @throws IllegalArgumentException - if the resource path is null, empty, or points to a nonexistent resource.
      */
-    protected void saveFromJar(String path, String filename, boolean replace) {
-        m_plugin.saveResource(path, false);
+    protected void saveFromJar(String path, boolean replace) {
+        m_plugin.saveResource(path, replace);
     }
 }
