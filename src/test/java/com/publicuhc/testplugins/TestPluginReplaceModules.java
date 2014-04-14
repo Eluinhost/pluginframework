@@ -86,8 +86,8 @@ public class TestPluginReplaceModules extends FrameworkJavaPlugin {
 
     public static class TestConcreteRouter extends DefaultRouter {
         @Inject
-        protected TestConcreteRouter(Provider<CommandRequestBuilder> requestProvider, Injector injector, Logger logger) {
-            super(requestProvider, injector, logger);
+        protected TestConcreteRouter(Provider<CommandRequestBuilder> requestProvider, Injector injector, Logger logger, Translate translate) {
+            super(requestProvider, injector, logger, translate);
         }
     }
 

@@ -34,6 +34,7 @@ import com.publicuhc.commands.proxies.ProxyTriggerException;
 import com.publicuhc.commands.proxies.TabCompleteProxy;
 import com.publicuhc.commands.requests.CommandRequest;
 import com.publicuhc.commands.requests.CommandRequestBuilder;
+import com.publicuhc.translate.Translate;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -71,6 +72,11 @@ public class DefaultRouter implements Router {
     private final Provider<CommandRequestBuilder> m_requestProvider;
 
     /**
+     * Used to translate messages
+     */
+    private final Translate m_translator;
+
+    /**
      * Used to inject all parameters needed to the command classes when added
      */
     private final Injector m_injector;
@@ -80,10 +86,11 @@ public class DefaultRouter implements Router {
     private static final String ROUTE_INFO_SUFFIX = "Details";
 
     @Inject
-    protected DefaultRouter(Provider<CommandRequestBuilder> requestProvider, Injector injector, Logger logger) {
+    protected DefaultRouter(Provider<CommandRequestBuilder> requestProvider, Injector injector, Logger logger, Translate translator) {
         m_requestProvider = requestProvider;
         m_injector = injector;
         m_logger = logger;
+        m_translator = translator;
     }
 
     @Override
