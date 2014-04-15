@@ -1,0 +1,6 @@
+testInt: 1
+testString: "string"
+testArray:
+- "first"
+- "second"
+- "third"
