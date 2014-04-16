@@ -21,12 +21,13 @@
 
 package com.publicuhc;
 
-import com.publicuhc.commands.routing.DefaultRouter;
-import com.publicuhc.configuration.DefaultConfigurator;
-import com.publicuhc.testplugins.TestPluginDefaultModules;
-import com.publicuhc.testplugins.TestPluginExtraModules;
-import com.publicuhc.testplugins.TestPluginReplaceModules;
-import com.publicuhc.translate.DefaultTranslate;
+import com.publicuhc.pluginframework.FrameworkJavaPlugin;
+import com.publicuhc.pluginframework.commands.routing.DefaultRouter;
+import com.publicuhc.pluginframework.configuration.DefaultConfigurator;
+import com.publicuhc.pluginframework.testplugins.TestPluginDefaultModules;
+import com.publicuhc.pluginframework.testplugins.TestPluginExtraModules;
+import com.publicuhc.pluginframework.testplugins.TestPluginReplaceModules;
+import com.publicuhc.pluginframework.translate.DefaultTranslate;
 import org.bukkit.Server;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginLoader;
