@@ -23,7 +23,6 @@ package com.publicuhc.translate;
 
 import com.google.inject.Inject;
 import com.publicuhc.configuration.Configurator;
-import com.publicuhc.translate.exceptions.LocaleNotFoundError;
 import org.bukkit.command.BlockCommandSender;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
@@ -52,11 +51,11 @@ public class DefaultTranslate implements Translate {
     public String translate(String key, String locale, Map<String, String> vars) {
         FileConfiguration configuration = m_configurator.getConfig("translations:" + locale);
 
-        if (null == configuration) {
-            throw new LocaleNotFoundError();
-        }
+        String value = configuration.getString(key);
 
-        String value = configuration.getString(key, "TRANSLATION KEY NOT SET FOR " + key);
+        if(null == value) {
+            value = "TRANSLATION KEY NOT SET FOR " + key;
+        }
 
         for (String s : vars.keySet()) {
             value = value.replaceAll("%" + s + "%", vars.get(s));
@@ -91,5 +90,12 @@ public class DefaultTranslate implements Translate {
             locale = locales.getString("default", "en");
         }
         return locale;
+    }
+
+    @Override
+    public void setLocaleForPlayer(Player p, String code) {
+        FileConfiguration configuration = m_configurator.getConfig("locales");
+        configuration.set("players."+p.getUniqueId(), code);
+        m_configurator.saveConfig("locales");
     }
 }

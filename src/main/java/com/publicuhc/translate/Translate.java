@@ -22,6 +22,7 @@
 package com.publicuhc.translate;
 
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
 import java.util.Map;
 
@@ -67,4 +68,11 @@ public interface Translate {
      * @throws com.publicuhc.translate.exceptions.LocaleNotFoundError if the locale supplied is invalid
      */
     String getLocaleForSender(CommandSender sender);
+
+    /**
+     * Set the locale for the given player
+     * @param p the player
+     * @param code the locale code
+     */
+    void setLocaleForPlayer(Player p, String code);
 }
