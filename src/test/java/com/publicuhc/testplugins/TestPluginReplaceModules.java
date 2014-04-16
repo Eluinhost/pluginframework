@@ -26,7 +26,6 @@ import com.google.inject.Inject;
 import com.google.inject.Injector;
 import com.google.inject.Provider;
 import com.google.inject.name.Named;
-import com.google.inject.name.Names;
 import com.publicuhc.FrameworkJavaPlugin;
 import com.publicuhc.commands.requests.CommandRequestBuilder;
 import com.publicuhc.commands.requests.DefaultCommandRequestBuilder;
@@ -57,9 +56,6 @@ public class TestPluginReplaceModules extends FrameworkJavaPlugin {
 
     @Inject
     public CommandRequestBuilder builder;
-    @Inject
-    @Named("base_locale_permission")
-    public String locale;
 
     @Override
     public boolean initUseDefaultBindings() {
@@ -76,7 +72,6 @@ public class TestPluginReplaceModules extends FrameworkJavaPlugin {
                 bind(Configurator.class).to(TestConcreteConfigurator.class);
                 bind(Translate.class).to(TestConcreteTranslate.class);
                 bind(CommandRequestBuilder.class).to(TestConcreteCommandRequestBuilder.class);
-                bind(String.class).annotatedWith(Names.named("base_locale_permission")).toInstance("test.locale");
             }
         };
         modules.add(module);
@@ -92,8 +87,8 @@ public class TestPluginReplaceModules extends FrameworkJavaPlugin {
 
     public static class TestConcreteTranslate extends DefaultTranslate {
         @Inject
-        protected TestConcreteTranslate(Configurator configurator, @Named("base_locale_permission") String basePermission) {
-            super(configurator, basePermission);
+        protected TestConcreteTranslate(Configurator configurator) {
+            super(configurator);
         }
     }
 

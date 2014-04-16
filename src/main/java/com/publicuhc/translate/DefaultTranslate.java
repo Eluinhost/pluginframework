@@ -22,11 +22,14 @@
 package com.publicuhc.translate;
 
 import com.google.inject.Inject;
-import com.google.inject.name.Named;
 import com.publicuhc.configuration.Configurator;
 import com.publicuhc.translate.exceptions.LocaleNotFoundError;
+import org.bukkit.command.BlockCommandSender;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.ConsoleCommandSender;
+import org.bukkit.command.RemoteConsoleCommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.entity.Player;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -34,12 +37,10 @@ import java.util.Map;
 public class DefaultTranslate implements Translate {
 
     private final Configurator m_configurator;
-    private final String m_basePermission;
 
     @Inject
-    protected DefaultTranslate(Configurator configurator, @Named("base_locale_permission") String basePermission) {
+    protected DefaultTranslate(Configurator configurator) {
         m_configurator = configurator;
-        m_basePermission = basePermission;
     }
 
     @Override
@@ -49,7 +50,7 @@ public class DefaultTranslate implements Translate {
 
     @Override
     public String translate(String key, String locale, Map<String, String> vars) {
-        FileConfiguration configuration = m_configurator.getConfig("translations/" + locale);
+        FileConfiguration configuration = m_configurator.getConfig("translations:" + locale);
 
         if (null == configuration) {
             throw new LocaleNotFoundError();
@@ -72,8 +73,23 @@ public class DefaultTranslate implements Translate {
 
     @Override
     public String getLocaleForSender(CommandSender sender) {
-        //TODO find the saved locale for the user
-        //TODO return the default locale from the config file
-        return null;
+        FileConfiguration locales = m_configurator.getConfig("locales");
+
+        String locale = null;
+
+        if(sender instanceof RemoteConsoleCommandSender) {
+            locale = locales.getString("remoteConsole");
+        }else if(sender instanceof ConsoleCommandSender) {
+            locale = locales.getString("console");
+        }else if(sender instanceof BlockCommandSender) {
+            locale = locales.getString("commandBlock");
+        }else if(sender instanceof Player) {
+            locale = locales.getString("players."+((Player) sender).getUniqueId());
+        }
+
+        if(null == locale) {
+            locale = locales.getString("default", "en");
+        }
+        return locale;
     }
 }

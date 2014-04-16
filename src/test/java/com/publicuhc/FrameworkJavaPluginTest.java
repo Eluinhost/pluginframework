@@ -53,7 +53,7 @@ public class FrameworkJavaPluginTest {
         PluginLoader loader = mock(PluginLoader.class);
         Server server = mock(Server.class);
         PluginDescriptionFile pdf = mock(PluginDescriptionFile.class);
-        File file1 = new File("bin/test/plugins/testplugin");
+        File file1 = new File("target"+File.separator+"testdatafolder");
 
         PluginLogger logger = mock(PluginLogger.class);
         whenNew(PluginLogger.class).withAnyArguments().thenReturn(logger);
@@ -76,7 +76,7 @@ public class FrameworkJavaPluginTest {
         PluginLoader loader = mock(PluginLoader.class);
         Server server = mock(Server.class);
         PluginDescriptionFile pdf = mock(PluginDescriptionFile.class);
-        File file1 = new File("bin/test/plugins/testplugin");
+        File file1 = new File("target"+File.separator+"testdatafolder");
 
         PluginLogger logger = mock(PluginLogger.class);
         whenNew(PluginLogger.class).withAnyArguments().thenReturn(logger);
@@ -114,14 +114,12 @@ public class FrameworkJavaPluginTest {
         assertThat(plugin.getRouter(), is(nullValue()));
         assertThat(plugin.getTranslate(), is(nullValue()));
         assertThat(plugin.builder, is(nullValue()));
-        assertThat(plugin.locale, is(nullValue()));
 
         plugin.onLoad();
 
         assertThat(plugin.getConfigurator(), is(instanceOf(TestPluginReplaceModules.TestConcreteConfigurator.class)));
         assertThat(plugin.getTranslate(), is(instanceOf(TestPluginReplaceModules.TestConcreteTranslate.class)));
         assertThat(plugin.getRouter(), is(instanceOf(TestPluginReplaceModules.TestConcreteRouter.class)));
-        assertThat(plugin.locale, is(equalTo("test.locale")));
         assertThat(plugin.builder, is(instanceOf(TestPluginReplaceModules.TestConcreteCommandRequestBuilder.class)));
     }
 

@@ -82,7 +82,6 @@ public class DefaultRouterTest {
                 bind(CommandRequestBuilder.class).to(DefaultCommandRequestBuilder.class);
                 bind(TestInterface.class).to(InjectorTest.class);
                 bind(Translate.class).to(DefaultTranslate.class);
-                bind(String.class).annotatedWith(Names.named("base_locale_permission")).toInstance("test.permission");
                 bind(Configurator.class).to(DefaultConfigurator.class);
                 bind(Plugin.class).toInstance(mock(Plugin.class));
                 bind(File.class).annotatedWith(Names.named("dataFolder")).toInstance(new File("target"+File.separator+"testdatafolder"));
