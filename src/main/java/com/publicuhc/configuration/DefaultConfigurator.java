@@ -48,7 +48,7 @@ public class DefaultConfigurator implements Configurator {
     public FileConfiguration getConfig(String id) {
         FileConfiguration config = m_configs.get(id);
         if (null == config) {
-            config = reloadConfig(id);
+            config = loadConfig(id);
         }
         return config;
     }
@@ -67,6 +67,13 @@ public class DefaultConfigurator implements Configurator {
 
     @Override
     public FileConfiguration reloadConfig(String id) {
+        FileConfiguration config = loadConfig(id);
+        ConfigFileReloadedEvent event = new ConfigFileReloadedEvent(id, config);
+        Bukkit.getPluginManager().callEvent(event);
+        return config;
+    }
+
+    protected FileConfiguration loadConfig(String id) {
         File customConfigFile = new File(m_plugin.getDataFolder(), id+".yml");
         FileConfiguration customConfig = YamlConfiguration.loadConfiguration(customConfigFile);
 
@@ -77,8 +84,6 @@ public class DefaultConfigurator implements Configurator {
             customConfig.setDefaults(defConfig);
         }
         m_configs.put(id, customConfig);
-        ConfigFileReloadedEvent event = new ConfigFileReloadedEvent(id, customConfig);
-        Bukkit.getPluginManager().callEvent(event);
         return customConfig;
     }
 }
