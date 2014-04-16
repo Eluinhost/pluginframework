@@ -121,7 +121,6 @@ public class DefaultConfiguratorTest {
         }
         m_dataFolder.mkdir();
         m_configurator = new DefaultConfigurator(m_dataFolder);
-
     }
 
     public boolean deleteDirectory(File path) {
