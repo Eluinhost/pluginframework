@@ -63,6 +63,7 @@ public class DefaultTranslate implements Translate {
         }
 
         value = ChatColor.translateAlternateColorCodes('&', value);
+
         return value;
     }
 
