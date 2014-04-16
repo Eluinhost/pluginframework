@@ -28,6 +28,7 @@ import com.google.inject.name.Names;
 import com.publicuhc.pluginframework.configuration.Configurator;
 import com.publicuhc.pluginframework.configuration.DefaultConfigurator;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.command.BlockCommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.command.RemoteConsoleCommandSender;
@@ -106,6 +107,11 @@ public class DefaultTranslateTest {
     @Test
     public void testTranslateSingleVar() {
         assertThat(translate.translate("testkeyonevar", "test", "amount", "one"), is(equalTo("test key one var")));
+    }
+
+    @Test
+    public void testTranslateColourCode() {
+        assertThat(translate.translate("testkeycolour", "test"), is(equalTo(ChatColor.RED+"test key")));
     }
 
     @Test

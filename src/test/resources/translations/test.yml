@@ -1,3 +1,4 @@
 testkeynovars: "testkeynovars"
 testkeyonevar: test key %amount% var
 testkeymultivar: test %var1% %var2% %var1% test
+testkeycolour: "&ctest key"

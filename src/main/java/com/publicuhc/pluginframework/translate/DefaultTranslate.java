@@ -23,6 +23,7 @@ package com.publicuhc.pluginframework.translate;
 
 import com.google.inject.Inject;
 import com.publicuhc.pluginframework.configuration.Configurator;
+import org.bukkit.ChatColor;
 import org.bukkit.command.BlockCommandSender;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
@@ -60,6 +61,8 @@ public class DefaultTranslate implements Translate {
         for (String s : vars.keySet()) {
             value = value.replaceAll("%" + s + "%", vars.get(s));
         }
+
+        value = ChatColor.translateAlternateColorCodes('&', value);
         return value;
     }
 
