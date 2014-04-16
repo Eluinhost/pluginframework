@@ -22,6 +22,8 @@
 package com.publicuhc.configuration;
 
 import com.google.inject.Inject;
+import com.publicuhc.configuration.events.ConfigFileReloadedEvent;
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.Plugin;
@@ -75,6 +77,8 @@ public class DefaultConfigurator implements Configurator {
             customConfig.setDefaults(defConfig);
         }
         m_configs.put(id, customConfig);
+        ConfigFileReloadedEvent event = new ConfigFileReloadedEvent(id, customConfig);
+        Bukkit.getPluginManager().callEvent(event);
         return customConfig;
     }
 }
