@@ -47,7 +47,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.plugin.Plugin;
-import org.hamcrest.CoreMatchers;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -55,18 +54,15 @@ import org.junit.runner.RunWith;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
+import java.io.File;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.MatchResult;
 
 import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.eq;
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.verify;
 import static org.powermock.api.mockito.PowerMockito.*;
 
@@ -89,6 +85,7 @@ public class DefaultRouterTest {
                 bind(String.class).annotatedWith(Names.named("base_locale_permission")).toInstance("test.permission");
                 bind(Configurator.class).to(DefaultConfigurator.class);
                 bind(Plugin.class).toInstance(mock(Plugin.class));
+                bind(File.class).annotatedWith(Names.named("dataFolder")).toInstance(new File("target/testdatafolder"));
             }
         });
         router = (DefaultRouter) injector.getInstance(Router.class);

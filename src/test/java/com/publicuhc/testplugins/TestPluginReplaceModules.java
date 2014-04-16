@@ -37,7 +37,6 @@ import com.publicuhc.configuration.DefaultConfigurator;
 import com.publicuhc.translate.DefaultTranslate;
 import com.publicuhc.translate.Translate;
 import org.bukkit.Server;
-import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginLoader;
 
@@ -100,8 +99,8 @@ public class TestPluginReplaceModules extends FrameworkJavaPlugin {
 
     public static class TestConcreteConfigurator extends DefaultConfigurator {
         @Inject
-        public TestConcreteConfigurator(Plugin plugin) {
-            super(plugin);
+        public TestConcreteConfigurator(@Named("dataFolder") File file) {
+            super(file);
         }
     }
 

@@ -22,6 +22,7 @@
 package com.publicuhc.configuration;
 
 import com.google.inject.Inject;
+import com.google.inject.name.Named;
 import com.publicuhc.configuration.events.ConfigFileReloadedEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -41,7 +42,7 @@ public class DefaultConfigurator implements Configurator {
     private final File m_dataFolder;
 
     @Inject
-    protected DefaultConfigurator(File dataFolder) {
+    protected DefaultConfigurator(@Named("dataFolder") File dataFolder) {
         m_dataFolder = dataFolder;
     }
 
@@ -79,7 +80,7 @@ public class DefaultConfigurator implements Configurator {
         FileConfiguration customConfig = YamlConfiguration.loadConfiguration(customConfigFile);
 
         // Look for defaults in the jar
-        InputStream defConfigStream = getResource(id+".yml");
+        InputStream defConfigStream = getResource(id + ".yml");
         if (defConfigStream != null) {
             YamlConfiguration defConfig = YamlConfiguration.loadConfiguration(defConfigStream);
             customConfig.setDefaults(defConfig);
