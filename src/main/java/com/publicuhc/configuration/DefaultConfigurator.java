@@ -45,65 +45,36 @@ public class DefaultConfigurator implements Configurator {
     @Override
     public FileConfiguration getConfig(String id) {
         FileConfiguration config = m_configs.get(id);
-        if (config == null) {
-            try {
-                config = loadFromFile(id + ".yml", true);
-                m_configs.put(id, config);
-            } catch (IOException e) {
-                e.printStackTrace();
-            } catch (IllegalArgumentException e) {
-                e.printStackTrace();
-            }
+        if (null == config) {
+            config = reloadConfig(id);
         }
         return config;
     }
 
     @Override
-    public void saveConfig(String id) throws IOException {
+    public void saveConfig(String id) {
         FileConfiguration configuration = m_configs.get(id);
         if (configuration != null) {
-            configuration.save(id + ".yml");
-        }
-    }
-
-    /**
-     * Load the config from the data directory and save it
-     *
-     * @param path        the path to load
-     * @param setDefaults whether to set default values or not
-     * @return the saved config
-     * @throws IllegalArgumentException - if saving from the JAR failed after failed load from the data dir
-     * @throws java.io.IOException      - if failed to save the config after options
-     */
-    protected FileConfiguration loadFromFile(String path, boolean setDefaults) throws IOException {
-        File configFile = new File(m_plugin.getDataFolder(), path);
-        System.out.print(configFile.getAbsoluteFile());
-        if (!configFile.exists()) {
-            saveFromJar(path, false);
-            configFile = new File(m_plugin.getDataFolder(), path);
-        }
-        FileConfiguration config = YamlConfiguration.loadConfiguration(configFile);
-        if (setDefaults) {
-            // Look for defaults in the jar
-            InputStream defConfigStream = m_plugin.getResource(path);
-            if (defConfigStream != null) {
-                YamlConfiguration defConfig = YamlConfiguration.loadConfiguration(defConfigStream);
-                config.setDefaults(defConfig);
+            try {
+                configuration.save(id + ".yml");
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-            config.save(configFile.getAbsoluteFile());
         }
-        return config;
     }
 
-    /**
-     * Save the file from the jar to the data directory
-     * The resource is saved into the plugin's data folder using the same hierarchy as the .jar file (subdirectories are preserved).
-     *
-     * @param replace  if true, the embedded resource will overwrite the contents of an existing file.
-     * @param path     the file in the jar
-     * @throws IllegalArgumentException - if the resource path is null, empty, or points to a nonexistent resource.
-     */
-    protected void saveFromJar(String path, boolean replace) {
-        m_plugin.saveResource(path, replace);
+    @Override
+    public FileConfiguration reloadConfig(String id) {
+        File customConfigFile = new File(m_plugin.getDataFolder(), id+".yml");
+        FileConfiguration customConfig = YamlConfiguration.loadConfiguration(customConfigFile);
+
+        // Look for defaults in the jar
+        InputStream defConfigStream = m_plugin.getResource(id+".yml");
+        if (defConfigStream != null) {
+            YamlConfiguration defConfig = YamlConfiguration.loadConfiguration(defConfigStream);
+            customConfig.setDefaults(defConfig);
+        }
+        m_configs.put(id, customConfig);
+        return customConfig;
     }
 }

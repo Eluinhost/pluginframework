@@ -23,8 +23,6 @@ package com.publicuhc.configuration;
 
 import org.bukkit.configuration.file.FileConfiguration;
 
-import java.io.IOException;
-
 public interface Configurator {
 
     /**
@@ -42,7 +40,12 @@ public interface Configurator {
      * The config must already be loaded for this to work
      *
      * @param id the id to save
-     * @throws IOException - Thrown when the given file cannot be written to for any reason.
      */
-    void saveConfig(String id) throws IOException;
+    void saveConfig(String id);
+
+    /**
+     * Reload the given config
+     * @param id the id to look for
+     */
+    FileConfiguration reloadConfig(String id);
 }
