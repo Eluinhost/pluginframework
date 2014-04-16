@@ -60,7 +60,7 @@ public class DefaultConfigurator implements Configurator {
         FileConfiguration configuration = m_configs.get(id);
         if (configuration != null) {
             try {
-                configuration.save(id + ".yml");
+                configuration.save(m_dataFolder.getAbsoluteFile()+"/"+id + ".yml");
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -84,6 +84,7 @@ public class DefaultConfigurator implements Configurator {
         if (defConfigStream != null) {
             YamlConfiguration defConfig = YamlConfiguration.loadConfiguration(defConfigStream);
             customConfig.setDefaults(defConfig);
+            customConfig.options().copyDefaults(true);
         }
         m_configs.put(id, customConfig);
         return customConfig;
