@@ -40,6 +40,22 @@
         </repository>
     </repositories>
 
+    <issueManagement>
+        <system>JIRA</system>
+        <url>http://jira.publicuhc.com/browse/PLUGIN</url>
+    </issueManagement>
+
+    <ciManagement>
+        <system>Bamboo</system>
+        <url>http://bamboo.publicuhc.com/browse/UHC-FRAMEWORK</url>
+    </ciManagement>
+
+    <scm>
+        <connection>scm:http://stash.publicuhc.com/scm/uhc/commandframework.git</connection>
+        <tag>HEAD</tag>
+        <url>http://stash.publicuhc.com/projects/UHC/repos/commandframework/</url>
+    </scm>
+
     <dependencies>
         <dependency>
             <groupId>org.bukkit</groupId>
