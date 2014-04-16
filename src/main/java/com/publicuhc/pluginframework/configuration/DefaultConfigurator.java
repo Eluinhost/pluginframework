@@ -63,7 +63,7 @@ public class DefaultConfigurator implements Configurator {
         FileConfiguration configuration = m_configs.get(id);
         if (configuration != null) {
             try {
-                configuration.save(m_dataFolder.getAbsoluteFile()+"/"+id.replaceAll(":", Matcher.quoteReplacement(File.separator)) + ".yml");
+                configuration.save(m_dataFolder.getAbsoluteFile()+File.separator+id.replaceAll(":", Matcher.quoteReplacement(File.separator)) + ".yml");
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -86,10 +86,11 @@ public class DefaultConfigurator implements Configurator {
         InputStream defConfigStream = getResource(id+".yml");
         if (defConfigStream != null) {
             YamlConfiguration defConfig = YamlConfiguration.loadConfiguration(defConfigStream);
-            customConfig.setDefaults(defConfig);
             customConfig.options().copyDefaults(true);
+            customConfig.setDefaults(defConfig);
         }
         m_configs.put(id, customConfig);
+        saveConfig(id);
         return customConfig;
     }
 
@@ -102,7 +103,8 @@ public class DefaultConfigurator implements Configurator {
         if (filename == null) {
             throw new IllegalArgumentException("Filename cannot be null");
         }
-        filename = filename.replaceAll(":", Matcher.quoteReplacement(File.separator));
+        //getResource always uses /
+        filename = filename.replaceAll(":", Matcher.quoteReplacement("/"));
         try {
             URL url = m_classLoader.getResource(filename);
 
