@@ -36,6 +36,7 @@ public class TestPluginExtraModules extends FrameworkJavaPlugin {
 
     /**
      * This method is intended for unit testing purposes. Its existence may be temporary.
+     *
      * @see org.bukkit.plugin.java.JavaPlugin
      */
     public TestPluginExtraModules(PluginLoader loader, Server server, PluginDescriptionFile pdf, File file1, File file2) {
@@ -43,6 +44,7 @@ public class TestPluginExtraModules extends FrameworkJavaPlugin {
     }
 
     public TestInterface i;
+
     @Inject
     public void setTest(TestInterface i) {
         this.i = i;
@@ -61,6 +63,7 @@ public class TestPluginExtraModules extends FrameworkJavaPlugin {
         return modules;
     }
 
-    public static interface TestInterface {}
-    public static class TestConcrete implements TestInterface {}
+    public static interface TestInterface { }
+
+    public static class TestConcrete implements TestInterface { }
 }

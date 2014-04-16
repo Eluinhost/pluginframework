@@ -29,9 +29,7 @@ import org.powermock.api.mockito.PowerMockito;
 import org.powermock.modules.junit4.PowerMockRunner;
 
 import static org.junit.Assert.assertEquals;
-import static org.powermock.api.mockito.PowerMockito.mock;
-import static org.powermock.api.mockito.PowerMockito.spy;
-import static org.powermock.api.mockito.PowerMockito.when;
+import static org.powermock.api.mockito.PowerMockito.*;
 
 @RunWith(PowerMockRunner.class)
 public class TabCompleteProxyTest {
@@ -43,7 +41,7 @@ public class TabCompleteProxyTest {
     @Test
     public void testTrigger() throws NoSuchMethodException, ProxyTriggerException {
         //set up the proxy
-        proxy.setCommandMethod(trigger.getClass().getMethod("triggerTabComplete",CommandRequest.class));
+        proxy.setCommandMethod(trigger.getClass().getMethod("triggerTabComplete", CommandRequest.class));
 
         //trigger the proxy
         assertEquals(TestTrigger.args, proxy.trigger(request));
@@ -55,13 +53,13 @@ public class TabCompleteProxyTest {
 
         try {
             proxy.trigger(request);
-        }catch (ProxyTriggerException ex){
+        } catch (ProxyTriggerException ex) {
             throw ex.getActualException();
         }
     }
 
     @Before
-    public void onStartUp(){
+    public void onStartUp() {
         proxy = new TabCompleteProxy();
         request = mock(CommandRequest.class);
         trigger = spy(new TestTrigger());

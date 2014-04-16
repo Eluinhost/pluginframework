@@ -29,7 +29,7 @@ import com.publicuhc.pluginframework.commands.routing.MethodRoute;
 public class TestExceptionRouteInfoCommands {
 
     @CommandMethod
-    public void command(CommandRequest request){
+    public void command(CommandRequest request) {
 
     }
 

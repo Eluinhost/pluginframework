@@ -63,7 +63,7 @@ public class DefaultConfigurator implements Configurator {
         FileConfiguration configuration = m_configs.get(id);
         if (configuration != null) {
             try {
-                configuration.save(m_dataFolder.getAbsoluteFile()+File.separator+id.replaceAll(":", Matcher.quoteReplacement(File.separator)) + ".yml");
+                configuration.save(m_dataFolder.getAbsoluteFile() + File.separator + id.replaceAll(":", Matcher.quoteReplacement(File.separator)) + ".yml");
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -79,11 +79,11 @@ public class DefaultConfigurator implements Configurator {
     }
 
     protected FileConfiguration loadConfig(String id) {
-        File customConfigFile = new File(m_dataFolder, id.replaceAll(":", Matcher.quoteReplacement(File.separator))+".yml");
+        File customConfigFile = new File(m_dataFolder, id.replaceAll(":", Matcher.quoteReplacement(File.separator)) + ".yml");
         FileConfiguration customConfig = YamlConfiguration.loadConfiguration(customConfigFile);
 
         // Look for defaults in the jar
-        InputStream defConfigStream = getResource(id+".yml");
+        InputStream defConfigStream = getResource(id + ".yml");
         if (defConfigStream != null) {
             YamlConfiguration defConfig = YamlConfiguration.loadConfiguration(defConfigStream);
             customConfig.options().copyDefaults(true);
@@ -96,6 +96,7 @@ public class DefaultConfigurator implements Configurator {
 
     /**
      * Load the resource from the plugin
+     *
      * @param filename the filename to load
      * @return inputstream
      */

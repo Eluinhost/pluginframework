@@ -33,8 +33,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 
-import static org.powermock.api.mockito.PowerMockito.mock;
-
 public class TestValidCommands {
 
     @CommandMethod

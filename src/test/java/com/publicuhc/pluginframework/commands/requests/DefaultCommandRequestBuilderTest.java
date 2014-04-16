@@ -34,9 +34,7 @@ import java.util.List;
 import java.util.regex.MatchResult;
 
 import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 import static org.powermock.api.mockito.PowerMockito.mock;
 
 @RunWith(PowerMockRunner.class)
@@ -112,7 +110,7 @@ public class DefaultCommandRequestBuilderTest {
     }
 
     @Test
-    public void testIsValid(){
+    public void testIsValid() {
         assertFalse(builder.isValid());
         builder.setSender(mock(CommandSender.class));
         assertFalse(builder.isValid());

@@ -40,7 +40,7 @@ public class DefaultMethodProxyTest {
     private DefaultMethodProxy proxy;
 
     @Test
-    public void testDoParamsMatch(){
+    public void testDoParamsMatch() {
 
         proxy.setPattern(Pattern.compile("[\\d]++"));
         assertThat(proxy.paramsMatch("e09=324"), is(nullValue()));
@@ -83,7 +83,7 @@ public class DefaultMethodProxyTest {
     }
 
     @Before
-    public void onStartUp(){
+    public void onStartUp() {
         proxy = new DefaultMethodProxy();
     }
 }

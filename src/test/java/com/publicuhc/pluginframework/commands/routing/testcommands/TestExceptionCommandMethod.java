@@ -45,7 +45,7 @@ public class TestExceptionCommandMethod {
     }
 
     @TabCompletion
-    public List<String> tabexception(CommandRequest request){
+    public List<String> tabexception(CommandRequest request) {
         throw new IllegalAccessError();
     }
 

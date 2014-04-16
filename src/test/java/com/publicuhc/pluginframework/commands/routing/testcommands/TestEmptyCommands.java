@@ -21,4 +21,4 @@
 
 package com.publicuhc.pluginframework.commands.routing.testcommands;
 
-public class TestEmptyCommands {}
+public class TestEmptyCommands { }

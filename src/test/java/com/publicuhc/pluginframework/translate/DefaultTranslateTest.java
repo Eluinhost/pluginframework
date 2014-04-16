@@ -111,7 +111,7 @@ public class DefaultTranslateTest {
 
     @Test
     public void testTranslateColourCode() {
-        assertThat(translate.translate("testkeycolour", "test"), is(equalTo(ChatColor.RED+"test key")));
+        assertThat(translate.translate("testkeycolour", "test"), is(equalTo(ChatColor.RED + "test key")));
     }
 
     @Test
@@ -124,8 +124,8 @@ public class DefaultTranslateTest {
 
     @Before
     public void onSetUp() {
-        final File dataFolder = new File("target"+File.separator+"testdatafolder");
-        if(dataFolder.exists()){
+        final File dataFolder = new File("target" + File.separator + "testdatafolder");
+        if (dataFolder.exists()) {
             deleteDirectory(dataFolder);
         }
         dataFolder.mkdir();

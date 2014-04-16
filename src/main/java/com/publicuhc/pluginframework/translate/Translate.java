@@ -44,7 +44,6 @@ public interface Translate {
      * @param locale the locale to use
      * @param vars   the map of keys=>values to replace
      * @return the translated string
-     * @throws com.publicuhc.pluginframework.translate.exceptions.LocaleNotFoundError if the locale supplied is invalid
      */
     String translate(String key, String locale, Map<String, String> vars);
 
@@ -56,7 +55,6 @@ public interface Translate {
      * @param value  the value for the var
      * @param locale the locale to use
      * @return the translated string
-     * @throws com.publicuhc.pluginframework.translate.exceptions.LocaleNotFoundError if the locale supplied is invalid
      */
     String translate(String key, String locale, String var, String value);
 
@@ -65,13 +63,13 @@ public interface Translate {
      *
      * @param sender the sender
      * @return the locale name
-     * @throws com.publicuhc.pluginframework.translate.exceptions.LocaleNotFoundError if the locale supplied is invalid
      */
     String getLocaleForSender(CommandSender sender);
 
     /**
      * Set the locale for the given player
-     * @param p the player
+     *
+     * @param p    the player
      * @param code the locale code
      */
     void setLocaleForPlayer(Player p, String code);

@@ -48,6 +48,7 @@ public class TestPluginReplaceModules extends FrameworkJavaPlugin {
 
     /**
      * This method is intended for unit testing purposes. Its existence may be temporary.
+     *
      * @see org.bukkit.plugin.java.JavaPlugin
      */
     public TestPluginReplaceModules(PluginLoader loader, Server server, PluginDescriptionFile pdf, File file1, File file2) {
@@ -100,5 +101,5 @@ public class TestPluginReplaceModules extends FrameworkJavaPlugin {
         }
     }
 
-    public static class TestConcreteCommandRequestBuilder extends DefaultCommandRequestBuilder {}
+    public static class TestConcreteCommandRequestBuilder extends DefaultCommandRequestBuilder { }
 }

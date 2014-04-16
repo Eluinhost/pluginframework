@@ -46,7 +46,7 @@ import static org.powermock.api.mockito.PowerMockito.mock;
 import static org.powermock.api.mockito.PowerMockito.whenNew;
 
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({ FrameworkJavaPlugin.class, PluginDescriptionFile.class, JavaPluginLoader.class })
+@PrepareForTest({FrameworkJavaPlugin.class, PluginDescriptionFile.class, JavaPluginLoader.class})
 public class FrameworkJavaPluginTest {
 
     @Test
@@ -54,7 +54,7 @@ public class FrameworkJavaPluginTest {
         PluginLoader loader = mock(PluginLoader.class);
         Server server = mock(Server.class);
         PluginDescriptionFile pdf = mock(PluginDescriptionFile.class);
-        File file1 = new File("target"+File.separator+"testdatafolder");
+        File file1 = new File("target" + File.separator + "testdatafolder");
 
         PluginLogger logger = mock(PluginLogger.class);
         whenNew(PluginLogger.class).withAnyArguments().thenReturn(logger);
@@ -77,7 +77,7 @@ public class FrameworkJavaPluginTest {
         PluginLoader loader = mock(PluginLoader.class);
         Server server = mock(Server.class);
         PluginDescriptionFile pdf = mock(PluginDescriptionFile.class);
-        File file1 = new File("target"+File.separator+"testdatafolder");
+        File file1 = new File("target" + File.separator + "testdatafolder");
 
         PluginLogger logger = mock(PluginLogger.class);
         whenNew(PluginLogger.class).withAnyArguments().thenReturn(logger);
@@ -104,7 +104,7 @@ public class FrameworkJavaPluginTest {
         PluginLoader loader = mock(PluginLoader.class);
         Server server = mock(Server.class);
         PluginDescriptionFile pdf = mock(PluginDescriptionFile.class);
-        File file1 = new File("target"+File.separator+"testdatafolder");
+        File file1 = new File("target" + File.separator + "testdatafolder");
 
         PluginLogger logger = mock(PluginLogger.class);
         whenNew(PluginLogger.class).withAnyArguments().thenReturn(logger);

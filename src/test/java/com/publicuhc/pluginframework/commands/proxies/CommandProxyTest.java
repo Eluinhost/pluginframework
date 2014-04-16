@@ -56,7 +56,7 @@ public class CommandProxyTest {
 
         try {
             proxy.trigger(request);
-        }catch (ProxyTriggerException ex){
+        } catch (ProxyTriggerException ex) {
             throw ex.getActualException();
         }
     }

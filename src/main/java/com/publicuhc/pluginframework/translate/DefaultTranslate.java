@@ -54,7 +54,7 @@ public class DefaultTranslate implements Translate {
 
         String value = configuration.getString(key);
 
-        if(null == value) {
+        if (null == value) {
             value = "TRANSLATION KEY NOT SET FOR " + key;
         }
 
@@ -80,17 +80,17 @@ public class DefaultTranslate implements Translate {
 
         String locale = null;
 
-        if(sender instanceof RemoteConsoleCommandSender) {
+        if (sender instanceof RemoteConsoleCommandSender) {
             locale = locales.getString("remoteConsole");
-        }else if(sender instanceof ConsoleCommandSender) {
+        } else if (sender instanceof ConsoleCommandSender) {
             locale = locales.getString("console");
-        }else if(sender instanceof BlockCommandSender) {
+        } else if (sender instanceof BlockCommandSender) {
             locale = locales.getString("commandBlock");
-        }else if(sender instanceof Player) {
-            locale = locales.getString("players."+((Player) sender).getUniqueId());
+        } else if (sender instanceof Player) {
+            locale = locales.getString("players." + ((Player) sender).getUniqueId());
         }
 
-        if(null == locale) {
+        if (null == locale) {
             locale = locales.getString("default");
         }
         return locale;
@@ -99,7 +99,7 @@ public class DefaultTranslate implements Translate {
     @Override
     public void setLocaleForPlayer(Player p, String code) {
         FileConfiguration configuration = m_configurator.getConfig("locales");
-        configuration.set("players."+p.getUniqueId(), code);
+        configuration.set("players." + p.getUniqueId(), code);
         m_configurator.saveConfig("locales");
     }
 }

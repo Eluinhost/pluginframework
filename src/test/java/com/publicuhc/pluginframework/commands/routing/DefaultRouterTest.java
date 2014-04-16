@@ -75,7 +75,7 @@ public class DefaultRouterTest {
 
     @Before
     public void setup() throws NoSuchMethodException {
-       injector = Guice.createInjector(new AbstractModule() {
+        injector = Guice.createInjector(new AbstractModule() {
             @Override
             protected void configure() {
                 bind(Router.class).to(DefaultRouter.class);
@@ -84,7 +84,7 @@ public class DefaultRouterTest {
                 bind(Translate.class).to(DefaultTranslate.class);
                 bind(Configurator.class).to(DefaultConfigurator.class);
                 bind(Plugin.class).toInstance(mock(Plugin.class));
-                bind(File.class).annotatedWith(Names.named("dataFolder")).toInstance(new File("target"+File.separator+"testdatafolder"));
+                bind(File.class).annotatedWith(Names.named("dataFolder")).toInstance(new File("target" + File.separator + "testdatafolder"));
                 bind(ClassLoader.class).toInstance(getClass().getClassLoader());
             }
         });
@@ -92,7 +92,7 @@ public class DefaultRouterTest {
     }
 
     @After
-    public void teardown(){
+    public void teardown() {
         router = null;
     }
 
@@ -346,7 +346,7 @@ public class DefaultRouterTest {
         router.registerCommands(TestExceptionCommandMethod.class);
         router.onCommand(sender, command, "wtfisalabel", new String[]{});
 
-        verify(sender).sendMessage(ChatColor.RED+"Error running command, check console for more information");
+        verify(sender).sendMessage(ChatColor.RED + "Error running command, check console for more information");
     }
 
     @Test
@@ -360,7 +360,7 @@ public class DefaultRouterTest {
 
         List<String> complete = router.onTabComplete(sender, command, "wtfisalabel", new String[]{"192.168.0.1"});
 
-        assertThat(complete, is(equalTo(Arrays.asList("1","2","3"))));
+        assertThat(complete, is(equalTo(Arrays.asList("1", "2", "3"))));
     }
 
     @Test
@@ -393,6 +393,7 @@ public class DefaultRouterTest {
 
         /**
          * Test for checking invalid return type
+         *
          * @param request n/a
          */
         @TabCompletion
@@ -402,6 +403,7 @@ public class DefaultRouterTest {
 
         /**
          * Test for checking invalid parameters
+         *
          * @return n/a
          */
         @TabCompletion
@@ -411,6 +413,7 @@ public class DefaultRouterTest {
 
         /**
          * Test for checking a valid method
+         *
          * @param request n/a
          * @return n/a
          */
@@ -421,6 +424,7 @@ public class DefaultRouterTest {
 
         /**
          * Test for checking an invalid return type
+         *
          * @param request n/a
          * @return n/a
          */
@@ -431,6 +435,7 @@ public class DefaultRouterTest {
 
         /**
          * Test for checking an invalid return type
+         *
          * @param request n/a
          * @return n/a
          */
@@ -441,6 +446,7 @@ public class DefaultRouterTest {
 
         /**
          * Test for checking missing annotation
+         *
          * @param request n/a
          * @return n/a
          */
@@ -450,6 +456,7 @@ public class DefaultRouterTest {
 
         /**
          * Test for a valid command method
+         *
          * @param request n/a
          */
         @CommandMethod
@@ -458,6 +465,7 @@ public class DefaultRouterTest {
 
         /**
          * Test for invalid parameters
+         *
          * @param string n/a
          */
         @CommandMethod
@@ -466,6 +474,7 @@ public class DefaultRouterTest {
 
         /**
          * Test for missing annotation
+         *
          * @param request n/a
          */
         public void onMissingAnnotationCommandMethod(CommandRequest request) {
@@ -473,6 +482,7 @@ public class DefaultRouterTest {
 
         /**
          * Test for a valid route info
+         *
          * @return n/a
          */
         @RouteInfo
@@ -482,6 +492,7 @@ public class DefaultRouterTest {
 
         /**
          * Test for missing annotation
+         *
          * @return n/a
          */
         public MethodRoute onMissingAnnotationRouteInfo() {
@@ -497,6 +508,7 @@ public class DefaultRouterTest {
 
         /**
          * Test for invalid return type
+         *
          * @return n/a
          */
         @RouteInfo
@@ -510,7 +522,7 @@ public class DefaultRouterTest {
         private TestInterface testInterface = null;
 
         @Inject
-        public void setInterface(TestInterface testInterface){
+        public void setInterface(TestInterface testInterface) {
             this.testInterface = testInterface;
         }
 

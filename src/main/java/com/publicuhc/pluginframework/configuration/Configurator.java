@@ -45,6 +45,7 @@ public interface Configurator {
 
     /**
      * Reload the given config
+     *
      * @param id the id to look for
      */
     FileConfiguration reloadConfig(String id);

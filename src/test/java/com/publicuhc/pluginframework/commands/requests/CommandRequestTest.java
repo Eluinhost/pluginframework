@@ -38,9 +38,7 @@ import java.util.List;
 import java.util.regex.MatchResult;
 
 import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.powermock.api.mockito.PowerMockito.*;
@@ -163,7 +161,7 @@ public class CommandRequestTest {
     public void testGetArg() {
         assertThat(request.getArg(0), is(equalTo("first")));
         assertThat(request.getArg(1), is(equalTo("2")));
-        assertThat(request.getArg(request.getArgs().size()-1), is(equalTo("last")));
+        assertThat(request.getArg(request.getArgs().size() - 1), is(equalTo("last")));
     }
 
     @Test(expected = IllegalArgumentException.class)

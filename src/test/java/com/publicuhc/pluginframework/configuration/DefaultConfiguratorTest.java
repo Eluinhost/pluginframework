@@ -31,7 +31,8 @@ import org.junit.runner.RunWith;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
-import java.io.*;
+import java.io.File;
+import java.io.InputStream;
 
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.assertThat;
@@ -86,7 +87,7 @@ public class DefaultConfiguratorTest {
 
         m_configurator.loadConfig("testfolder:subtest");
         m_configurator.saveConfig("testfolder:subtest");
-        configFile = new File(m_dataFolder, "testfolder"+File.separator+"subtest.yml");
+        configFile = new File(m_dataFolder, "testfolder" + File.separator + "subtest.yml");
         assertTrue(configFile.exists());
     }
 
@@ -115,8 +116,8 @@ public class DefaultConfiguratorTest {
 
     @Before
     public void onSetUp() throws Exception {
-        m_dataFolder = new File("target"+File.separator+"testdatafolder");
-        if(m_dataFolder.exists()){
+        m_dataFolder = new File("target" + File.separator + "testdatafolder");
+        if (m_dataFolder.exists()) {
             deleteDirectory(m_dataFolder);
         }
         m_dataFolder.mkdir();

@@ -31,6 +31,7 @@ import java.io.File;
 public class TestPluginDefaultModules extends FrameworkJavaPlugin {
     /**
      * This method is intended for unit testing purposes. Its existence may be temporary.
+     *
      * @see org.bukkit.plugin.java.JavaPlugin
      */
     public TestPluginDefaultModules(PluginLoader loader, Server server, PluginDescriptionFile pdf, File file1, File file2) {
