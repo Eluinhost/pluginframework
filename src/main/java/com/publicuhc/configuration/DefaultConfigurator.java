@@ -26,22 +26,23 @@ import com.publicuhc.configuration.events.ConfigFileReloadedEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.plugin.Plugin;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.HashMap;
 import java.util.Map;
 
 public class DefaultConfigurator implements Configurator {
 
-    private final Plugin m_plugin;
     private final Map<String, FileConfiguration> m_configs = new HashMap<String, FileConfiguration>();
+    private final File m_dataFolder;
 
     @Inject
-    public DefaultConfigurator(Plugin plugin) {
-        m_plugin = plugin;
+    protected DefaultConfigurator(File dataFolder) {
+        m_dataFolder = dataFolder;
     }
 
     @Override
@@ -74,16 +75,41 @@ public class DefaultConfigurator implements Configurator {
     }
 
     protected FileConfiguration loadConfig(String id) {
-        File customConfigFile = new File(m_plugin.getDataFolder(), id+".yml");
+        File customConfigFile = new File(m_dataFolder, id+".yml");
         FileConfiguration customConfig = YamlConfiguration.loadConfiguration(customConfigFile);
 
         // Look for defaults in the jar
-        InputStream defConfigStream = m_plugin.getResource(id+".yml");
+        InputStream defConfigStream = getResource(id+".yml");
         if (defConfigStream != null) {
             YamlConfiguration defConfig = YamlConfiguration.loadConfiguration(defConfigStream);
             customConfig.setDefaults(defConfig);
         }
         m_configs.put(id, customConfig);
         return customConfig;
+    }
+
+    /**
+     * Load the resource from the plugin
+     * @param filename the filename to load
+     * @return inputstream
+     */
+    protected InputStream getResource(String filename) {
+        if (filename == null) {
+            throw new IllegalArgumentException("Filename cannot be null");
+        }
+
+        try {
+            URL url = this.getClass().getClassLoader().getResource(filename);
+
+            if (url == null) {
+                return null;
+            }
+
+            URLConnection connection = url.openConnection();
+            connection.setUseCaches(false);
+            return connection.getInputStream();
+        } catch (IOException ex) {
+            return null;
+        }
     }
 }
