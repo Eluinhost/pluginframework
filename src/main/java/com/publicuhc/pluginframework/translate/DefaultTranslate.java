@@ -87,7 +87,7 @@ public class DefaultTranslate implements Translate {
         }
 
         if(null == locale) {
-            locale = locales.getString("default", "en");
+            locale = locales.getString("default");
         }
         return locale;
     }
