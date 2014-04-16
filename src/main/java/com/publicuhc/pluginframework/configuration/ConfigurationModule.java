@@ -24,8 +24,16 @@ package com.publicuhc.pluginframework.configuration;
 import com.google.inject.AbstractModule;
 
 public class ConfigurationModule extends AbstractModule {
+
+    private final ClassLoader m_classLoader;
+
+    public ConfigurationModule(ClassLoader loader) {
+        m_classLoader = loader;
+    }
+
     @Override
     protected void configure() {
         bind(Configurator.class).to(DefaultConfigurator.class);
+        bind(ClassLoader.class).toInstance(m_classLoader);
     }
 }

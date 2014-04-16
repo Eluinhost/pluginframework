@@ -73,7 +73,7 @@ public abstract class FrameworkJavaPlugin extends JavaPlugin {
         });
         if (initUseDefaultBindings()) {
             modules.add(new CommandModule());
-            modules.add(new ConfigurationModule());
+            modules.add(new ConfigurationModule(this.getClassLoader()));
             modules.add(new TranslateModule());
         }
         modules.add(new PluginModule(this));

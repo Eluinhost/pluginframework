@@ -41,10 +41,12 @@ public class DefaultConfigurator implements Configurator {
 
     private final Map<String, FileConfiguration> m_configs = new HashMap<String, FileConfiguration>();
     private final File m_dataFolder;
+    private final ClassLoader m_classLoader;
 
     @Inject
-    protected DefaultConfigurator(@Named("dataFolder") File dataFolder) {
+    protected DefaultConfigurator(@Named("dataFolder") File dataFolder, ClassLoader classLoader) {
         m_dataFolder = dataFolder;
+        m_classLoader = classLoader;
     }
 
     @Override
@@ -102,7 +104,7 @@ public class DefaultConfigurator implements Configurator {
         }
         filename = filename.replaceAll(":", Matcher.quoteReplacement(File.separator));
         try {
-            URL url = this.getClass().getClassLoader().getResource(filename);
+            URL url = m_classLoader.getResource(filename);
 
             if (url == null) {
                 return null;

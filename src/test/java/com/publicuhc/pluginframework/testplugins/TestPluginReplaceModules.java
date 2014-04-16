@@ -72,6 +72,7 @@ public class TestPluginReplaceModules extends FrameworkJavaPlugin {
                 bind(Configurator.class).to(TestConcreteConfigurator.class);
                 bind(Translate.class).to(TestConcreteTranslate.class);
                 bind(CommandRequestBuilder.class).to(TestConcreteCommandRequestBuilder.class);
+                bind(ClassLoader.class).toInstance(getClass().getClassLoader());
             }
         };
         modules.add(module);
@@ -94,8 +95,8 @@ public class TestPluginReplaceModules extends FrameworkJavaPlugin {
 
     public static class TestConcreteConfigurator extends DefaultConfigurator {
         @Inject
-        public TestConcreteConfigurator(@Named("dataFolder") File file) {
-            super(file);
+        public TestConcreteConfigurator(@Named("dataFolder") File file, ClassLoader loader) {
+            super(file, loader);
         }
     }
 

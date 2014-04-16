@@ -85,6 +85,7 @@ public class DefaultRouterTest {
                 bind(Configurator.class).to(DefaultConfigurator.class);
                 bind(Plugin.class).toInstance(mock(Plugin.class));
                 bind(File.class).annotatedWith(Names.named("dataFolder")).toInstance(new File("target"+File.separator+"testdatafolder"));
+                bind(ClassLoader.class).toInstance(getClass().getClassLoader());
             }
         });
         router = (DefaultRouter) injector.getInstance(Router.class);

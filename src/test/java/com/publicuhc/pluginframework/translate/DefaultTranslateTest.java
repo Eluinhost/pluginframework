@@ -129,6 +129,7 @@ public class DefaultTranslateTest {
             protected void configure() {
                 bind(Configurator.class).to(DefaultConfigurator.class);
                 bind(File.class).annotatedWith(Names.named("dataFolder")).toInstance(dataFolder);
+                bind(ClassLoader.class).toInstance(getClass().getClassLoader());
             }
         });
         configurator = i.getInstance(Configurator.class);
