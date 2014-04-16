@@ -35,6 +35,7 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.regex.Matcher;
 
 public class DefaultConfigurator implements Configurator {
 
@@ -60,7 +61,7 @@ public class DefaultConfigurator implements Configurator {
         FileConfiguration configuration = m_configs.get(id);
         if (configuration != null) {
             try {
-                configuration.save(m_dataFolder.getAbsoluteFile()+"/"+id + ".yml");
+                configuration.save(m_dataFolder.getAbsoluteFile()+"/"+id.replaceAll(":", Matcher.quoteReplacement(File.separator)) + ".yml");
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -76,11 +77,11 @@ public class DefaultConfigurator implements Configurator {
     }
 
     protected FileConfiguration loadConfig(String id) {
-        File customConfigFile = new File(m_dataFolder, id+".yml");
+        File customConfigFile = new File(m_dataFolder, id.replaceAll(":", Matcher.quoteReplacement(File.separator))+".yml");
         FileConfiguration customConfig = YamlConfiguration.loadConfiguration(customConfigFile);
 
         // Look for defaults in the jar
-        InputStream defConfigStream = getResource(id + ".yml");
+        InputStream defConfigStream = getResource(id+".yml");
         if (defConfigStream != null) {
             YamlConfiguration defConfig = YamlConfiguration.loadConfiguration(defConfigStream);
             customConfig.setDefaults(defConfig);
@@ -99,7 +100,7 @@ public class DefaultConfigurator implements Configurator {
         if (filename == null) {
             throw new IllegalArgumentException("Filename cannot be null");
         }
-
+        filename = filename.replaceAll(":", Matcher.quoteReplacement(File.separator));
         try {
             URL url = this.getClass().getClassLoader().getResource(filename);
 

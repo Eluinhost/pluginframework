@@ -85,7 +85,7 @@ public class DefaultRouterTest {
                 bind(String.class).annotatedWith(Names.named("base_locale_permission")).toInstance("test.permission");
                 bind(Configurator.class).to(DefaultConfigurator.class);
                 bind(Plugin.class).toInstance(mock(Plugin.class));
-                bind(File.class).annotatedWith(Names.named("dataFolder")).toInstance(new File("target/testdatafolder"));
+                bind(File.class).annotatedWith(Names.named("dataFolder")).toInstance(new File("target"+File.separator+"testdatafolder"));
             }
         });
         router = (DefaultRouter) injector.getInstance(Router.class);

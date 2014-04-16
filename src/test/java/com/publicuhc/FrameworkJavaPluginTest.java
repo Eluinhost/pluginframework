@@ -28,7 +28,6 @@ import com.publicuhc.testplugins.TestPluginExtraModules;
 import com.publicuhc.testplugins.TestPluginReplaceModules;
 import com.publicuhc.translate.DefaultTranslate;
 import org.bukkit.Server;
-import org.bukkit.plugin.InvalidPluginException;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginLoader;
 import org.bukkit.plugin.PluginLogger;
@@ -104,7 +103,7 @@ public class FrameworkJavaPluginTest {
         PluginLoader loader = mock(PluginLoader.class);
         Server server = mock(Server.class);
         PluginDescriptionFile pdf = mock(PluginDescriptionFile.class);
-        File file1 = new File("bin/test/plugins/testplugin");
+        File file1 = new File("target"+File.separator+"testdatafolder");
 
         PluginLogger logger = mock(PluginLogger.class);
         whenNew(PluginLogger.class).withAnyArguments().thenReturn(logger);

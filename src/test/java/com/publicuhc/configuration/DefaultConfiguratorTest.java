@@ -57,10 +57,7 @@ public class DefaultConfiguratorTest {
         stream = m_configurator.getResource("nonexisting.yml");
         assertThat(stream, is(nullValue()));
 
-        stream = m_configurator.getResource("testfolder/subtest.yml");
-        assertThat(stream, is(not(nullValue())));
-
-        stream = m_configurator.getResource("testfolder\\subtest.yml");
+        stream = m_configurator.getResource("testfolder:subtest.yml");
         assertThat(stream, is(not(nullValue())));
     }
 
@@ -75,11 +72,7 @@ public class DefaultConfiguratorTest {
         assertThat(configuration, is(not(nullValue())));
         assertThat(configuration.getString("testString"), is(equalTo("teststring")));
 
-        configuration = m_configurator.loadConfig("testfolder/subtest");
-        assertThat(configuration, is(not(nullValue())));
-        assertThat(configuration.getInt("test1"), is(20));
-
-        configuration = m_configurator.loadConfig("testfolder\\subtest");
+        configuration = m_configurator.loadConfig("testfolder:subtest");
         assertThat(configuration, is(not(nullValue())));
         assertThat(configuration.getInt("test1"), is(20));
     }
@@ -91,14 +84,9 @@ public class DefaultConfiguratorTest {
         File configFile = new File(m_dataFolder, "test.yml");
         assertTrue(configFile.exists());
 
-        m_configurator.loadConfig("testfolder/subtest");
-        m_configurator.saveConfig("testfolder/subtest");
-        configFile = new File(m_dataFolder, "testfolder/subtest.yml");
-        assertTrue(configFile.exists());
-
-        m_configurator.loadConfig("testfolder\\subtest");
-        m_configurator.saveConfig("testfolder\\subtest");
-        configFile = new File(m_dataFolder, "testfolder\\subtest.yml");
+        m_configurator.loadConfig("testfolder:subtest");
+        m_configurator.saveConfig("testfolder:subtest");
+        configFile = new File(m_dataFolder, "testfolder"+File.separator+"subtest.yml");
         assertTrue(configFile.exists());
     }
 
@@ -107,10 +95,7 @@ public class DefaultConfiguratorTest {
         FileConfiguration configuration = m_configurator.getConfig("test");
         assertThat(configuration.getString("testString"), is(equalTo("teststring")));
 
-        configuration = m_configurator.getConfig("testfolder/subtest");
-        assertThat(configuration.getInt("test1"), is(20));
-
-        configuration = m_configurator.getConfig("testfolder\\subtest");
+        configuration = m_configurator.getConfig("testfolder:subtest");
         assertThat(configuration.getInt("test1"), is(20));
     }
 
@@ -130,7 +115,7 @@ public class DefaultConfiguratorTest {
 
     @Before
     public void onSetUp() throws Exception {
-        m_dataFolder = new File("target/testdatafolder");
+        m_dataFolder = new File("target"+File.separator+"testdatafolder");
         if(m_dataFolder.exists()){
             deleteDirectory(m_dataFolder);
         }
