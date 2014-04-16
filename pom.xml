@@ -145,15 +145,15 @@
                     <relocations>
                         <relocation>
                             <pattern>com.google.inject</pattern>
-                            <shadedPattern>${project.groupId}.inject.google</shadedPattern>
+                            <shadedPattern>${project.groupId}.${project.artifactId}.shaded.inject</shadedPattern>
                         </relocation>
                         <relocation>
                             <pattern>javax.inject</pattern>
-                            <shadedPattern>${project.groupId}.inject.javax</shadedPattern>
+                            <shadedPattern>${project.groupId}.${project.artifactId}.shaded.javax</shadedPattern>
                         </relocation>
                         <relocation>
                             <pattern>org.aopalliance</pattern>
-                            <shadedPattern>${project.groupId}.aopalliance</shadedPattern>
+                            <shadedPattern>${project.groupId}.${project.artifactId}.aopalliance</shadedPattern>
                         </relocation>
                     </relocations>
                 </configuration>
