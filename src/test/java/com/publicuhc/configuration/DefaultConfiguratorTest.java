@@ -21,36 +21,121 @@
 
 package com.publicuhc.configuration;
 
-import org.bukkit.plugin.Plugin;
-import org.bukkit.plugin.java.JavaPlugin;
+import com.publicuhc.configuration.events.ConfigFileReloadedEvent;
+import org.bukkit.Bukkit;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.plugin.PluginManager;
 import org.junit.Before;
+import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
-import java.io.File;
+import java.io.*;
 
-import static org.powermock.api.mockito.PowerMockito.doCallRealMethod;
-import static org.powermock.api.mockito.PowerMockito.mock;
+import static org.hamcrest.CoreMatchers.*;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.powermock.api.mockito.PowerMockito.*;
 
 
 @RunWith(PowerMockRunner.class)
+@PrepareForTest(Bukkit.class)
 public class DefaultConfiguratorTest {
 
     private DefaultConfigurator m_configurator;
-    private Plugin m_plugin;
     private File m_dataFolder;
+
+    @Test
+    public void testGetResource() {
+        InputStream stream = m_configurator.getResource("test.yml");
+        assertThat(stream, is(not(nullValue())));
+
+        stream = m_configurator.getResource("nonexisting.yml");
+        assertThat(stream, is(nullValue()));
+
+        stream = m_configurator.getResource("testfolder/subtest.yml");
+        assertThat(stream, is(not(nullValue())));
+
+        stream = m_configurator.getResource("testfolder\\subtest.yml");
+        assertThat(stream, is(not(nullValue())));
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testNullGetResource() {
+        m_configurator.getResource(null);
+    }
+
+    @Test
+    public void testLoadConfig() {
+        FileConfiguration configuration = m_configurator.loadConfig("test");
+        assertThat(configuration, is(not(nullValue())));
+        assertThat(configuration.getString("testString"), is(equalTo("teststring")));
+
+        configuration = m_configurator.loadConfig("testfolder/subtest");
+        assertThat(configuration, is(not(nullValue())));
+        assertThat(configuration.getInt("test1"), is(20));
+
+        configuration = m_configurator.loadConfig("testfolder\\subtest");
+        assertThat(configuration, is(not(nullValue())));
+        assertThat(configuration.getInt("test1"), is(20));
+    }
+
+    @Test
+    public void testSaveConfig() {
+        m_configurator.loadConfig("test");
+        m_configurator.saveConfig("test");
+        File configFile = new File(m_dataFolder, "test.yml");
+        assertTrue(configFile.exists());
+
+        m_configurator.loadConfig("testfolder/subtest");
+        m_configurator.saveConfig("testfolder/subtest");
+        configFile = new File(m_dataFolder, "testfolder/subtest.yml");
+        assertTrue(configFile.exists());
+
+        m_configurator.loadConfig("testfolder\\subtest");
+        m_configurator.saveConfig("testfolder\\subtest");
+        configFile = new File(m_dataFolder, "testfolder\\subtest.yml");
+        assertTrue(configFile.exists());
+    }
+
+    @Test
+    public void testGetConfig() {
+        FileConfiguration configuration = m_configurator.getConfig("test");
+        assertThat(configuration.getString("testString"), is(equalTo("teststring")));
+
+        configuration = m_configurator.getConfig("testfolder/subtest");
+        assertThat(configuration.getInt("test1"), is(20));
+
+        configuration = m_configurator.getConfig("testfolder\\subtest");
+        assertThat(configuration.getInt("test1"), is(20));
+    }
+
+    @Test
+    public void testReloadConfig() {
+        mockStatic(Bukkit.class);
+        PluginManager manager = mock(PluginManager.class);
+        when(Bukkit.getPluginManager()).thenReturn(manager);
+
+        FileConfiguration configuration = m_configurator.getConfig("test");
+
+        m_configurator.reloadConfig("test");
+
+        assertThat(m_configurator.getConfig("test"), is(not(sameInstance(configuration))));
+        verify(manager, times(1)).callEvent(any(ConfigFileReloadedEvent.class));
+    }
 
     @Before
     public void onSetUp() throws Exception {
-        m_plugin = mock(JavaPlugin.class);
         m_dataFolder = new File("target/testdatafolder");
         if(m_dataFolder.exists()){
             deleteDirectory(m_dataFolder);
         }
         m_dataFolder.mkdir();
-        //when(m_plugin.getDataFolder()).thenReturn(m_dataFolder); //TODO stackoverflow error for overriding this final method because equals is final too...
-        doCallRealMethod().when(m_plugin).saveResource("test.yml", false);
-        m_configurator = new DefaultConfigurator(m_plugin);
+        m_configurator = new DefaultConfigurator(m_dataFolder);
 
     }
 
