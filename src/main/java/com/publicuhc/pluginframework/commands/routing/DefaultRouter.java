@@ -64,7 +64,7 @@ public class DefaultRouter implements Router {
     /**
      * Stores the message to send a player if a route wasn't found for the given command and parameters
      */
-    private final HashMap<Command, List<String>> m_noRouteMessages = new HashMap<Command, List<String>>(); //TODO be able to set the defaults
+    private final HashMap<String, List<String>> m_noRouteMessages = new HashMap<String, List<String>>();
 
     /**
      * Used to build requests
@@ -213,6 +213,18 @@ public class DefaultRouter implements Router {
         }
     }
 
+    @Override
+    public void setDefaultMessageForCommand(String commandName, List<String> message) {
+        m_noRouteMessages.put(commandName, message);
+    }
+
+    @Override
+    public void setDefaultMessageForCommand(String commandName, String message) {
+        ArrayList<String> mes = new ArrayList<String>(1);
+        mes.add(message);
+        setDefaultMessageForCommand(commandName, mes);
+    }
+
     protected void checkTabCompleteReturn(Method method) throws InvalidReturnTypeException {
         //only allow list returns
         if (!List.class.isAssignableFrom(method.getReturnType())) {
@@ -282,7 +294,7 @@ public class DefaultRouter implements Router {
 
         //no proxies found that matched the route
         if (proxies.isEmpty()) {
-            List<String> messages = m_noRouteMessages.get(command);
+            List<String> messages = m_noRouteMessages.get(command.getName());
             //if there isn't any messages send the usage message
             if (messages == null || messages.isEmpty()) {
                 return false;

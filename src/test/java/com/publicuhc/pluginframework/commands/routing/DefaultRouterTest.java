@@ -331,8 +331,10 @@ public class DefaultRouterTest {
         PluginCommand command = mock(PluginCommand.class);
         when(command.getName()).thenReturn("banIP");
         when(Bukkit.getPluginCommand("banIP")).thenReturn(command);
-        assertFalse(router.onCommand(sender, command, "wtfisalabel", new String[]{"192.168.0.1", "some", "random", "message", "here"}));
-        //TODO check for default command message if no route found
+        router.setDefaultMessageForCommand("banIP", "banip route not found");
+
+        router.onCommand(sender, command, "wtfisalabel", new String[]{"192.168.0.1", "some", "random", "message", "here"});
+        verify(sender).sendMessage("banip route not found");
     }
 
     @Test
@@ -371,7 +373,6 @@ public class DefaultRouterTest {
         when(command.getName()).thenReturn("test");
         when(Bukkit.getPluginCommand("test")).thenReturn(command);
         assertThat(router.onTabComplete(sender, command, "wtfisalabel", new String[]{"192.168.0.1"}), is(equalTo(Arrays.asList(new String[]{}))));
-        //TODO check for default command message if no route found
     }
 
     @Test
