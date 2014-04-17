@@ -24,9 +24,10 @@ package com.publicuhc.pluginframework.commands.routing.testcommands;
 import com.publicuhc.pluginframework.commands.annotation.CommandMethod;
 import com.publicuhc.pluginframework.commands.annotation.RouteInfo;
 import com.publicuhc.pluginframework.commands.annotation.TabCompletion;
+import com.publicuhc.pluginframework.commands.matchers.PatternRouteMatcher;
 import com.publicuhc.pluginframework.commands.requests.CommandRequest;
 import com.publicuhc.pluginframework.commands.requests.SenderType;
-import com.publicuhc.pluginframework.commands.routing.BaseMethodRoute;
+import com.publicuhc.pluginframework.commands.routing.DefaultMethodRoute;
 import com.publicuhc.pluginframework.commands.routing.MethodRoute;
 import org.bukkit.Bukkit;
 
@@ -44,8 +45,8 @@ public class TestFullCommands {
 
     @RouteInfo
     public MethodRoute banIPDetails() {
-        return new BaseMethodRoute(
-                Pattern.compile("^([\\d]{1,3}.[\\d]{1,3}.[\\d]{1,3}.[\\d]{1,3}) (.*)$"),
+        return new DefaultMethodRoute(
+                new PatternRouteMatcher(Pattern.compile("^([\\d]{1,3}.[\\d]{1,3}.[\\d]{1,3}.[\\d]{1,3}) (.*)$")),
                 new SenderType[]{SenderType.CONSOLE},
                 "test.permission",
                 "banIP"
@@ -63,8 +64,8 @@ public class TestFullCommands {
 
     @RouteInfo
     public MethodRoute completeDetails() {
-        return new BaseMethodRoute(
-                Pattern.compile("^([\\d]{1,3}.[\\d]{1,3}.[\\d]{1,3}.[\\d]{1,3})$"),
+        return new DefaultMethodRoute(
+                new PatternRouteMatcher(Pattern.compile("^([\\d]{1,3}.[\\d]{1,3}.[\\d]{1,3}.[\\d]{1,3})$")),
                 new SenderType[]{SenderType.CONSOLE},
                 "test.permission",
                 "banIP");

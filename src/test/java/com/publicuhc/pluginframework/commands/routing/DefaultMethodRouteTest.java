@@ -21,6 +21,8 @@
 
 package com.publicuhc.pluginframework.commands.routing;
 
+import com.publicuhc.pluginframework.commands.matchers.PatternRouteMatcher;
+import com.publicuhc.pluginframework.commands.matchers.RouteMatcher;
 import com.publicuhc.pluginframework.commands.requests.SenderType;
 import org.junit.Before;
 import org.junit.Test;
@@ -35,18 +37,18 @@ import static org.junit.Assert.assertThat;
 import static org.powermock.api.mockito.PowerMockito.mock;
 
 @RunWith(PowerMockRunner.class)
-public class BaseMethodRouteTest {
+public class DefaultMethodRouteTest {
 
-    private Pattern pattern;
+    private RouteMatcher routeMatcher;
     private SenderType[] allowed;
     private String perm;
     private String baseCommand;
 
-    private BaseMethodRoute route;
+    private DefaultMethodRoute route;
 
     @Test
     public void testRoute() {
-        assertThat(route.getRoute(), is(sameInstance(pattern)));
+        assertThat(route.getRoute(), is(sameInstance(routeMatcher)));
     }
 
     @Test
@@ -66,11 +68,11 @@ public class BaseMethodRouteTest {
 
     @Before
     public void onStartUp() {
-        pattern = mock(Pattern.class);
+        routeMatcher = new PatternRouteMatcher(mock(Pattern.class));
         allowed = new SenderType[]{SenderType.PLAYER, SenderType.CONSOLE};
         perm = "perms";
         baseCommand = "testcommand";
 
-        route = new BaseMethodRoute(pattern, allowed, perm, baseCommand);
+        route = new DefaultMethodRoute(routeMatcher, allowed, perm, baseCommand);
     }
 }

@@ -1,5 +1,5 @@
 /*
- * MethodRoute.java
+ * PatternRouteMatcher.java
  *
  * Copyright (c) 2014 Graham Howden <graham_howden1 at yahoo.co.uk>.
  *
@@ -19,30 +19,33 @@
  * along with PluginFramework.  If not, see <http ://www.gnu.org/licenses/>.
  */
 
-package com.publicuhc.pluginframework.commands.routing;
+package com.publicuhc.pluginframework.commands.matchers;
 
-import com.publicuhc.pluginframework.commands.matchers.RouteMatcher;
-import com.publicuhc.pluginframework.commands.requests.SenderType;
+import java.util.regex.MatchResult;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
-public interface MethodRoute {
+public class PatternRouteMatcher implements RouteMatcher {
 
-    /**
-     * @return the route to match to run
-     */
-    RouteMatcher getRoute();
-
-    /**
-     * @return the allowed senders for this
-     */
-    SenderType[] getAllowedTypes();
+    private final Pattern m_pattern;
+    private Matcher m_matcher;
 
     /**
-     * @return the permission needed
+     * A route that matches the pattern given
+     * @param pattern the pattern to match against
      */
-    String getPermission();
+    public PatternRouteMatcher(Pattern pattern) {
+        m_pattern = pattern;
+    }
 
-    /**
-     * @return the base command to run on
-     */
-    String getBaseCommand();
+    @Override
+    public MatchResult getResult(String match) {
+        if(null == m_matcher) {
+            m_matcher = m_pattern.matcher(match);
+        } else {
+            m_matcher.reset(match);
+        }
+
+        return m_matcher.matches() ? m_matcher.toMatchResult() : null;
+    }
 }

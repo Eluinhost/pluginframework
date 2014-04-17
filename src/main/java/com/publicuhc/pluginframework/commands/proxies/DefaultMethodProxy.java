@@ -21,17 +21,17 @@
 
 package com.publicuhc.pluginframework.commands.proxies;
 
+import com.publicuhc.pluginframework.commands.matchers.RouteMatcher;
 import com.publicuhc.pluginframework.commands.requests.SenderType;
 import org.bukkit.command.Command;
 
 import java.lang.reflect.Method;
 import java.util.regex.MatchResult;
 import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class DefaultMethodProxy implements MethodProxy {
 
-    private Pattern m_pattern;
+    private RouteMatcher m_route;
     private Method m_method;
     private Command m_command;
     private Object m_instance;
@@ -40,8 +40,8 @@ public class DefaultMethodProxy implements MethodProxy {
     private SenderType[] m_allowedSenders;
 
     @Override
-    public void setPattern(Pattern pattern) {
-        m_pattern = pattern;
+    public void setRoute(RouteMatcher route) {
+        m_route = route;
         m_matcher = null;
     }
 
@@ -66,8 +66,8 @@ public class DefaultMethodProxy implements MethodProxy {
     }
 
     @Override
-    public Pattern getPattern() {
-        return m_pattern;
+    public RouteMatcher getRoute() {
+        return m_route;
     }
 
     @Override
@@ -82,12 +82,7 @@ public class DefaultMethodProxy implements MethodProxy {
 
     @Override
     public MatchResult paramsMatch(String params) {
-        if (m_matcher == null) {
-            m_matcher = m_pattern.matcher(params);
-        } else {
-            m_matcher.reset(params);
-        }
-        return m_matcher.matches() ? m_matcher.toMatchResult() : null;
+        return m_route.getResult(params);
     }
 
     public String getPermission() {

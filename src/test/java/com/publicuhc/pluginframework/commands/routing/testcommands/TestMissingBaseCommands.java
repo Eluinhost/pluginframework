@@ -23,9 +23,10 @@ package com.publicuhc.pluginframework.commands.routing.testcommands;
 
 import com.publicuhc.pluginframework.commands.annotation.CommandMethod;
 import com.publicuhc.pluginframework.commands.annotation.RouteInfo;
+import com.publicuhc.pluginframework.commands.matchers.PatternRouteMatcher;
 import com.publicuhc.pluginframework.commands.requests.CommandRequest;
 import com.publicuhc.pluginframework.commands.requests.SenderType;
-import com.publicuhc.pluginframework.commands.routing.BaseMethodRoute;
+import com.publicuhc.pluginframework.commands.routing.DefaultMethodRoute;
 import com.publicuhc.pluginframework.commands.routing.MethodRoute;
 
 import java.util.regex.Pattern;
@@ -39,6 +40,6 @@ public class TestMissingBaseCommands {
 
     @RouteInfo
     public MethodRoute commandMissingDetails() {
-        return new BaseMethodRoute(Pattern.compile("^arg$"), new SenderType[]{SenderType.CONSOLE}, "permission", "unknowncommand");
+        return new DefaultMethodRoute(new PatternRouteMatcher(Pattern.compile("^arg$")), new SenderType[]{SenderType.CONSOLE}, "permission", "unknowncommand");
     }
 }
