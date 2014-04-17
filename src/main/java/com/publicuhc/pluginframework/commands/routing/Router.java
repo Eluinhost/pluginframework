@@ -27,6 +27,7 @@ import com.publicuhc.pluginframework.commands.proxies.TabCompleteProxy;
 import org.bukkit.command.Command;
 import org.bukkit.command.TabExecutor;
 
+import java.util.List;
 import java.util.Map;
 import java.util.regex.MatchResult;
 
@@ -59,4 +60,18 @@ public interface Router extends TabExecutor {
      * @param inject whether to inject dependencies or not
      */
     void registerCommands(Object object, boolean inject) throws CommandClassParseException;
+
+    /**
+     * Set the message to be displayed if a command is triggered but gets no matches
+     * @param commandName the name of the command
+     * @param message the messages to send
+     */
+    void setDefaultMessageForCommand(String commandName, List<String> message);
+
+    /**
+     * Set the message to be displayed if a command is triggered but gets no matches
+     * @param commandName the name of the command
+     * @param message the message to send
+     */
+    void setDefaultMessageForCommand(String commandName, String message);
 }

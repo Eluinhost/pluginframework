@@ -64,6 +64,17 @@ public class DefaultCommandRequestBuilderTest {
     }
 
     @Test
+    public void testCount() {
+        assertThat(builder.setCount(10), CoreMatchers.<CommandRequestBuilder>is(CoreMatchers.<CommandRequestBuilder>sameInstance(builder)));
+        assertThat(builder.getCount(), is(10));
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testInvalidCount() {
+        builder.setCount(-1);
+    }
+
+    @Test
     public void testArguments() {
         String[] args = {"arg1", "arg2", "arg3"};
 
@@ -119,6 +130,8 @@ public class DefaultCommandRequestBuilderTest {
         builder.setCommand(mock(Command.class));
         assertFalse(builder.isValid());
         builder.setMatchResult(mock(MatchResult.class));
+        assertFalse(builder.isValid());
+        builder.setCount(1);
         assertTrue(builder.isValid());
     }
 
@@ -147,6 +160,7 @@ public class DefaultCommandRequestBuilderTest {
         builder.setArguments(args);
         builder.setCommand(command);
         builder.setMatchResult(result);
+        builder.setCount(1);
 
         CommandRequest request = builder.build();
 
@@ -154,6 +168,7 @@ public class DefaultCommandRequestBuilderTest {
         assertThat(request.getCommand(), is(sameInstance(command)));
         assertThat(request.getMatcherResult(), is(sameInstance(result)));
         assertThat(request.getSender(), is(sameInstance(sender)));
+        assertThat(request.getCount(), is(1));
     }
 
     @Test(expected = IllegalStateException.class)

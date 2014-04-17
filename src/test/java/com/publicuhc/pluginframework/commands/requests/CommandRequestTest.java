@@ -69,7 +69,7 @@ public class CommandRequestTest {
         CommandSender sender = mock(CommandSender.class);
         Command command = mock(Command.class);
         MatchResult result = mock(MatchResult.class);
-        CommandRequest request = new CommandRequest(command, args, sender, result);
+        CommandRequest request = new CommandRequest(command, args, sender, result, 1);
 
         request.removeFirstArg();
     }
@@ -85,7 +85,7 @@ public class CommandRequestTest {
         CommandSender sender = mock(CommandSender.class);
         Command command = mock(Command.class);
         MatchResult result = mock(MatchResult.class);
-        CommandRequest request = new CommandRequest(command, args, sender, result);
+        CommandRequest request = new CommandRequest(command, args, sender, result, 1);
 
         assertThat(request.getFirstArg(), is(nullValue()));
     }
@@ -103,7 +103,7 @@ public class CommandRequestTest {
         CommandSender sender = mock(CommandSender.class);
         Command command = mock(Command.class);
         MatchResult result = mock(MatchResult.class);
-        CommandRequest request = new CommandRequest(command, args, sender, result);
+        CommandRequest request = new CommandRequest(command, args, sender, result, 1);
 
         assertThat(request.getLastArg(), is(nullValue()));
     }
@@ -285,6 +285,6 @@ public class CommandRequestTest {
         sender = mock(Player.class);
         command = mock(Command.class);
         result = mock(MatchResult.class);
-        request = new CommandRequest(command, args, sender, result);
+        request = new CommandRequest(command, args, sender, result, 1);
     }
 }
