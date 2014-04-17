@@ -65,6 +65,12 @@ public interface CommandRequestBuilder {
     CommandRequestBuilder setMatchResult(MatchResult result);
 
     /**
+     * @param count the amount matched
+     * @return this
+     */
+    CommandRequestBuilder setCount(int count);
+
+    /**
      * @return whether the state is valid or not
      */
     boolean isValid();

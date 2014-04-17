@@ -35,13 +35,14 @@ public class DefaultCommandRequestBuilder implements CommandRequestBuilder {
     private List<String> m_arguments;
     private CommandSender m_commandSender;
     private MatchResult m_matchResult;
+    private int m_count = -1;
 
     @Override
     public CommandRequest build() {
         if (!isValid()) {
             throw new IllegalStateException("Command request state is invalid");
         }
-        return new CommandRequest(m_command, m_arguments, m_commandSender, m_matchResult);
+        return new CommandRequest(m_command, m_arguments, m_commandSender, m_matchResult, m_count);
     }
 
     @Override
@@ -65,6 +66,19 @@ public class DefaultCommandRequestBuilder implements CommandRequestBuilder {
         }
         m_matchResult = result;
         return this;
+    }
+
+    @Override
+    public CommandRequestBuilder setCount(int count) {
+        if( count < 0 ){
+            throw new IllegalArgumentException("Count cannot be negative");
+        }
+        m_count = count;
+        return this;
+    }
+
+    protected int getCount() {
+        return m_count;
     }
 
     protected MatchResult getMatchResult() {
@@ -107,7 +121,7 @@ public class DefaultCommandRequestBuilder implements CommandRequestBuilder {
 
     @Override
     public boolean isValid() {
-        return !(m_commandSender == null || m_command == null || m_arguments == null || m_matchResult == null);
+        return !(m_commandSender == null || m_command == null || m_arguments == null || m_matchResult == null || m_count < 0);
     }
 
     @Override

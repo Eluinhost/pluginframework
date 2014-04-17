@@ -39,17 +39,19 @@ public class CommandRequest {
     private final CommandSender m_sender;
     private final Command m_command;
     private MatchResult m_matchResult;
+    private int m_count;
 
     /**
      * @param command the command
      * @param args    the arguements to use
      * @param sender  the sender for the request
      */
-    public CommandRequest(Command command, List<String> args, CommandSender sender, MatchResult result) {
+    public CommandRequest(Command command, List<String> args, CommandSender sender, MatchResult result, int count) {
         m_command = command;
         m_args = args;
         m_sender = sender;
         m_matchResult = result;
+        m_count = count;
     }
 
     public MatchResult getMatcherResult() {
@@ -243,5 +245,12 @@ public class CommandRequest {
             throw new IllegalArgumentException("Index must be within the size of the argument list");
         }
         return BooleanUtils.toBoolean(m_args.get(index));
+    }
+
+    /**
+     * @return the amount of routes matched
+     */
+    public int getCount() {
+        return m_count;
     }
 }

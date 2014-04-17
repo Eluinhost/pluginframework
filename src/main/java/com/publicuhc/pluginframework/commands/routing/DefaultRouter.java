@@ -313,6 +313,7 @@ public class DefaultRouter implements Router {
                             .setArguments(args)
                             .setSender(sender)
                             .setMatchResult(proxies.get(proxy))
+                            .setCount(proxies.size())
                             .build();
             try {
                 proxy.trigger(request);
@@ -355,6 +356,7 @@ public class DefaultRouter implements Router {
                     .setArguments(args)
                     .setSender(sender)
                     .setMatchResult(proxies.get(proxy))
+                    .setCount(proxies.size())
                     .build();
             try {
                 results.addAll(proxy.trigger(request));
