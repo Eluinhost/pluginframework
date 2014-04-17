@@ -21,13 +21,12 @@
 
 package com.publicuhc.pluginframework.commands.routing;
 
+import com.publicuhc.pluginframework.commands.matchers.RouteMatcher;
 import com.publicuhc.pluginframework.commands.requests.SenderType;
 
-import java.util.regex.Pattern;
+public class DefaultMethodRoute implements MethodRoute {
 
-public class BaseMethodRoute implements MethodRoute {
-
-    private final Pattern m_route;
+    private final RouteMatcher m_route;
     private final SenderType[] m_allowedTypes;
     private final String m_permission;
     private final String m_baseCommand;
@@ -38,7 +37,7 @@ public class BaseMethodRoute implements MethodRoute {
      * @param permission   the permission needed to run
      * @param baseCommand  the base command to run under
      */
-    public BaseMethodRoute(Pattern route, SenderType[] allowedTypes, String permission, String baseCommand) {
+    public DefaultMethodRoute(RouteMatcher route, SenderType[] allowedTypes, String permission, String baseCommand) {
         m_route = route;
         m_allowedTypes = allowedTypes;
         m_permission = permission;
@@ -46,7 +45,7 @@ public class BaseMethodRoute implements MethodRoute {
     }
 
     @Override
-    public Pattern getRoute() {
+    public RouteMatcher getRoute() {
         return m_route;
     }
 

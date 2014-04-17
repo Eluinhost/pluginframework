@@ -21,24 +21,24 @@
 
 package com.publicuhc.pluginframework.commands.proxies;
 
+import com.publicuhc.pluginframework.commands.matchers.RouteMatcher;
 import com.publicuhc.pluginframework.commands.requests.SenderType;
 import org.bukkit.command.Command;
 
 import java.lang.reflect.Method;
 import java.util.regex.MatchResult;
-import java.util.regex.Pattern;
 
 public interface MethodProxy {
 
     /**
-     * @param pattern the pattern to be matched to run
+     * @param route the route to be matched to run
      */
-    void setPattern(Pattern pattern);
+    void setRoute(RouteMatcher route);
 
     /**
      * @return the pattern to be matched on
      */
-    Pattern getPattern();
+    RouteMatcher getRoute();
 
     /**
      * @param object the instance to run against

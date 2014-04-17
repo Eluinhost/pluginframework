@@ -21,6 +21,8 @@
 
 package com.publicuhc.pluginframework.commands.proxies;
 
+import com.publicuhc.pluginframework.commands.matchers.PatternRouteMatcher;
+import com.publicuhc.pluginframework.commands.matchers.RouteMatcher;
 import com.publicuhc.pluginframework.commands.requests.SenderType;
 import org.bukkit.command.Command;
 import org.junit.Before;
@@ -42,11 +44,11 @@ public class DefaultMethodProxyTest {
     @Test
     public void testDoParamsMatch() {
 
-        proxy.setPattern(Pattern.compile("[\\d]++"));
+        proxy.setRoute(new PatternRouteMatcher(Pattern.compile("[\\d]++")));
         assertThat(proxy.paramsMatch("e09=324"), is(nullValue()));
         assertThat(proxy.paramsMatch("3908420"), is(not(nullValue())));
 
-        proxy.setPattern(Pattern.compile("[\\D]++"));
+        proxy.setRoute(new PatternRouteMatcher(Pattern.compile("[\\D]++")));
         assertThat(proxy.paramsMatch("3908420"), is(nullValue()));
         assertThat(proxy.paramsMatch("eff=gdk"), is(not(nullValue())));
     }
@@ -61,10 +63,10 @@ public class DefaultMethodProxyTest {
 
     @Test
     public void testPattern() {
-        Pattern pattern = mock(Pattern.class);
-        proxy.setPattern(pattern);
+        RouteMatcher route = new PatternRouteMatcher(mock(Pattern.class));
+        proxy.setRoute(route);
 
-        assertThat(proxy.getPattern(), is(sameInstance(pattern)));
+        assertThat(proxy.getRoute(), is(sameInstance(route)));
     }
 
     @Test

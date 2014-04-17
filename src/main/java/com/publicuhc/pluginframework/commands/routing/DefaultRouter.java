@@ -203,7 +203,7 @@ public class DefaultRouter implements Router {
                     proxy = tabCompleteProxy;
                 }
 
-                proxy.setPattern(methodRoute.getRoute());
+                proxy.setRoute(methodRoute.getRoute());
                 proxy.setBaseCommand(command);
                 proxy.setCommandMethod(method);
                 proxy.setInstance(object);

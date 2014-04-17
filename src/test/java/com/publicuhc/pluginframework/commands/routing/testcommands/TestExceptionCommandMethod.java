@@ -24,13 +24,13 @@ package com.publicuhc.pluginframework.commands.routing.testcommands;
 import com.publicuhc.pluginframework.commands.annotation.CommandMethod;
 import com.publicuhc.pluginframework.commands.annotation.RouteInfo;
 import com.publicuhc.pluginframework.commands.annotation.TabCompletion;
+import com.publicuhc.pluginframework.commands.matchers.AnyRouteMatcher;
 import com.publicuhc.pluginframework.commands.requests.CommandRequest;
 import com.publicuhc.pluginframework.commands.requests.SenderType;
-import com.publicuhc.pluginframework.commands.routing.BaseMethodRoute;
+import com.publicuhc.pluginframework.commands.routing.DefaultMethodRoute;
 import com.publicuhc.pluginframework.commands.routing.MethodRoute;
 
 import java.util.List;
-import java.util.regex.Pattern;
 
 public class TestExceptionCommandMethod {
 
@@ -41,7 +41,7 @@ public class TestExceptionCommandMethod {
 
     @RouteInfo
     public MethodRoute exceptionDetails() {
-        return new BaseMethodRoute(Pattern.compile(".*"), new SenderType[]{SenderType.CONSOLE}, "perm", "test");
+        return new DefaultMethodRoute(new AnyRouteMatcher(), new SenderType[]{SenderType.CONSOLE}, "perm", "test");
     }
 
     @TabCompletion
@@ -51,6 +51,6 @@ public class TestExceptionCommandMethod {
 
     @RouteInfo
     public MethodRoute tabexceptionDetails() {
-        return new BaseMethodRoute(Pattern.compile(".*"), new SenderType[]{SenderType.CONSOLE}, "perm", "test");
+        return new DefaultMethodRoute(new AnyRouteMatcher(), new SenderType[]{SenderType.CONSOLE}, "perm", "test");
     }
 }

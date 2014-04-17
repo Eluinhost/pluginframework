@@ -1,5 +1,5 @@
 /*
- * MethodRoute.java
+ * SimpleRouteMatcher.java
  *
  * Copyright (c) 2014 Graham Howden <graham_howden1 at yahoo.co.uk>.
  *
@@ -19,30 +19,17 @@
  * along with PluginFramework.  If not, see <http ://www.gnu.org/licenses/>.
  */
 
-package com.publicuhc.pluginframework.commands.routing;
+package com.publicuhc.pluginframework.commands.matchers;
 
-import com.publicuhc.pluginframework.commands.matchers.RouteMatcher;
-import com.publicuhc.pluginframework.commands.requests.SenderType;
+import java.util.regex.Pattern;
 
-public interface MethodRoute {
-
-    /**
-     * @return the route to match to run
-     */
-    RouteMatcher getRoute();
+public class SimpleRouteMatcher extends PatternRouteMatcher {
 
     /**
-     * @return the allowed senders for this
+     * Makes a route that will match the exact string given
+     * @param arguments the string to match, will be automatically quoted
      */
-    SenderType[] getAllowedTypes();
-
-    /**
-     * @return the permission needed
-     */
-    String getPermission();
-
-    /**
-     * @return the base command to run on
-     */
-    String getBaseCommand();
+    public SimpleRouteMatcher(String arguments) {
+        super(Pattern.compile(Pattern.quote(arguments)));
+    }
 }
