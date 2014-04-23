@@ -1,5 +1,5 @@
 /*
- * BaseRoute.java
+ * RouteBuilder.java
  *
  * Copyright (c) 2014 Graham Howden <graham_howden1 at yahoo.co.uk>.
  *
@@ -21,34 +21,23 @@
 
 package com.publicuhc.pluginframework.commands.routing;
 
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandSender;
+import com.publicuhc.pluginframework.commands.requests.SenderType;
 
-public class BaseRoute extends Route {
+import java.util.regex.Pattern;
 
-    private int m_maxMatches;
+public interface RouteBuilder {
 
-    public BaseRoute(int maxMatches) {
-        super(null);
-        m_maxMatches = maxMatches;
-    }
+    Route build();
 
-    public BaseRoute() {
-        super(null);
-        m_maxMatches = 0;
-    }
+    void restrictCommand(String string);
 
-    public void setMaxMatches(int matches) {
-        m_maxMatches = matches;
-    }
+    void restrictPermission(String permission);
 
-    @Override
-    public int getMaxMatches() {
-        return m_maxMatches;
-    }
+    void restrictPattern(Pattern pattern);
 
-    @Override
-    public boolean matches(CommandSender sender, Command command, String arguments) {
-        return true;
-    }
+    void restrictSenderType(SenderType... types);
+
+    void maxMatches(int matches);
+
+    void reset();
 }
