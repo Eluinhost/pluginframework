@@ -21,28 +21,19 @@
 
 package com.publicuhc.pluginframework.commands.proxies;
 
-import com.publicuhc.pluginframework.commands.matchers.RouteMatcher;
-import com.publicuhc.pluginframework.commands.requests.SenderType;
-import org.bukkit.command.Command;
+import com.publicuhc.pluginframework.commands.routing.Route;
 
 import java.lang.reflect.Method;
-import java.util.regex.MatchResult;
-import java.util.regex.Matcher;
 
 public class DefaultMethodProxy implements MethodProxy {
 
-    private RouteMatcher m_route;
+    private Route m_route;
     private Method m_method;
-    private Command m_command;
     private Object m_instance;
-    private Matcher m_matcher;
-    private String m_permission;
-    private SenderType[] m_allowedSenders;
 
     @Override
-    public void setRoute(RouteMatcher route) {
+    public void setRoute(Route route) {
         m_route = route;
-        m_matcher = null;
     }
 
     @Override
@@ -56,17 +47,7 @@ public class DefaultMethodProxy implements MethodProxy {
     }
 
     @Override
-    public void setBaseCommand(Command command) {
-        m_command = command;
-    }
-
-    @Override
-    public Command getBaseCommand() {
-        return m_command;
-    }
-
-    @Override
-    public RouteMatcher getRoute() {
+    public Route getRoute() {
         return m_route;
     }
 
@@ -78,26 +59,5 @@ public class DefaultMethodProxy implements MethodProxy {
     @Override
     public Method getCommandMethod() {
         return m_method;
-    }
-
-    @Override
-    public MatchResult paramsMatch(String params) {
-        return m_route.getResult(params);
-    }
-
-    public String getPermission() {
-        return m_permission;
-    }
-
-    public void setPermission(String permission) {
-        m_permission = permission;
-    }
-
-    public SenderType[] getAllowedSenders() {
-        return m_allowedSenders;
-    }
-
-    public void setAllowedSenders(SenderType[] allowedSenders) {
-        m_allowedSenders = allowedSenders;
     }
 }

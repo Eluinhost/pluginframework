@@ -35,7 +35,6 @@ import org.powermock.modules.junit4.PowerMockRunner;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.MatchResult;
 
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
@@ -50,7 +49,6 @@ public class CommandRequestTest {
     private CommandRequest request;
     private CommandSender sender;
     private Command command;
-    private MatchResult result;
 
     @Test
     public void testRemoveFirstArg() {
@@ -68,8 +66,7 @@ public class CommandRequestTest {
         List<String> args = new ArrayList<String>();
         CommandSender sender = mock(CommandSender.class);
         Command command = mock(Command.class);
-        MatchResult result = mock(MatchResult.class);
-        CommandRequest request = new CommandRequest(command, args, sender, result, 1);
+        CommandRequest request = new CommandRequest(command, args, sender, 1);
 
         request.removeFirstArg();
     }
@@ -84,8 +81,7 @@ public class CommandRequestTest {
         List<String> args = new ArrayList<String>();
         CommandSender sender = mock(CommandSender.class);
         Command command = mock(Command.class);
-        MatchResult result = mock(MatchResult.class);
-        CommandRequest request = new CommandRequest(command, args, sender, result, 1);
+        CommandRequest request = new CommandRequest(command, args, sender, 1);
 
         assertThat(request.getFirstArg(), is(nullValue()));
     }
@@ -102,8 +98,7 @@ public class CommandRequestTest {
         List<String> args = new ArrayList<String>();
         CommandSender sender = mock(CommandSender.class);
         Command command = mock(Command.class);
-        MatchResult result = mock(MatchResult.class);
-        CommandRequest request = new CommandRequest(command, args, sender, result, 1);
+        CommandRequest request = new CommandRequest(command, args, sender, 1);
 
         assertThat(request.getLastArg(), is(nullValue()));
     }
@@ -253,11 +248,6 @@ public class CommandRequestTest {
     }
 
     @Test
-    public void testGetMatchResult() {
-        assertThat(request.getMatcherResult(), is(sameInstance(result)));
-    }
-
-    @Test
     public void testGetSender() {
         assertThat(request.getSender(), is(sameInstance(sender)));
     }
@@ -284,7 +274,6 @@ public class CommandRequestTest {
         args.add("last");
         sender = mock(Player.class);
         command = mock(Command.class);
-        result = mock(MatchResult.class);
-        request = new CommandRequest(command, args, sender, result, 1);
+        request = new CommandRequest(command, args, sender, 1);
     }
 }

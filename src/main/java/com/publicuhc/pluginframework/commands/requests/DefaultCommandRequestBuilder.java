@@ -27,14 +27,12 @@ import org.bukkit.command.CommandSender;
 import javax.annotation.Nonnull;
 import java.util.Arrays;
 import java.util.List;
-import java.util.regex.MatchResult;
 
 public class DefaultCommandRequestBuilder implements CommandRequestBuilder {
 
     private Command m_command;
     private List<String> m_arguments;
     private CommandSender m_commandSender;
-    private MatchResult m_matchResult;
     private int m_count = -1;
 
     @Override
@@ -42,7 +40,7 @@ public class DefaultCommandRequestBuilder implements CommandRequestBuilder {
         if (!isValid()) {
             throw new IllegalStateException("Command request state is invalid");
         }
-        return new CommandRequest(m_command, m_arguments, m_commandSender, m_matchResult, m_count);
+        return new CommandRequest(m_command, m_arguments, m_commandSender, m_count);
     }
 
     @Override
@@ -60,15 +58,6 @@ public class DefaultCommandRequestBuilder implements CommandRequestBuilder {
     }
 
     @Override
-    public CommandRequestBuilder setMatchResult(MatchResult result) {
-        if (null == result) {
-            throw new IllegalArgumentException("Match result cannot be null");
-        }
-        m_matchResult = result;
-        return this;
-    }
-
-    @Override
     public CommandRequestBuilder setCount(int count) {
         if( count < 0 ){
             throw new IllegalArgumentException("Count cannot be negative");
@@ -79,10 +68,6 @@ public class DefaultCommandRequestBuilder implements CommandRequestBuilder {
 
     protected int getCount() {
         return m_count;
-    }
-
-    protected MatchResult getMatchResult() {
-        return m_matchResult;
     }
 
     @Override
@@ -121,7 +106,7 @@ public class DefaultCommandRequestBuilder implements CommandRequestBuilder {
 
     @Override
     public boolean isValid() {
-        return !(m_commandSender == null || m_command == null || m_arguments == null || m_matchResult == null || m_count < 0);
+        return !(m_commandSender == null || m_command == null || m_arguments == null || m_count < 0);
     }
 
     @Override
@@ -129,6 +114,5 @@ public class DefaultCommandRequestBuilder implements CommandRequestBuilder {
         m_command = null;
         m_commandSender = null;
         m_arguments = null;
-        m_matchResult = null;
     }
 }

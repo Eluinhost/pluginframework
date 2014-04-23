@@ -37,7 +37,7 @@ public class TestFullCommands {
     @CommandMethod
     public void banIP(CommandRequest request) {
         Bukkit.banIP(request.getArg(0));
-        request.sendMessage("banned with message " + request.getMatcherResult().group(2));
+        request.sendMessage("banned with message " + request.getArg(1));
     }
 
     @RouteInfo
