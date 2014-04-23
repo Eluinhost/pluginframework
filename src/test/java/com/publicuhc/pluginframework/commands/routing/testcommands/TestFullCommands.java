@@ -24,11 +24,8 @@ package com.publicuhc.pluginframework.commands.routing.testcommands;
 import com.publicuhc.pluginframework.commands.annotation.CommandMethod;
 import com.publicuhc.pluginframework.commands.annotation.RouteInfo;
 import com.publicuhc.pluginframework.commands.annotation.TabCompletion;
-import com.publicuhc.pluginframework.commands.matchers.PatternRouteMatcher;
 import com.publicuhc.pluginframework.commands.requests.CommandRequest;
-import com.publicuhc.pluginframework.commands.requests.SenderType;
-import com.publicuhc.pluginframework.commands.routing.DefaultMethodRoute;
-import com.publicuhc.pluginframework.commands.routing.MethodRoute;
+import com.publicuhc.pluginframework.commands.routing.*;
 import org.bukkit.Bukkit;
 
 import java.util.ArrayList;
@@ -44,13 +41,10 @@ public class TestFullCommands {
     }
 
     @RouteInfo
-    public MethodRoute banIPDetails() {
-        return new DefaultMethodRoute(
-                new PatternRouteMatcher(Pattern.compile("^([\\d]{1,3}.[\\d]{1,3}.[\\d]{1,3}.[\\d]{1,3}) (.*)$")),
-                new SenderType[]{SenderType.CONSOLE},
-                "test.permission",
-                "banIP"
-        );
+    public Route banIPDetails() {
+        CommandRestrictedRoute crr = new CommandRestrictedRoute(new BaseRoute(), "banIP");
+        PatternRestrictedRoute prr = new PatternRestrictedRoute(crr, Pattern.compile("^([\\d]{1,3}.[\\d]{1,3}.[\\d]{1,3}.[\\d]{1,3}) (.*)$"));
+        return new PermissionRestrictedRoute(prr, "test.permission");
     }
 
     @TabCompletion
@@ -63,11 +57,9 @@ public class TestFullCommands {
     }
 
     @RouteInfo
-    public MethodRoute completeDetails() {
-        return new DefaultMethodRoute(
-                new PatternRouteMatcher(Pattern.compile("^([\\d]{1,3}.[\\d]{1,3}.[\\d]{1,3}.[\\d]{1,3})$")),
-                new SenderType[]{SenderType.CONSOLE},
-                "test.permission",
-                "banIP");
+    public Route completeDetails() {
+        CommandRestrictedRoute crr = new CommandRestrictedRoute(new BaseRoute(), "banIP");
+        PatternRestrictedRoute prr = new PatternRestrictedRoute(crr, Pattern.compile("^([\\d]{1,3}.[\\d]{1,3}.[\\d]{1,3}.[\\d]{1,3})$"));
+        return new PermissionRestrictedRoute(prr, "test.permission");
     }
 }

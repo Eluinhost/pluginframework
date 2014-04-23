@@ -170,25 +170,16 @@ public class DefaultRouter implements Router {
                 checkRouteInfo(routeInfo);
 
                 //get the details
-                MethodRoute methodRoute;
+                Route methodRoute;
                 try {
-                    methodRoute = (MethodRoute) routeInfo.invoke(object);
+                    methodRoute = (Route) routeInfo.invoke(object);
                 } catch (Exception e) {
                     e.printStackTrace();
                     m_logger.log(Level.SEVERE, "Error getting route info from the method " + routeInfo.getName());
                     throw new CommandClassParseException();
                 }
 
-                //some validation
-                PluginCommand command = Bukkit.getPluginCommand(methodRoute.getBaseCommand());
-                if (command == null) {
-                    m_logger.log(Level.SEVERE, "Couldn't find the command " + methodRoute.getBaseCommand() + " for the method " + method.getName());
-                    throw new BaseCommandNotFoundException();
-                }
-
-                //register ourselves
-                command.setExecutor(this);
-                command.setTabCompleter(this);
+                checkRouteChainValid(methodRoute);
 
                 DefaultMethodProxy proxy = null;
 
@@ -203,12 +194,13 @@ public class DefaultRouter implements Router {
                     proxy = tabCompleteProxy;
                 }
 
-                proxy.setRoute(methodRoute.getRoute());
+                /*proxy.setRoute(methodRoute.getRoute());
                 proxy.setBaseCommand(command);
                 proxy.setCommandMethod(method);
                 proxy.setInstance(object);
                 proxy.setPermission(methodRoute.getPermission());
                 proxy.setAllowedSenders(methodRoute.getAllowedTypes());
+                */
             }
         }
     }
@@ -269,7 +261,7 @@ public class DefaultRouter implements Router {
             m_logger.log(Level.SEVERE, "Route info method " + method.getName() + " does not have the @RouteInfo annotation");
             throw new AnnotationMissingException();
         }
-        if (!MethodRoute.class.isAssignableFrom(method.getReturnType())) {
+        if (!Route.class.isAssignableFrom(method.getReturnType())) {
             m_logger.log(Level.SEVERE, "Route info method " + method.getName() + " does not have the correct return type");
             throw new InvalidReturnTypeException();
         }
@@ -367,5 +359,27 @@ public class DefaultRouter implements Router {
         }
 
         return results;
+    }
+
+    protected void checkRouteChainValid(Route route) throws BaseCommandNotFoundException {
+        checkRouteRestrictionValid(route);
+
+        Route newRoute = route.getNextChain();
+        if(newRoute != null) {
+            checkRouteChainValid(newRoute);
+        }
+    }
+
+    protected void checkRouteRestrictionValid(Route route) throws BaseCommandNotFoundException {
+        if(route instanceof CommandRestrictedRoute) {
+            String commandName = ((CommandRestrictedRoute) route).getCommand();
+            PluginCommand command = Bukkit.getPluginCommand(commandName);
+            if (command == null) {
+                throw new BaseCommandNotFoundException(commandName);
+            }
+            //register ourselves
+            command.setExecutor(this);
+            command.setTabCompleter(this);
+        }
     }
 }

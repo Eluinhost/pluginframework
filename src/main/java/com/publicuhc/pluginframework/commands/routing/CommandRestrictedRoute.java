@@ -41,4 +41,8 @@ public class CommandRestrictedRoute extends Route {
     public boolean matches(CommandSender sender, Command command, String arguments) {
         return command.getName().equals(m_command) && getNextChain().matches(sender, command, arguments);
     }
+
+    public String getCommand() {
+        return m_command;
+    }
 }

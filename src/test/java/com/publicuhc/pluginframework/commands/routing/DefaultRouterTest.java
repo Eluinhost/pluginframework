@@ -487,7 +487,7 @@ public class DefaultRouterTest {
          * @return n/a
          */
         @RouteInfo
-        public MethodRoute onValidRouteInfo() {
+        public Route onValidRouteInfo() {
             return null;
         }
 
@@ -496,7 +496,7 @@ public class DefaultRouterTest {
          *
          * @return n/a
          */
-        public MethodRoute onMissingAnnotationRouteInfo() {
+        public Route onMissingAnnotationRouteInfo() {
             return null;
         }
 

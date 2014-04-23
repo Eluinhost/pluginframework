@@ -24,11 +24,10 @@ package com.publicuhc.pluginframework.commands.routing.testcommands;
 import com.publicuhc.pluginframework.commands.annotation.CommandMethod;
 import com.publicuhc.pluginframework.commands.annotation.RouteInfo;
 import com.publicuhc.pluginframework.commands.annotation.TabCompletion;
-import com.publicuhc.pluginframework.commands.matchers.AnyRouteMatcher;
 import com.publicuhc.pluginframework.commands.requests.CommandRequest;
-import com.publicuhc.pluginframework.commands.requests.SenderType;
-import com.publicuhc.pluginframework.commands.routing.DefaultMethodRoute;
-import com.publicuhc.pluginframework.commands.routing.MethodRoute;
+import com.publicuhc.pluginframework.commands.routing.BaseRoute;
+import com.publicuhc.pluginframework.commands.routing.CommandRestrictedRoute;
+import com.publicuhc.pluginframework.commands.routing.Route;
 
 import java.util.List;
 
@@ -40,8 +39,8 @@ public class TestExceptionCommandMethod {
     }
 
     @RouteInfo
-    public MethodRoute exceptionDetails() {
-        return new DefaultMethodRoute(new AnyRouteMatcher(), new SenderType[]{SenderType.CONSOLE}, "perm", "test");
+    public Route exceptionDetails() {
+        return new CommandRestrictedRoute(new BaseRoute(), "test");
     }
 
     @TabCompletion
@@ -50,7 +49,7 @@ public class TestExceptionCommandMethod {
     }
 
     @RouteInfo
-    public MethodRoute tabexceptionDetails() {
-        return new DefaultMethodRoute(new AnyRouteMatcher(), new SenderType[]{SenderType.CONSOLE}, "perm", "test");
+    public Route tabexceptionDetails() {
+        return new CommandRestrictedRoute(new BaseRoute(), "test");
     }
 }
