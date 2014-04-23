@@ -27,13 +27,12 @@ import org.bukkit.command.CommandSender;
 
 import java.util.Arrays;
 
-public class SenderTypeRestrictedRoute implements Route {
+public class SenderTypeRestrictedRoute extends Route {
 
-    private final Route m_wrapped;
     private final SenderType[] m_types;
 
     public SenderTypeRestrictedRoute(Route route, SenderType... types) {
-        m_wrapped = route;
+        super(route);
         m_types = types;
     }
 
@@ -41,6 +40,6 @@ public class SenderTypeRestrictedRoute implements Route {
     public boolean matches(CommandSender sender, Command command, String arguments) {
         SenderType type = SenderType.getFromCommandSender(sender);
 
-        return Arrays.asList(m_types).contains(type) && m_wrapped.matches(sender, command, arguments);
+        return Arrays.asList(m_types).contains(type) && getNextChain().matches(sender, command, arguments);
     }
 }

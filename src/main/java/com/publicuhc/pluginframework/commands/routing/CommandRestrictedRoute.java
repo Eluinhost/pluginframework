@@ -26,20 +26,19 @@ import org.bukkit.command.CommandSender;
 
 import java.util.regex.Matcher;
 
-public class CommandRestrictedRoute implements Route {
+public class CommandRestrictedRoute extends Route {
 
-    private final Route m_wrapped;
     private final String m_command;
 
     private Matcher m_matcher;
 
     public CommandRestrictedRoute(Route route, String command) {
-        m_wrapped = route;
+        super(route);
         m_command = command;
     }
 
     @Override
     public boolean matches(CommandSender sender, Command command, String arguments) {
-        return command.getName().equals(m_command) && m_wrapped.matches(sender, command, arguments);
+        return command.getName().equals(m_command) && getNextChain().matches(sender, command, arguments);
     }
 }

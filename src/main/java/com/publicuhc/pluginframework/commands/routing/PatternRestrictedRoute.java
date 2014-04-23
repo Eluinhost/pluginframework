@@ -27,15 +27,14 @@ import org.bukkit.command.CommandSender;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class PatternRestrictedRoute implements Route {
+public class PatternRestrictedRoute extends Route {
 
-    private final Route m_wrapped;
     private final Pattern m_pattern;
 
     private Matcher m_matcher;
 
     public PatternRestrictedRoute(Route route, Pattern pattern) {
-        m_wrapped = route;
+        super(route);
         m_pattern = pattern;
     }
 
@@ -49,6 +48,6 @@ public class PatternRestrictedRoute implements Route {
         }
 
         //if the pattern wasn't correct this route chain fails
-        return m_matcher.matches() && m_wrapped.matches(sender, command, arguments);
+        return m_matcher.matches() && getNextChain().matches(sender, command, arguments);
     }
 }

@@ -24,7 +24,31 @@ package com.publicuhc.pluginframework.commands.routing;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 
-public interface Route {
+import java.util.regex.Matcher;
 
-    boolean matches(CommandSender sender, Command command, String arguments);
+public abstract class Route {
+
+    private final Route m_wrapped;
+
+    private Matcher m_matcher;
+
+    protected Route(Route route) {
+        m_wrapped = route;
+    }
+
+    /**
+     * @return the next restriction in the chain or null if no chains left
+     */
+    public Route getNextChain() {
+        return m_wrapped;
+    }
+
+    /**
+     * Does this route + all subsequent chains match the given parameters
+     * @param sender the command sender
+     * @param command the command
+     * @param arguments the arguments
+     * @return true if matches, false a chain failed
+     */
+    abstract boolean matches(CommandSender sender, Command command, String arguments);
 }

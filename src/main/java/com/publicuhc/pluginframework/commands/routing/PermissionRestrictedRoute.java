@@ -24,18 +24,17 @@ package com.publicuhc.pluginframework.commands.routing;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 
-public class PermissionRestrictedRoute implements Route {
+public class PermissionRestrictedRoute extends Route {
 
-    private final Route m_wrapped;
     private final String m_permission;
 
     public PermissionRestrictedRoute(Route route, String permission) {
-        m_wrapped = route;
+        super(route);
         m_permission = permission;
     }
 
     @Override
     public boolean matches(CommandSender sender, Command command, String arguments) {
-        return sender.hasPermission(m_permission) && m_wrapped.matches(sender, command, arguments);
+        return sender.hasPermission(m_permission) && getNextChain().matches(sender, command, arguments);
     }
 }

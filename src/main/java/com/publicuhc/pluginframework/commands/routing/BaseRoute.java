@@ -24,7 +24,11 @@ package com.publicuhc.pluginframework.commands.routing;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 
-public class BaseRoute implements Route {
+public class BaseRoute extends Route {
+
+    public BaseRoute() {
+        super(null);
+    }
 
     @Override
     public boolean matches(CommandSender sender, Command command, String arguments) {
