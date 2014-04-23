@@ -73,14 +73,9 @@ public class DefaultMethodChecker implements MethodChecker {
     }
 
     @Override
-    public void checkRouteInfo(Method method) throws InvalidMethodParametersException, AnnotationMissingException, InvalidReturnTypeException {
+    public void checkRouteInfo(Method method) throws InvalidMethodParametersException, AnnotationMissingException {
         checkForBuilderParameter(method);
         checkForAnnotationPresent(RouteInfo.class, method);
-
-        if (!Route.class.isAssignableFrom(method.getReturnType())) {
-            m_logger.log(Level.SEVERE, "Route info method " + method.getName() + " does not have the correct return type");
-            throw new InvalidReturnTypeException();
-        }
     }
 
     protected void checkForCommandRequestParameter(Method method) throws InvalidMethodParametersException {

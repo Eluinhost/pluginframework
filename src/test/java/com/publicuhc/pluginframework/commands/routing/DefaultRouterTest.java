@@ -356,8 +356,7 @@ public class DefaultRouterTest {
          * @param request n/a
          */
         @CommandMethod
-        public void onValidCommandMethod(CommandRequest request) {
-        }
+        public void onValidCommandMethod(CommandRequest request) {}
 
         /**
          * Test for invalid parameters
@@ -365,26 +364,20 @@ public class DefaultRouterTest {
          * @param string n/a
          */
         @CommandMethod
-        public void onInvalidParameters(String string) {
-        }
+        public void onInvalidParameters(String string) {}
 
         /**
          * Test for missing annotation
          *
          * @param request n/a
          */
-        public void onMissingAnnotationCommandMethod(CommandRequest request) {
-        }
+        public void onMissingAnnotationCommandMethod(CommandRequest request) {}
 
         /**
          * Test for a valid route info
-         *
-         * @return n/a
          */
         @RouteInfo
-        public Route onValidRouteInfo(RouteBuilder builder) {
-            return null;
-        }
+        public void onValidRouteInfo(RouteBuilder builder) {}
 
         /**
          * Test for missing annotation
@@ -392,23 +385,6 @@ public class DefaultRouterTest {
          * @return n/a
          */
         public Route onMissingAnnotationRouteInfo(RouteBuilder builder) {
-            return null;
-        }
-
-        /**
-         * Test for missing return type
-         */
-        @RouteInfo
-        public void onMissingReturnRouteInfo(RouteBuilder builder) {
-        }
-
-        /**
-         * Test for invalid return type
-         *
-         * @return n/a
-         */
-        @RouteInfo
-        public String onInvalidReturnRouteInfo(RouteBuilder builder) {
             return null;
         }
     }

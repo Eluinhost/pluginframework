@@ -164,14 +164,16 @@ public class DefaultRouter implements Router {
             m_methodChecker.checkRouteInfo(routeInfo);
 
             //get the details
-            Route methodRoute;
+            RouteBuilder builder = m_injector.getInstance(RouteBuilder.class);
             try {
-                methodRoute = (Route) routeInfo.invoke(object, m_injector.getInstance(RouteBuilder.class));
+                routeInfo.invoke(object, builder);
             } catch (Exception e) {
                 e.printStackTrace();
                 m_logger.log(Level.SEVERE, "Error getting route info from the method " + routeInfo.getName());
                 throw new CommandClassParseException();
             }
+
+            Route methodRoute = builder.build();
 
             checkRouteChainValid(methodRoute);
 

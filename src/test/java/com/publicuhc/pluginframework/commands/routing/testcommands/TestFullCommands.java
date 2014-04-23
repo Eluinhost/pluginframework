@@ -41,12 +41,10 @@ public class TestFullCommands {
     }
 
     @RouteInfo
-    public Route banIPDetails(RouteBuilder builder) {
+    public void banIPDetails(RouteBuilder builder) {
         builder.restrictCommand("banIP");
         builder.restrictPattern(Pattern.compile("^([\\d]{1,3}.[\\d]{1,3}.[\\d]{1,3}.[\\d]{1,3}) (.*)$"));
         builder.restrictPermission("test.permission");
-
-        return builder.build();
     }
 
     @TabCompletion
@@ -59,10 +57,9 @@ public class TestFullCommands {
     }
 
     @RouteInfo
-    public Route completeDetails(RouteBuilder builder) {
+    public void completeDetails(RouteBuilder builder) {
         builder.restrictCommand("banIP");
         builder.restrictPattern(Pattern.compile("^([\\d]{1,3}.[\\d]{1,3}.[\\d]{1,3}.[\\d]{1,3})$"));
         builder.restrictPermission("test.permission");
-        return builder.build();
     }
 }

@@ -33,6 +33,6 @@ public interface MethodChecker {
 
     void checkCommandMethod(Method method) throws InvalidMethodParametersException, AnnotationMissingException;
 
-    void checkRouteInfo(Method method) throws InvalidMethodParametersException, AnnotationMissingException, InvalidReturnTypeException;
+    void checkRouteInfo(Method method) throws InvalidMethodParametersException, AnnotationMissingException;
 
 }

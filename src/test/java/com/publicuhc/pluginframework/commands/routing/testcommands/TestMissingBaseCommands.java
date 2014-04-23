@@ -24,7 +24,6 @@ package com.publicuhc.pluginframework.commands.routing.testcommands;
 import com.publicuhc.pluginframework.commands.annotation.CommandMethod;
 import com.publicuhc.pluginframework.commands.annotation.RouteInfo;
 import com.publicuhc.pluginframework.commands.requests.CommandRequest;
-import com.publicuhc.pluginframework.commands.routing.Route;
 import com.publicuhc.pluginframework.commands.routing.RouteBuilder;
 
 public class TestMissingBaseCommands {
@@ -35,8 +34,7 @@ public class TestMissingBaseCommands {
     }
 
     @RouteInfo
-    public Route commandMissingDetails(RouteBuilder builder) {
+    public void commandMissingDetails(RouteBuilder builder) {
         builder.restrictCommand("unknowncommand");
-        return builder.build();
     }
 }

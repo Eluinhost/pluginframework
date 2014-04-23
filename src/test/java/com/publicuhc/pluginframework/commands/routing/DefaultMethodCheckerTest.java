@@ -80,18 +80,6 @@ public class DefaultMethodCheckerTest {
         checker.checkRouteInfo(routeInfo);
     }
 
-    @Test(expected = InvalidReturnTypeException.class)
-    public void testMissingReturnRouteInfo() throws NoSuchMethodException, CommandClassParseException {
-        Method routeInfo = DefaultRouterTest.TestCommandClass.class.getMethod("onMissingReturnRouteInfo", RouteBuilder.class);
-        checker.checkRouteInfo(routeInfo);
-    }
-
-    @Test(expected = InvalidReturnTypeException.class)
-    public void testInvalidReturnRouteInfo() throws NoSuchMethodException, CommandClassParseException {
-        Method routeInfo = DefaultRouterTest.TestCommandClass.class.getMethod("onInvalidReturnRouteInfo", RouteBuilder.class);
-        checker.checkRouteInfo(routeInfo);
-    }
-
     @Test(expected = InvalidMethodParametersException.class)
     public void testInvalidParameters() throws NoSuchMethodException, CommandClassParseException {
         Method invalid = DefaultRouterTest.TestCommandClass.class.getMethod("onInvalidParameters", String.class);
