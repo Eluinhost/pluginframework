@@ -29,7 +29,9 @@ import com.google.inject.name.Names;
 import com.publicuhc.pluginframework.commands.annotation.CommandMethod;
 import com.publicuhc.pluginframework.commands.annotation.RouteInfo;
 import com.publicuhc.pluginframework.commands.annotation.TabCompletion;
-import com.publicuhc.pluginframework.commands.exceptions.*;
+import com.publicuhc.pluginframework.commands.exceptions.BaseCommandNotFoundException;
+import com.publicuhc.pluginframework.commands.exceptions.CommandClassParseException;
+import com.publicuhc.pluginframework.commands.exceptions.DetailsMethodNotFoundException;
 import com.publicuhc.pluginframework.commands.proxies.CommandProxy;
 import com.publicuhc.pluginframework.commands.proxies.TabCompleteProxy;
 import com.publicuhc.pluginframework.commands.requests.CommandRequest;
@@ -47,7 +49,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.plugin.Plugin;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -55,12 +56,12 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
 import java.io.File;
-import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.verify;
 import static org.powermock.api.mockito.PowerMockito.*;
 
@@ -84,118 +85,10 @@ public class DefaultRouterTest {
                 bind(File.class).annotatedWith(Names.named("dataFolder")).toInstance(new File("target" + File.separator + "testdatafolder"));
                 bind(ClassLoader.class).toInstance(getClass().getClassLoader());
                 bind(RouteBuilder.class).to(DefaultRouteBuilder.class);
+                bind(MethodChecker.class).to(DefaultMethodChecker.class);
             }
         });
         router = (DefaultRouter) injector.getInstance(Router.class);
-    }
-
-    @After
-    public void teardown() {
-        router = null;
-    }
-
-    /*####################################
-     *  Tests for checkTabCompleteReturn #
-     *##################################*/
-
-    @Test
-    public void testValidTabCompleteReturn() throws NoSuchMethodException, InvalidReturnTypeException {
-        Method validTabComplete = TestCommandClass.class.getMethod("onValidTabComplete", CommandRequest.class);
-        router.checkTabCompleteReturn(validTabComplete);
-    }
-
-    @Test(expected = InvalidReturnTypeException.class)
-    public void testVoidTabCompleteReturn() throws NoSuchMethodException, InvalidReturnTypeException {
-        Method invalidReturn = TestCommandClass.class.getMethod("onTabCompleteNoReturn", CommandRequest.class);
-        router.checkTabCompleteReturn(invalidReturn);
-    }
-
-    @Test(expected = InvalidReturnTypeException.class)
-    public void testInvalidTypeTabCompleteReturn() throws NoSuchMethodException, InvalidReturnTypeException {
-        Method invalidReturn = TestCommandClass.class.getMethod("onInvalidReturnTypeTabComplete", CommandRequest.class);
-        router.checkTabCompleteReturn(invalidReturn);
-    }
-
-    @Test(expected = InvalidReturnTypeException.class)
-    public void testInvalidGenericReturnTabCompleteReturn() throws NoSuchMethodException, InvalidReturnTypeException {
-        Method invalidReturn = TestCommandClass.class.getMethod("onInvalidGenericReturnTypeTabComplete", CommandRequest.class);
-        router.checkTabCompleteReturn(invalidReturn);
-    }
-
-    /*###########################
-     *  Tests for isTabComplete #
-     *#########################*/
-
-    @Test
-    public void testValidTabCompleteAnnotation() throws NoSuchMethodException {
-        Method validAnnotation = TestCommandClass.class.getMethod("onValidTabComplete", CommandRequest.class);
-        assertTrue(router.isTabComplete(validAnnotation));
-    }
-
-    @Test
-    public void testMissingTabCompleteAnnotation() throws NoSuchMethodException {
-        Method missingAnnotation = TestCommandClass.class.getMethod("onMissingAnnotationTabComplete", CommandRequest.class);
-        assertFalse(router.isTabComplete(missingAnnotation));
-    }
-
-    /*#############################
-     *  Tests for isCommandMethod #
-     *###########################*/
-
-    @Test
-    public void testValidCommandMethodAnnotation() throws NoSuchMethodException {
-        Method validAnnotation = TestCommandClass.class.getMethod("onValidCommandMethod", CommandRequest.class);
-        assertTrue(router.isCommandMethod(validAnnotation));
-    }
-
-    @Test
-    public void testMissingCommandMethodAnnotation() throws NoSuchMethodException {
-        Method missingAnnotation = TestCommandClass.class.getMethod("onMissingAnnotationCommandMethod", CommandRequest.class);
-        assertFalse(router.isCommandMethod(missingAnnotation));
-    }
-
-    /*############################
-     *  Tests for checkRouteInfo #
-     *##########################*/
-
-    @Test
-    public void testValidRouteInfo() throws NoSuchMethodException, CommandClassParseException {
-        Method validRouteInfo = TestCommandClass.class.getMethod("onValidRouteInfo", RouteBuilder.class);
-        router.checkRouteInfo(validRouteInfo);
-    }
-
-    @Test(expected = AnnotationMissingException.class)
-    public void testMissingAnnotationRouteInfo() throws NoSuchMethodException, CommandClassParseException {
-        Method routeInfo = TestCommandClass.class.getMethod("onMissingAnnotationRouteInfo", RouteBuilder.class);
-        router.checkRouteInfo(routeInfo);
-    }
-
-    @Test(expected = InvalidReturnTypeException.class)
-    public void testMissingReturnRouteInfo() throws NoSuchMethodException, CommandClassParseException {
-        Method routeInfo = TestCommandClass.class.getMethod("onMissingReturnRouteInfo", RouteBuilder.class);
-        router.checkRouteInfo(routeInfo);
-    }
-
-    @Test(expected = InvalidReturnTypeException.class)
-    public void testInvalidReturnRouteInfo() throws NoSuchMethodException, CommandClassParseException {
-        Method routeInfo = TestCommandClass.class.getMethod("onInvalidReturnRouteInfo", RouteBuilder.class);
-        router.checkRouteInfo(routeInfo);
-    }
-
-    /*#############################
-     *  Tests for checkParameters #
-     *###########################*/
-
-    @Test
-    public void testValidParameters() throws NoSuchMethodException, CommandClassParseException {
-        Method valid = TestCommandClass.class.getMethod("onValidCommandMethod", CommandRequest.class);
-        router.checkParameters(valid);
-    }
-
-    @Test(expected = InvalidMethodParametersException.class)
-    public void testInvalidParameters() throws NoSuchMethodException, CommandClassParseException {
-        Method invalid = TestCommandClass.class.getMethod("onInvalidParameters", String.class);
-        router.checkParameters(invalid);
     }
 
     @Test
@@ -392,7 +285,7 @@ public class DefaultRouterTest {
     }
 
     @SuppressWarnings("unused")
-    private static class TestCommandClass {
+    public static class TestCommandClass {
 
         /**
          * Test for checking invalid return type

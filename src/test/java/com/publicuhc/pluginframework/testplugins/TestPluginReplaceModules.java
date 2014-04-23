@@ -29,7 +29,9 @@ import com.google.inject.name.Named;
 import com.publicuhc.pluginframework.FrameworkJavaPlugin;
 import com.publicuhc.pluginframework.commands.requests.CommandRequestBuilder;
 import com.publicuhc.pluginframework.commands.requests.DefaultCommandRequestBuilder;
+import com.publicuhc.pluginframework.commands.routing.DefaultMethodChecker;
 import com.publicuhc.pluginframework.commands.routing.DefaultRouter;
+import com.publicuhc.pluginframework.commands.routing.MethodChecker;
 import com.publicuhc.pluginframework.commands.routing.Router;
 import com.publicuhc.pluginframework.configuration.Configurator;
 import com.publicuhc.pluginframework.configuration.DefaultConfigurator;
@@ -74,6 +76,7 @@ public class TestPluginReplaceModules extends FrameworkJavaPlugin {
                 bind(Translate.class).to(TestConcreteTranslate.class);
                 bind(CommandRequestBuilder.class).to(TestConcreteCommandRequestBuilder.class);
                 bind(ClassLoader.class).toInstance(getClass().getClassLoader());
+                bind(MethodChecker.class).to(TestConcreteMethodChecker.class);
             }
         };
         modules.add(module);
@@ -82,8 +85,8 @@ public class TestPluginReplaceModules extends FrameworkJavaPlugin {
 
     public static class TestConcreteRouter extends DefaultRouter {
         @Inject
-        protected TestConcreteRouter(Provider<CommandRequestBuilder> requestProvider, Injector injector, Logger logger, Translate translate) {
-            super(requestProvider, injector, logger, translate);
+        protected TestConcreteRouter(Provider<CommandRequestBuilder> requestProvider, Injector injector, Logger logger, Translate translate, MethodChecker checker) {
+            super(requestProvider, injector, logger, translate, checker);
         }
     }
 
@@ -102,4 +105,11 @@ public class TestPluginReplaceModules extends FrameworkJavaPlugin {
     }
 
     public static class TestConcreteCommandRequestBuilder extends DefaultCommandRequestBuilder { }
+
+    public static class TestConcreteMethodChecker extends DefaultMethodChecker {
+        @Inject
+        protected TestConcreteMethodChecker(Logger logger) {
+            super(logger);
+        }
+    }
 }
