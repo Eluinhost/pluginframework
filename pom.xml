@@ -33,6 +33,34 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
+    <licenses>
+        <license>
+            <name>GNU General Public License 3.0</name>
+            <url>src/main/resources/LICENSE</url>
+            <distribution>repo</distribution>
+            <comments>License for PluginFramework</comments>
+        </license>
+    </licenses>
+
+    <developers>
+        <developer>
+            <id>Eluinhost/ghowden</id>
+            <name>Eluinhost/ghowden</name>
+            <email>graham_howden1@yahoo.co.uk</email>
+            <url>http://publicuhc.com</url>
+            <organization>publicuhc</organization>
+            <organizationUrl>http://publicuhc.com</organizationUrl>
+            <roles>
+                <role>developer</role>
+            </roles>
+            <timezone>"Europe/London" (UTC+00:00)</timezone>
+            <properties>
+                <picUrl>http://www.gravatar.com/avatar/60572e556ada5ae680a551b8aaa30506</picUrl>
+            </properties>
+        </developer>
+    </developers>
+
+
     <repositories>
         <repository>
             <id>bukkit-repo</id>
@@ -51,9 +79,9 @@
     </ciManagement>
 
     <scm>
-        <connection>scm:http://stash.publicuhc.com/scm/uhc/commandframework.git</connection>
+        <connection>scm:http://stash.publicuhc.com/scm/uhc/pluginframework.git</connection>
         <tag>HEAD</tag>
-        <url>http://stash.publicuhc.com/projects/UHC/repos/commandframework/</url>
+        <url>http://stash.publicuhc.com/scm/uhc/pluginframework.git</url>
     </scm>
 
     <dependencies>
@@ -179,5 +207,18 @@
             </extension>
         </extensions>
     </build>
+
+    <reporting>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>2.9.1</version>
+                <configuration>
+                    <show>public</show>
+                </configuration>
+            </plugin>
+        </plugins>
+    </reporting>
 
 </project>
