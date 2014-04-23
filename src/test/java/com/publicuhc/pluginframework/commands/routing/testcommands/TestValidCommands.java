@@ -25,9 +25,8 @@ import com.publicuhc.pluginframework.commands.annotation.CommandMethod;
 import com.publicuhc.pluginframework.commands.annotation.RouteInfo;
 import com.publicuhc.pluginframework.commands.annotation.TabCompletion;
 import com.publicuhc.pluginframework.commands.requests.CommandRequest;
-import com.publicuhc.pluginframework.commands.routing.BaseRoute;
-import com.publicuhc.pluginframework.commands.routing.CommandRestrictedRoute;
 import com.publicuhc.pluginframework.commands.routing.Route;
+import com.publicuhc.pluginframework.commands.routing.RouteBuilder;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,12 +42,14 @@ public class TestValidCommands {
     }
 
     @RouteInfo
-    public Route testCommandDetails() {
-        return new CommandRestrictedRoute(new BaseRoute(), "test");
+    public Route testCommandDetails(RouteBuilder builder) {
+        builder.restrictCommand("test");
+        return builder.build();
     }
 
     @RouteInfo
-    public Route testTabCompleteDetails() {
-        return new CommandRestrictedRoute(new BaseRoute(), "test");
+    public Route testTabCompleteDetails(RouteBuilder builder) {
+        builder.restrictCommand("test");
+        return builder.build();
     }
 }

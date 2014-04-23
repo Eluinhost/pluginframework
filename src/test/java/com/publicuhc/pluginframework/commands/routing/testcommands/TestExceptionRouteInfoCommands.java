@@ -25,6 +25,7 @@ import com.publicuhc.pluginframework.commands.annotation.CommandMethod;
 import com.publicuhc.pluginframework.commands.annotation.RouteInfo;
 import com.publicuhc.pluginframework.commands.requests.CommandRequest;
 import com.publicuhc.pluginframework.commands.routing.Route;
+import com.publicuhc.pluginframework.commands.routing.RouteBuilder;
 
 public class TestExceptionRouteInfoCommands {
 
@@ -34,7 +35,7 @@ public class TestExceptionRouteInfoCommands {
     }
 
     @RouteInfo
-    public Route commandDetails() {
+    public Route commandDetails(RouteBuilder builder) {
         throw new IllegalAccessError();
     }
 }

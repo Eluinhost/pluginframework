@@ -155,7 +155,7 @@ public class DefaultRouter implements Router {
                 //get the method with the details we need
                 Method routeInfo;
                 try {
-                    routeInfo = klass.getMethod(method.getName() + ROUTE_INFO_SUFFIX);
+                    routeInfo = klass.getMethod(method.getName() + ROUTE_INFO_SUFFIX, RouteBuilder.class);
                 } catch (NoSuchMethodException e) {
                     m_logger.log(Level.SEVERE, "No method found with the name " + method.getName() + ROUTE_INFO_SUFFIX);
                     throw new DetailsMethodNotFoundException();
@@ -167,7 +167,7 @@ public class DefaultRouter implements Router {
                 //get the details
                 Route methodRoute;
                 try {
-                    methodRoute = (Route) routeInfo.invoke(object);
+                    methodRoute = (Route) routeInfo.invoke(object, m_injector.getInstance(RouteBuilder.class));
                 } catch (Exception e) {
                     e.printStackTrace();
                     m_logger.log(Level.SEVERE, "Error getting route info from the method " + routeInfo.getName());
@@ -255,6 +255,10 @@ public class DefaultRouter implements Router {
         if (!Route.class.isAssignableFrom(method.getReturnType())) {
             m_logger.log(Level.SEVERE, "Route info method " + method.getName() + " does not have the correct return type");
             throw new InvalidReturnTypeException();
+        }
+        if (method.getParameterTypes().length != 1 || !RouteBuilder.class.isAssignableFrom(method.getParameterTypes()[0])) {
+            m_logger.log(Level.SEVERE, "Method " + method.getName() + " has incorrect parameters");
+            throw new InvalidMethodParametersException();
         }
     }
 

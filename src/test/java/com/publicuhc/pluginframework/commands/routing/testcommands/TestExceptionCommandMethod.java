@@ -25,9 +25,8 @@ import com.publicuhc.pluginframework.commands.annotation.CommandMethod;
 import com.publicuhc.pluginframework.commands.annotation.RouteInfo;
 import com.publicuhc.pluginframework.commands.annotation.TabCompletion;
 import com.publicuhc.pluginframework.commands.requests.CommandRequest;
-import com.publicuhc.pluginframework.commands.routing.BaseRoute;
-import com.publicuhc.pluginframework.commands.routing.CommandRestrictedRoute;
 import com.publicuhc.pluginframework.commands.routing.Route;
+import com.publicuhc.pluginframework.commands.routing.RouteBuilder;
 
 import java.util.List;
 
@@ -39,8 +38,9 @@ public class TestExceptionCommandMethod {
     }
 
     @RouteInfo
-    public Route exceptionDetails() {
-        return new CommandRestrictedRoute(new BaseRoute(), "test");
+    public Route exceptionDetails(RouteBuilder builder) {
+        builder.restrictCommand("test");
+        return builder.build();
     }
 
     @TabCompletion
@@ -49,7 +49,8 @@ public class TestExceptionCommandMethod {
     }
 
     @RouteInfo
-    public Route tabexceptionDetails() {
-        return new CommandRestrictedRoute(new BaseRoute(), "test");
+    public Route tabexceptionDetails(RouteBuilder builder) {
+        builder.restrictCommand("test");
+        return builder.build();
     }
 }

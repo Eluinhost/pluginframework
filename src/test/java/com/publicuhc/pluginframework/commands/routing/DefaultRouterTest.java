@@ -83,6 +83,7 @@ public class DefaultRouterTest {
                 bind(Plugin.class).toInstance(mock(Plugin.class));
                 bind(File.class).annotatedWith(Names.named("dataFolder")).toInstance(new File("target" + File.separator + "testdatafolder"));
                 bind(ClassLoader.class).toInstance(getClass().getClassLoader());
+                bind(RouteBuilder.class).to(DefaultRouteBuilder.class);
             }
         });
         router = (DefaultRouter) injector.getInstance(Router.class);
@@ -159,25 +160,25 @@ public class DefaultRouterTest {
 
     @Test
     public void testValidRouteInfo() throws NoSuchMethodException, CommandClassParseException {
-        Method validRouteInfo = TestCommandClass.class.getMethod("onValidRouteInfo");
+        Method validRouteInfo = TestCommandClass.class.getMethod("onValidRouteInfo", RouteBuilder.class);
         router.checkRouteInfo(validRouteInfo);
     }
 
     @Test(expected = AnnotationMissingException.class)
     public void testMissingAnnotationRouteInfo() throws NoSuchMethodException, CommandClassParseException {
-        Method routeInfo = TestCommandClass.class.getMethod("onMissingAnnotationRouteInfo");
+        Method routeInfo = TestCommandClass.class.getMethod("onMissingAnnotationRouteInfo", RouteBuilder.class);
         router.checkRouteInfo(routeInfo);
     }
 
     @Test(expected = InvalidReturnTypeException.class)
     public void testMissingReturnRouteInfo() throws NoSuchMethodException, CommandClassParseException {
-        Method routeInfo = TestCommandClass.class.getMethod("onMissingReturnRouteInfo");
+        Method routeInfo = TestCommandClass.class.getMethod("onMissingReturnRouteInfo", RouteBuilder.class);
         router.checkRouteInfo(routeInfo);
     }
 
     @Test(expected = InvalidReturnTypeException.class)
     public void testInvalidReturnRouteInfo() throws NoSuchMethodException, CommandClassParseException {
-        Method routeInfo = TestCommandClass.class.getMethod("onInvalidReturnRouteInfo");
+        Method routeInfo = TestCommandClass.class.getMethod("onInvalidReturnRouteInfo", RouteBuilder.class);
         router.checkRouteInfo(routeInfo);
     }
 
@@ -488,7 +489,7 @@ public class DefaultRouterTest {
          * @return n/a
          */
         @RouteInfo
-        public Route onValidRouteInfo() {
+        public Route onValidRouteInfo(RouteBuilder builder) {
             return null;
         }
 
@@ -497,7 +498,7 @@ public class DefaultRouterTest {
          *
          * @return n/a
          */
-        public Route onMissingAnnotationRouteInfo() {
+        public Route onMissingAnnotationRouteInfo(RouteBuilder builder) {
             return null;
         }
 
@@ -505,7 +506,7 @@ public class DefaultRouterTest {
          * Test for missing return type
          */
         @RouteInfo
-        public void onMissingReturnRouteInfo() {
+        public void onMissingReturnRouteInfo(RouteBuilder builder) {
         }
 
         /**
@@ -514,7 +515,7 @@ public class DefaultRouterTest {
          * @return n/a
          */
         @RouteInfo
-        public String onInvalidReturnRouteInfo() {
+        public String onInvalidReturnRouteInfo(RouteBuilder builder) {
             return null;
         }
     }

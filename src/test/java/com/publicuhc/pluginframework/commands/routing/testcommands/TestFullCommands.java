@@ -41,10 +41,12 @@ public class TestFullCommands {
     }
 
     @RouteInfo
-    public Route banIPDetails() {
-        CommandRestrictedRoute crr = new CommandRestrictedRoute(new BaseRoute(), "banIP");
-        PatternRestrictedRoute prr = new PatternRestrictedRoute(crr, Pattern.compile("^([\\d]{1,3}.[\\d]{1,3}.[\\d]{1,3}.[\\d]{1,3}) (.*)$"));
-        return new PermissionRestrictedRoute(prr, "test.permission");
+    public Route banIPDetails(RouteBuilder builder) {
+        builder.restrictCommand("banIP");
+        builder.restrictPattern(Pattern.compile("^([\\d]{1,3}.[\\d]{1,3}.[\\d]{1,3}.[\\d]{1,3}) (.*)$"));
+        builder.restrictPermission("test.permission");
+
+        return builder.build();
     }
 
     @TabCompletion
@@ -57,9 +59,10 @@ public class TestFullCommands {
     }
 
     @RouteInfo
-    public Route completeDetails() {
-        CommandRestrictedRoute crr = new CommandRestrictedRoute(new BaseRoute(), "banIP");
-        PatternRestrictedRoute prr = new PatternRestrictedRoute(crr, Pattern.compile("^([\\d]{1,3}.[\\d]{1,3}.[\\d]{1,3}.[\\d]{1,3})$"));
-        return new PermissionRestrictedRoute(prr, "test.permission");
+    public Route completeDetails(RouteBuilder builder) {
+        builder.restrictCommand("banIP");
+        builder.restrictPattern(Pattern.compile("^([\\d]{1,3}.[\\d]{1,3}.[\\d]{1,3}.[\\d]{1,3})$"));
+        builder.restrictPermission("test.permission");
+        return builder.build();
     }
 }
