@@ -31,7 +31,6 @@ import org.powermock.modules.junit4.PowerMockRunner;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.regex.MatchResult;
 
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
@@ -56,16 +55,8 @@ public class DefaultCommandRequestBuilderTest {
     }
 
     @Test
-    public void testMatchResult() {
-        MatchResult result = mock(MatchResult.class);
-
-        assertThat(builder.setMatchResult(result), is(CoreMatchers.<CommandRequestBuilder>sameInstance(builder)));
-        assertThat(builder.getMatchResult(), is(sameInstance(result)));
-    }
-
-    @Test
     public void testCount() {
-        assertThat(builder.setCount(10), CoreMatchers.<CommandRequestBuilder>is(CoreMatchers.<CommandRequestBuilder>sameInstance(builder)));
+        assertThat(builder.setCount(10), CoreMatchers.is(CoreMatchers.<CommandRequestBuilder>sameInstance(builder)));
         assertThat(builder.getCount(), is(10));
     }
 
@@ -80,11 +71,6 @@ public class DefaultCommandRequestBuilderTest {
 
         assertThat(builder.setArguments(args), is(CoreMatchers.<CommandRequestBuilder>sameInstance(builder)));
         assertThat(builder.getArguments(), is(equalTo(Arrays.asList(args))));
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void testNullMatchResult() {
-        builder.setMatchResult(null);
     }
 
     @Test
@@ -129,8 +115,6 @@ public class DefaultCommandRequestBuilderTest {
         assertFalse(builder.isValid());
         builder.setCommand(mock(Command.class));
         assertFalse(builder.isValid());
-        builder.setMatchResult(mock(MatchResult.class));
-        assertFalse(builder.isValid());
         builder.setCount(1);
         assertTrue(builder.isValid());
     }
@@ -140,13 +124,11 @@ public class DefaultCommandRequestBuilderTest {
         builder.setSender(mock(CommandSender.class));
         builder.setArguments(new String[]{});
         builder.setCommand(mock(Command.class));
-        builder.setMatchResult(mock(MatchResult.class));
 
         builder.clear();
         assertThat(builder.getSender(), is(nullValue()));
         assertThat(builder.getArguments(), is(nullValue()));
         assertThat(builder.getCommand(), is(nullValue()));
-        assertThat(builder.getMatchResult(), is(nullValue()));
     }
 
     @Test
@@ -154,19 +136,16 @@ public class DefaultCommandRequestBuilderTest {
         CommandSender sender = mock(CommandSender.class);
         String[] args = {"arg1", "arg2", "arg3"};
         Command command = mock(Command.class);
-        MatchResult result = mock(MatchResult.class);
 
         builder.setSender(sender);
         builder.setArguments(args);
         builder.setCommand(command);
-        builder.setMatchResult(result);
         builder.setCount(1);
 
         CommandRequest request = builder.build();
 
         assertThat(request.getArgs(), is(equalTo(Arrays.asList(args))));
         assertThat(request.getCommand(), is(sameInstance(command)));
-        assertThat(request.getMatcherResult(), is(sameInstance(result)));
         assertThat(request.getSender(), is(sameInstance(sender)));
         assertThat(request.getCount(), is(1));
     }

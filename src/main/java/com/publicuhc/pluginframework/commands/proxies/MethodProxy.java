@@ -21,24 +21,21 @@
 
 package com.publicuhc.pluginframework.commands.proxies;
 
-import com.publicuhc.pluginframework.commands.matchers.RouteMatcher;
-import com.publicuhc.pluginframework.commands.requests.SenderType;
-import org.bukkit.command.Command;
+import com.publicuhc.pluginframework.commands.routing.Route;
 
 import java.lang.reflect.Method;
-import java.util.regex.MatchResult;
 
 public interface MethodProxy {
 
     /**
      * @param route the route to be matched to run
      */
-    void setRoute(RouteMatcher route);
+    void setRoute(Route route);
 
     /**
-     * @return the pattern to be matched on
+     * @return the route to be matched on
      */
-    RouteMatcher getRoute();
+    Route getRoute();
 
     /**
      * @param object the instance to run against
@@ -60,39 +57,4 @@ public interface MethodProxy {
      */
     Method getCommandMethod();
 
-    /**
-     * @param command the base command
-     */
-    void setBaseCommand(Command command);
-
-    /**
-     * @return the base command
-     */
-    Command getBaseCommand();
-
-    /**
-     * @param params the parameters to check
-     * @return the match result or null if no match
-     */
-    MatchResult paramsMatch(String params);
-
-    /**
-     * @return the permission, null if any allowed
-     */
-    String getPermission();
-
-    /**
-     * @param permission the permission to use
-     */
-    void setPermission(String permission);
-
-    /**
-     * @return the allowed senders
-     */
-    SenderType[] getAllowedSenders();
-
-    /**
-     * @param allowedSenders the allowed senders
-     */
-    void setAllowedSenders(SenderType[] allowedSenders);
 }

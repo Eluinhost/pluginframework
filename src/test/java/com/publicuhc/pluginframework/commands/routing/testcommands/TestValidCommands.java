@@ -24,15 +24,13 @@ package com.publicuhc.pluginframework.commands.routing.testcommands;
 import com.publicuhc.pluginframework.commands.annotation.CommandMethod;
 import com.publicuhc.pluginframework.commands.annotation.RouteInfo;
 import com.publicuhc.pluginframework.commands.annotation.TabCompletion;
-import com.publicuhc.pluginframework.commands.matchers.PatternRouteMatcher;
 import com.publicuhc.pluginframework.commands.requests.CommandRequest;
-import com.publicuhc.pluginframework.commands.requests.SenderType;
-import com.publicuhc.pluginframework.commands.routing.DefaultMethodRoute;
-import com.publicuhc.pluginframework.commands.routing.MethodRoute;
+import com.publicuhc.pluginframework.commands.routing.BaseRoute;
+import com.publicuhc.pluginframework.commands.routing.CommandRestrictedRoute;
+import com.publicuhc.pluginframework.commands.routing.Route;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Pattern;
 
 public class TestValidCommands {
 
@@ -45,12 +43,12 @@ public class TestValidCommands {
     }
 
     @RouteInfo
-    public MethodRoute testCommandDetails() {
-        return new DefaultMethodRoute(new PatternRouteMatcher(Pattern.compile("^arg$")), new SenderType[]{SenderType.CONSOLE, SenderType.REMOTE_CONSOLE}, "test.permission", "test");
+    public Route testCommandDetails() {
+        return new CommandRestrictedRoute(new BaseRoute(), "test");
     }
 
     @RouteInfo
-    public MethodRoute testTabCompleteDetails() {
-        return new DefaultMethodRoute(new PatternRouteMatcher(Pattern.compile("^arg$")), new SenderType[]{SenderType.CONSOLE, SenderType.REMOTE_CONSOLE}, "test.permission", "test");
+    public Route testTabCompleteDetails() {
+        return new CommandRestrictedRoute(new BaseRoute(), "test");
     }
 }

@@ -1,5 +1,5 @@
 /*
- * MethodRoute.java
+ * SenderTypeRestrictedRoute.java
  *
  * Copyright (c) 2014 Graham Howden <graham_howden1 at yahoo.co.uk>.
  *
@@ -21,28 +21,25 @@
 
 package com.publicuhc.pluginframework.commands.routing;
 
-import com.publicuhc.pluginframework.commands.matchers.RouteMatcher;
 import com.publicuhc.pluginframework.commands.requests.SenderType;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandSender;
 
-public interface MethodRoute {
+import java.util.Arrays;
 
-    /**
-     * @return the route to match to run
-     */
-    RouteMatcher getRoute();
+public class SenderTypeRestrictedRoute extends Route {
 
-    /**
-     * @return the allowed senders for this
-     */
-    SenderType[] getAllowedTypes();
+    private final SenderType[] m_types;
 
-    /**
-     * @return the permission needed
-     */
-    String getPermission();
+    public SenderTypeRestrictedRoute(Route route, SenderType... types) {
+        super(route);
+        m_types = types;
+    }
 
-    /**
-     * @return the base command to run on
-     */
-    String getBaseCommand();
+    @Override
+    public boolean matches(CommandSender sender, Command command, String arguments) {
+        SenderType type = SenderType.getFromCommandSender(sender);
+
+        return Arrays.asList(m_types).contains(type) && getNextChain().matches(sender, command, arguments);
+    }
 }

@@ -1,5 +1,5 @@
 /*
- * RouteMatcher.java
+ * BaseRoute.java
  *
  * Copyright (c) 2014 Graham Howden <graham_howden1 at yahoo.co.uk>.
  *
@@ -19,17 +19,19 @@
  * along with PluginFramework.  If not, see <http ://www.gnu.org/licenses/>.
  */
 
-package com.publicuhc.pluginframework.commands.matchers;
+package com.publicuhc.pluginframework.commands.routing;
 
-import java.util.regex.MatchResult;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandSender;
 
-public interface RouteMatcher {
+public class BaseRoute extends Route {
 
-    /**
-     * Attempts a match
-     *
-     * @param match the string to match against
-     * @return The match result if it matches, otherwise null
-     */
-    MatchResult getResult(String match);
+    public BaseRoute() {
+        super(null);
+    }
+
+    @Override
+    public boolean matches(CommandSender sender, Command command, String arguments) {
+        return true;
+    }
 }

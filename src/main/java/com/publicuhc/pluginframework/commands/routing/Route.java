@@ -1,5 +1,5 @@
 /*
- * PatternRouteMatcher.java
+ * Route.java
  *
  * Copyright (c) 2014 Graham Howden <graham_howden1 at yahoo.co.uk>.
  *
@@ -19,33 +19,36 @@
  * along with PluginFramework.  If not, see <http ://www.gnu.org/licenses/>.
  */
 
-package com.publicuhc.pluginframework.commands.matchers;
+package com.publicuhc.pluginframework.commands.routing;
 
-import java.util.regex.MatchResult;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandSender;
+
 import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
-public class PatternRouteMatcher implements RouteMatcher {
+public abstract class Route {
 
-    private final Pattern m_pattern;
+    private final Route m_wrapped;
+
     private Matcher m_matcher;
 
+    protected Route(Route route) {
+        m_wrapped = route;
+    }
+
     /**
-     * A route that matches the pattern given
-     * @param pattern the pattern to match against
+     * @return the next restriction in the chain or null if no chains left
      */
-    public PatternRouteMatcher(Pattern pattern) {
-        m_pattern = pattern;
+    public Route getNextChain() {
+        return m_wrapped;
     }
 
-    @Override
-    public MatchResult getResult(String match) {
-        if(null == m_matcher) {
-            m_matcher = m_pattern.matcher(match);
-        } else {
-            m_matcher.reset(match);
-        }
-
-        return m_matcher.matches() ? m_matcher.toMatchResult() : null;
-    }
+    /**
+     * Does this route + all subsequent chains match the given parameters
+     * @param sender the command sender
+     * @param command the command
+     * @param arguments the arguments
+     * @return true if matches, false a chain failed
+     */
+    abstract boolean matches(CommandSender sender, Command command, String arguments);
 }

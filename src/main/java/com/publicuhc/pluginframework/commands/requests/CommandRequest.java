@@ -31,14 +31,12 @@ import org.bukkit.entity.Player;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.regex.MatchResult;
 
 public class CommandRequest {
 
     private final List<String> m_args;
     private final CommandSender m_sender;
     private final Command m_command;
-    private MatchResult m_matchResult;
     private int m_count;
 
     /**
@@ -46,16 +44,11 @@ public class CommandRequest {
      * @param args    the arguements to use
      * @param sender  the sender for the request
      */
-    public CommandRequest(Command command, List<String> args, CommandSender sender, MatchResult result, int count) {
+    public CommandRequest(Command command, List<String> args, CommandSender sender, int count) {
         m_command = command;
         m_args = args;
         m_sender = sender;
-        m_matchResult = result;
         m_count = count;
-    }
-
-    public MatchResult getMatcherResult() {
-        return m_matchResult;
     }
 
     /**

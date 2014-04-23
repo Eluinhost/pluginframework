@@ -21,4 +21,15 @@
 
 package com.publicuhc.pluginframework.commands.exceptions;
 
-public class BaseCommandNotFoundException extends CommandClassParseException { }
+public class BaseCommandNotFoundException extends CommandClassParseException {
+
+    private String m_commandName;
+
+    public BaseCommandNotFoundException(String commandName) {
+        m_commandName = commandName;
+    }
+
+    public String getCommandName() {
+        return m_commandName;
+    }
+}

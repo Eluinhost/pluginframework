@@ -1,5 +1,5 @@
 /*
- * AnyRouteMatcher.java
+ * PermissionRestrictedRoute.java
  *
  * Copyright (c) 2014 Graham Howden <graham_howden1 at yahoo.co.uk>.
  *
@@ -19,16 +19,22 @@
  * along with PluginFramework.  If not, see <http ://www.gnu.org/licenses/>.
  */
 
-package com.publicuhc.pluginframework.commands.matchers;
+package com.publicuhc.pluginframework.commands.routing;
 
-import java.util.regex.Pattern;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandSender;
 
-public class AnyRouteMatcher extends PatternRouteMatcher {
+public class PermissionRestrictedRoute extends Route {
 
-    /**
-     * Will match any arguments
-     */
-    public AnyRouteMatcher() {
-        super(Pattern.compile("(.*)"));
+    private final String m_permission;
+
+    public PermissionRestrictedRoute(Route route, String permission) {
+        super(route);
+        m_permission = permission;
+    }
+
+    @Override
+    public boolean matches(CommandSender sender, Command command, String arguments) {
+        return sender.hasPermission(m_permission) && getNextChain().matches(sender, command, arguments);
     }
 }

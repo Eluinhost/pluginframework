@@ -58,8 +58,6 @@ import java.io.File;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
-import java.util.regex.MatchResult;
 
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
@@ -71,11 +69,10 @@ import static org.powermock.api.mockito.PowerMockito.*;
 public class DefaultRouterTest {
 
     private DefaultRouter router;
-    private Injector injector;
 
     @Before
     public void setup() throws NoSuchMethodException {
-        injector = Guice.createInjector(new AbstractModule() {
+        Injector injector = Guice.createInjector(new AbstractModule() {
             @Override
             protected void configure() {
                 bind(Router.class).to(DefaultRouter.class);
@@ -264,18 +261,19 @@ public class DefaultRouterTest {
         PluginCommand command = mock(PluginCommand.class);
         when(command.getName()).thenReturn("test");
         when(Bukkit.getPluginCommand("test")).thenReturn(command);
+        CommandSender sender = mock(CommandSender.class);
         router.registerCommands(TestValidCommands.class);
 
         Command valid = mock(Command.class);
         when(valid.getName()).thenReturn("test");
 
-        Map<CommandProxy, MatchResult> proxies = router.getCommandProxy(valid, "arg");
+        List<CommandProxy> proxies = router.getCommandProxy(sender, valid, "arg");
         assertThat(proxies.size(), is(1));
 
         Command invalid = mock(Command.class);
         when(invalid.getName()).thenReturn("invalidtest");
 
-        proxies = router.getCommandProxy(invalid, "arg");
+        proxies = router.getCommandProxy(sender, invalid, "arg");
         assertThat(proxies.size(), is(0));
     }
 
@@ -289,18 +287,19 @@ public class DefaultRouterTest {
         PluginCommand command = mock(PluginCommand.class);
         when(command.getName()).thenReturn("test");
         when(Bukkit.getPluginCommand("test")).thenReturn(command);
+        CommandSender sender = mock(CommandSender.class);
         router.registerCommands(TestValidCommands.class);
 
         Command valid = mock(Command.class);
         when(valid.getName()).thenReturn("test");
 
-        Map<TabCompleteProxy, MatchResult> proxies = router.getTabCompleteProxy(valid, "arg");
+        List<TabCompleteProxy> proxies = router.getTabCompleteProxy(sender, valid, "arg");
         assertThat(proxies.size(), is(1));
 
         Command invalid = mock(Command.class);
         when(invalid.getName()).thenReturn("invalidtest");
 
-        proxies = router.getTabCompleteProxy(invalid, "arg");
+        proxies = router.getTabCompleteProxy(sender, invalid, "arg");
         assertThat(proxies.size(), is(0));
     }
 
@@ -317,9 +316,10 @@ public class DefaultRouterTest {
         router.registerCommands(TestFullCommands.class);
 
         CommandSender sender = mock(ConsoleCommandSender.class);
+        when(sender.hasPermission("test.permission")).thenReturn(true);
         router.onCommand(sender, command, "wtfisalabel", new String[]{"192.168.0.1", "some", "random", "message", "here"});
 
-        verify(sender).sendMessage("banned with message some random message here");
+        verify(sender).sendMessage("banned with message some");
         verifyStatic();
         Bukkit.banIP("192.168.0.1");
     }
@@ -355,6 +355,7 @@ public class DefaultRouterTest {
     public void testOnTabCompleteSuccess() throws CommandClassParseException {
         mockStatic(Bukkit.class);
         CommandSender sender = mock(ConsoleCommandSender.class);
+        when(sender.hasPermission("test.permission")).thenReturn(true);
         PluginCommand command = mock(PluginCommand.class);
         when(command.getName()).thenReturn("banIP");
         when(Bukkit.getPluginCommand("banIP")).thenReturn(command);
@@ -487,7 +488,7 @@ public class DefaultRouterTest {
          * @return n/a
          */
         @RouteInfo
-        public MethodRoute onValidRouteInfo() {
+        public Route onValidRouteInfo() {
             return null;
         }
 
@@ -496,7 +497,7 @@ public class DefaultRouterTest {
          *
          * @return n/a
          */
-        public MethodRoute onMissingAnnotationRouteInfo() {
+        public Route onMissingAnnotationRouteInfo() {
             return null;
         }
 

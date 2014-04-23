@@ -25,11 +25,10 @@ import com.publicuhc.pluginframework.commands.exceptions.CommandClassParseExcept
 import com.publicuhc.pluginframework.commands.proxies.CommandProxy;
 import com.publicuhc.pluginframework.commands.proxies.TabCompleteProxy;
 import org.bukkit.command.Command;
+import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
 
 import java.util.List;
-import java.util.Map;
-import java.util.regex.MatchResult;
 
 public interface Router extends TabExecutor {
 
@@ -38,14 +37,14 @@ public interface Router extends TabExecutor {
      * @param parameters the parameters
      * @return the list of matched commandproxy
      */
-    Map<CommandProxy, MatchResult> getCommandProxy(Command command, String parameters);
+    List<CommandProxy> getCommandProxy(CommandSender sender, Command command, String parameters);
 
     /**
      * @param command    the command string
      * @param parameters the parameters
      * @return the list of matched tabcompleteproxy
      */
-    Map<TabCompleteProxy, MatchResult> getTabCompleteProxy(Command command, String parameters);
+    List<TabCompleteProxy> getTabCompleteProxy(CommandSender sender, Command command, String parameters);
 
     /**
      * Register a class for commands, makes an instance

@@ -1,5 +1,5 @@
 /*
- * SimpleRouteMatcher.java
+ * CommandRestrictedRoute.java
  *
  * Copyright (c) 2014 Graham Howden <graham_howden1 at yahoo.co.uk>.
  *
@@ -19,17 +19,30 @@
  * along with PluginFramework.  If not, see <http ://www.gnu.org/licenses/>.
  */
 
-package com.publicuhc.pluginframework.commands.matchers;
+package com.publicuhc.pluginframework.commands.routing;
 
-import java.util.regex.Pattern;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandSender;
 
-public class SimpleRouteMatcher extends PatternRouteMatcher {
+import java.util.regex.Matcher;
 
-    /**
-     * Makes a route that will match the exact string given
-     * @param arguments the string to match, will be automatically quoted
-     */
-    public SimpleRouteMatcher(String arguments) {
-        super(Pattern.compile(Pattern.quote(arguments)));
+public class CommandRestrictedRoute extends Route {
+
+    private final String m_command;
+
+    private Matcher m_matcher;
+
+    public CommandRestrictedRoute(Route route, String command) {
+        super(route);
+        m_command = command;
+    }
+
+    @Override
+    public boolean matches(CommandSender sender, Command command, String arguments) {
+        return command.getName().equals(m_command) && getNextChain().matches(sender, command, arguments);
+    }
+
+    public String getCommand() {
+        return m_command;
     }
 }
