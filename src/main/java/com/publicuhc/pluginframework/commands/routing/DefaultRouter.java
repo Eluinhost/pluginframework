@@ -290,6 +290,10 @@ public class DefaultRouter implements Router {
 
         //trigger all the proxies
         for (CommandProxy proxy : proxies) {
+            Route route = proxy.getRoute();
+            if(route.getMaxMatches() != 0 && route.getMaxMatches() < proxies.size()) {
+                continue;
+            }
             CommandRequestBuilder builder = m_requestProvider.get();
             CommandRequest request =
                     builder.setCommand(command)

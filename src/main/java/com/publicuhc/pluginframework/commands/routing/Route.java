@@ -51,4 +51,11 @@ public abstract class Route {
      * @return true if matches, false a chain failed
      */
     abstract boolean matches(CommandSender sender, Command command, String arguments);
+
+    public int getMaxMatches() {
+        if(m_wrapped != null) {
+            return m_wrapped.getMaxMatches();
+        }
+        return 0;
+    }
 }

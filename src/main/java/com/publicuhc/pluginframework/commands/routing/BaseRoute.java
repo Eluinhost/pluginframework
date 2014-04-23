@@ -26,8 +26,21 @@ import org.bukkit.command.CommandSender;
 
 public class BaseRoute extends Route {
 
+    private final int m_maxMatches;
+
+    public BaseRoute(int maxMatches) {
+        super(null);
+        m_maxMatches = maxMatches;
+    }
+
     public BaseRoute() {
         super(null);
+        m_maxMatches = 0;
+    }
+
+    @Override
+    public int getMaxMatches() {
+        return m_maxMatches;
     }
 
     @Override
