@@ -48,7 +48,7 @@ public class CommandRequest {
      * @param args    the arguements to use
      * @param sender  the sender for the request
      */
-    public CommandRequest(Command command, List<String> args, CommandSender sender, int count) {
+    protected CommandRequest(Command command, List<String> args, CommandSender sender, int count) {
         m_command = command;
         m_args = args;
         m_sender = sender;
