@@ -40,6 +40,7 @@ public class CommandRequest {
     private CommandSender m_sender;
     private Command m_command;
     private int m_count = -1;
+    private String m_locale;
 
     public static UUID INVALID_ID = new UUID(0L, 0L);
 
@@ -63,8 +64,20 @@ public class CommandRequest {
         return this;
     }
 
+    protected CommandRequest setLocale(String locale) {
+        m_locale = locale;
+        return this;
+    }
+
     protected boolean isValid() {
-        return m_args != null && m_sender != null && m_command != null && m_count > -1;
+        return m_args != null && m_sender != null && m_command != null && m_count > -1 && m_locale != null;
+    }
+
+    /**
+     * @return Get the locale for this request
+     */
+    public String getLocale() {
+        return m_locale;
     }
 
     /**
@@ -80,7 +93,7 @@ public class CommandRequest {
      * @return unmodifiable list of the arguments supplied
      */
     public List<String> getArgs() {
-        return Collections.unmodifiableList(m_args);
+        return null == m_args ? null : Collections.unmodifiableList(m_args);
     }
 
     /**

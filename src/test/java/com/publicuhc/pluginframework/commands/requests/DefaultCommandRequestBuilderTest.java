@@ -21,6 +21,7 @@
 
 package com.publicuhc.pluginframework.commands.requests;
 
+import com.publicuhc.pluginframework.translate.Translate;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.hamcrest.CoreMatchers;
@@ -34,7 +35,9 @@ import java.util.List;
 
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
+import static org.mockito.Matchers.any;
 import static org.powermock.api.mockito.PowerMockito.mock;
+import static org.powermock.api.mockito.PowerMockito.when;
 
 @RunWith(PowerMockRunner.class)
 public class DefaultCommandRequestBuilderTest {
@@ -56,7 +59,7 @@ public class DefaultCommandRequestBuilderTest {
 
     @Test
     public void testCount() {
-        assertThat(builder.setCount(10), CoreMatchers.is(CoreMatchers.<CommandRequestBuilder>sameInstance(builder)));
+        assertThat(builder.setCount(10), is(CoreMatchers.<CommandRequestBuilder>sameInstance(builder)));
         assertThat(builder.getCount(), is(10));
     }
 
@@ -157,6 +160,8 @@ public class DefaultCommandRequestBuilderTest {
 
     @Before
     public void onStartUp() {
-        builder = new DefaultCommandRequestBuilder();
+        Translate translate = mock(Translate.class);
+        when(translate.getLocaleForSender(any(CommandSender.class))).thenReturn("en");
+        builder = new DefaultCommandRequestBuilder(translate);
     }
 }

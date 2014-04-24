@@ -52,6 +52,7 @@ public interface CommandRequestBuilder {
     CommandRequestBuilder setArguments(String[] arguments);
 
     /**
+     * Sets the sender, also sets the locale to the sender's locale
      * @param sender the command sender
      * @return this
      */
@@ -62,6 +63,13 @@ public interface CommandRequestBuilder {
      * @return this
      */
     CommandRequestBuilder setCount(int count);
+
+    /**
+     * Set the locale string for the request
+     * @param locale the locale to use
+     * @return this
+     */
+    CommandRequestBuilder setLocale(String locale);
 
     /**
      * @return whether the state is valid or not

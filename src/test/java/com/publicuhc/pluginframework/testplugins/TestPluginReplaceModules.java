@@ -104,7 +104,12 @@ public class TestPluginReplaceModules extends FrameworkJavaPlugin {
         }
     }
 
-    public static class TestConcreteCommandRequestBuilder extends DefaultCommandRequestBuilder { }
+    public static class TestConcreteCommandRequestBuilder extends DefaultCommandRequestBuilder {
+        @Inject
+        public TestConcreteCommandRequestBuilder(Translate translate) {
+            super(translate);
+        }
+    }
 
     public static class TestConcreteMethodChecker extends DefaultMethodChecker {
         @Inject

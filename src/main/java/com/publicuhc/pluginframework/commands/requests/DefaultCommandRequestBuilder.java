@@ -21,6 +21,8 @@
 
 package com.publicuhc.pluginframework.commands.requests;
 
+import com.google.inject.Inject;
+import com.publicuhc.pluginframework.translate.Translate;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 
@@ -30,6 +32,12 @@ import java.util.List;
 public class DefaultCommandRequestBuilder implements CommandRequestBuilder {
 
     private CommandRequest m_request = new CommandRequest();
+    private final Translate m_translate;
+
+    @Inject
+    public DefaultCommandRequestBuilder(Translate translate) {
+        m_translate = translate;
+    }
 
     @Override
     public CommandRequest build() {
@@ -58,6 +66,12 @@ public class DefaultCommandRequestBuilder implements CommandRequestBuilder {
             throw new IllegalArgumentException("Count cannot be negative");
         }
         m_request.setCount(count);
+        return this;
+    }
+
+    @Override
+    public CommandRequestBuilder setLocale(String locale) {
+        m_request.setLocale(locale);
         return this;
     }
 
@@ -92,6 +106,7 @@ public class DefaultCommandRequestBuilder implements CommandRequestBuilder {
             throw new IllegalArgumentException("Sender cannot be null");
         }
         m_request.setCommandSender(sender);
+        m_request.setLocale(m_translate.getLocaleForSender(sender));
         return this;
     }
 
