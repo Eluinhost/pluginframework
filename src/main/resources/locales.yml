@@ -1,6 +1,6 @@
 default: en
 players:
-  048fa31030de44fe9f5ec7443e91ad46: en
+  048fa310-30de-44fe-9f5e-c7443e91ad46: en
 console: en
 remoteConsole: en
 commandBlock: en
