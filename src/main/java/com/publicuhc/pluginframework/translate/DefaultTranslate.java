@@ -99,7 +99,7 @@ public class DefaultTranslate implements Translate {
     @Override
     public void setLocaleForPlayer(Player p, String code) {
         FileConfiguration configuration = m_configurator.getConfig("locales");
-        configuration.set("players." + p.getUniqueId(), code);
+        configuration.set("players." + p.getUniqueId().toString(), code);
         m_configurator.saveConfig("locales");
     }
 }
