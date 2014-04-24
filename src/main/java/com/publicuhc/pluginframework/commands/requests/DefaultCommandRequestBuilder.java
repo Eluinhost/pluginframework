@@ -24,37 +24,32 @@ package com.publicuhc.pluginframework.commands.requests;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 
-import javax.annotation.Nonnull;
 import java.util.Arrays;
 import java.util.List;
 
 public class DefaultCommandRequestBuilder implements CommandRequestBuilder {
 
-    private Command m_command;
-    private List<String> m_arguments;
-    private CommandSender m_commandSender;
-    private int m_count = -1;
+    private CommandRequest m_request = new CommandRequest();
 
     @Override
     public CommandRequest build() {
-        if (!isValid()) {
+        if (!m_request.isValid()) {
             throw new IllegalStateException("Command request state is invalid");
         }
-        return new CommandRequest(m_command, m_arguments, m_commandSender, m_count);
+        return m_request;
     }
 
     @Override
-    @Nonnull
     public CommandRequestBuilder setCommand(Command command) {
         if (null == command) {
             throw new IllegalArgumentException("Command cannot be null");
         }
-        m_command = command;
+        m_request.setCommand(command);
         return this;
     }
 
     protected Command getCommand() {
-        return m_command;
+        return m_request.getCommand();
     }
 
     @Override
@@ -62,12 +57,12 @@ public class DefaultCommandRequestBuilder implements CommandRequestBuilder {
         if( count < 0 ){
             throw new IllegalArgumentException("Count cannot be negative");
         }
-        m_count = count;
+        m_request.setCount(count);
         return this;
     }
 
     protected int getCount() {
-        return m_count;
+        return m_request.getCount();
     }
 
     @Override
@@ -75,12 +70,12 @@ public class DefaultCommandRequestBuilder implements CommandRequestBuilder {
         if (null == arguments) {
             throw new IllegalArgumentException("Argument list cannot be null");
         }
-        m_arguments = arguments;
+        m_request.setArgs(arguments);
         return this;
     }
 
     protected List<String> getArguments() {
-        return m_arguments;
+        return m_request.getArgs();
     }
 
     @Override
@@ -96,23 +91,21 @@ public class DefaultCommandRequestBuilder implements CommandRequestBuilder {
         if (null == sender) {
             throw new IllegalArgumentException("Sender cannot be null");
         }
-        m_commandSender = sender;
+        m_request.setCommandSender(sender);
         return this;
     }
 
     protected CommandSender getSender() {
-        return m_commandSender;
+        return m_request.getSender();
     }
 
     @Override
     public boolean isValid() {
-        return !(m_commandSender == null || m_command == null || m_arguments == null || m_count < 0);
+        return m_request.isValid();
     }
 
     @Override
     public void clear() {
-        m_command = null;
-        m_commandSender = null;
-        m_arguments = null;
+        m_request = new CommandRequest();
     }
 }

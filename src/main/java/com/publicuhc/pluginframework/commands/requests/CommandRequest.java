@@ -36,23 +36,35 @@ import java.util.UUID;
 
 public class CommandRequest {
 
-    private final List<String> m_args;
-    private final CommandSender m_sender;
-    private final Command m_command;
-    private int m_count;
+    private List<String> m_args;
+    private CommandSender m_sender;
+    private Command m_command;
+    private int m_count = -1;
 
     public static UUID INVALID_ID = new UUID(0L, 0L);
 
-    /**
-     * @param command the command
-     * @param args    the arguements to use
-     * @param sender  the sender for the request
-     */
-    protected CommandRequest(Command command, List<String> args, CommandSender sender, int count) {
-        m_command = command;
+    protected CommandRequest setArgs(List<String> args) {
         m_args = args;
+        return this;
+    }
+
+    protected CommandRequest setCommand(Command command) {
+        m_command = command;
+        return this;
+    }
+
+    protected CommandRequest setCommandSender(CommandSender sender) {
         m_sender = sender;
+        return this;
+    }
+
+    protected CommandRequest setCount(int count) {
         m_count = count;
+        return this;
+    }
+
+    protected boolean isValid() {
+        return m_args != null && m_sender != null && m_command != null && m_count > -1;
     }
 
     /**

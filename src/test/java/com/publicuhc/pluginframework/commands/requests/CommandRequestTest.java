@@ -64,9 +64,8 @@ public class CommandRequestTest {
     @Test
     public void testRemoveFirstArgNoArgs() {
         List<String> args = new ArrayList<String>();
-        CommandSender sender = mock(CommandSender.class);
-        Command command = mock(Command.class);
-        CommandRequest request = new CommandRequest(command, args, sender, 1);
+        CommandRequest request = new CommandRequest();
+        request.setArgs(args);
 
         request.removeFirstArg();
     }
@@ -79,9 +78,8 @@ public class CommandRequestTest {
     @Test
     public void testGetFirstArgNoArgs() {
         List<String> args = new ArrayList<String>();
-        CommandSender sender = mock(CommandSender.class);
-        Command command = mock(Command.class);
-        CommandRequest request = new CommandRequest(command, args, sender, 1);
+        CommandRequest request = new CommandRequest();
+        request.setArgs(args);
 
         assertThat(request.getFirstArg(), is(nullValue()));
     }
@@ -96,9 +94,8 @@ public class CommandRequestTest {
     @Test
     public void testGetLastArgNoArgs() {
         List<String> args = new ArrayList<String>();
-        CommandSender sender = mock(CommandSender.class);
-        Command command = mock(Command.class);
-        CommandRequest request = new CommandRequest(command, args, sender, 1);
+        CommandRequest request = new CommandRequest();
+        request.setArgs(args);
 
         assertThat(request.getLastArg(), is(nullValue()));
     }
@@ -274,6 +271,10 @@ public class CommandRequestTest {
         args.add("last");
         sender = mock(Player.class);
         command = mock(Command.class);
-        request = new CommandRequest(command, args, sender, 1);
+        request = new CommandRequest();
+        request.setCommandSender(sender)
+                .setCommand(command)
+                .setArgs(args)
+                .setCount(1);
     }
 }
