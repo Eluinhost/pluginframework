@@ -19,9 +19,8 @@
  * along with PluginFramework.  If not, see <http ://www.gnu.org/licenses/>.
  */
 
-package com.publicuhc;
+package com.publicuhc.pluginframework;
 
-import com.publicuhc.pluginframework.FrameworkJavaPlugin;
 import com.publicuhc.pluginframework.commands.routing.DefaultRouter;
 import com.publicuhc.pluginframework.configuration.DefaultConfigurator;
 import com.publicuhc.pluginframework.testplugins.TestPluginDefaultModules;
