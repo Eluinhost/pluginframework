@@ -21,6 +21,7 @@
 
 package com.publicuhc.pluginframework.commands.requests;
 
+import com.publicuhc.pluginframework.util.UUIDFetcher;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.math.NumberUtils;
 import org.bukkit.Bukkit;
@@ -31,6 +32,7 @@ import org.bukkit.entity.Player;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.UUID;
 
 public class CommandRequest {
 
@@ -38,6 +40,8 @@ public class CommandRequest {
     private final CommandSender m_sender;
     private final Command m_command;
     private int m_count;
+
+    public static UUID INVALID_ID = new UUID(0L, 0L);
 
     /**
      * @param command the command
@@ -189,6 +193,24 @@ public class CommandRequest {
             throw new IllegalArgumentException("Index must be within the size of the argument list");
         }
         return Bukkit.getPlayer(m_args.get(index));
+    }
+
+    /**
+     * Return the UUID for the player given, looked up on Mojang servers
+     * @param index the index to look for
+     * @return the UUID or INVALID_ID constant if error/not found
+     */
+    public UUID getPlayerUUID(int index) {
+        if (!isArgPresent(index)) {
+            throw new IllegalArgumentException("Index must be within the size of the argument list");
+        }
+        UUID playerID;
+        try {
+            playerID = UUIDFetcher.getUUIDOf(m_args.get(index));
+        } catch (@SuppressWarnings("OverlyBroadCatchBlock") Exception ignored) {
+            playerID = INVALID_ID;
+        }
+        return playerID;
     }
 
     /**
