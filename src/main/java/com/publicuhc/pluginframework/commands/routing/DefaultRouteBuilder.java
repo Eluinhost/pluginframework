@@ -40,33 +40,39 @@ public class DefaultRouteBuilder implements RouteBuilder {
     }
 
     @Override
-    public void restrictCommand(String string) {
+    public RouteBuilder restrictCommand(String string) {
         m_route = new CommandRestrictedRoute(m_route, string);
+        return this;
     }
 
     @Override
-    public void restrictPermission(String permission) {
+    public RouteBuilder restrictPermission(String permission) {
         m_route = new PermissionRestrictedRoute(m_route, permission);
+        return this;
     }
 
     @Override
-    public void restrictPattern(Pattern pattern) {
-        m_route = new PatternRestrictedRoute(m_route, pattern);
+    public RouteBuilder restrictPattern(Pattern expression) {
+        m_route = new PatternRestrictedRoute(m_route, expression);
+        return this;
     }
 
     @Override
-    public void restrictSenderType(SenderType... types) {
+    public RouteBuilder restrictSenderType(SenderType... types) {
         m_route = new SenderTypeRestrictedRoute(m_route, types);
+        return this;
     }
 
     @Override
-    public void maxMatches(int matches) {
+    public RouteBuilder maxMatches(int matches) {
         m_baseRoute.setMaxMatches(matches);
+        return this;
     }
 
     @Override
-    public void reset() {
+    public RouteBuilder reset() {
         m_baseRoute = new BaseRoute();
         m_route = m_baseRoute;
+        return this;
     }
 }
