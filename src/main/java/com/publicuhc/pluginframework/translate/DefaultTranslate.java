@@ -55,7 +55,7 @@ public class DefaultTranslate implements Translate {
         String value = configuration.getString(key);
 
         if (null == value) {
-            value = "TRANSLATION KEY NOT SET FOR " + key;
+            value = key;
         }
 
         for (String s : vars.keySet()) {

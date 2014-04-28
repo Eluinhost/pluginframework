@@ -100,7 +100,7 @@ public class DefaultTranslateTest {
 
     @Test
     public void testTranslateNoVars() {
-        assertThat(translate.translate("novalidkey", "test"), is(equalTo("TRANSLATION KEY NOT SET FOR novalidkey")));
+        assertThat(translate.translate("novalidkey", "test"), is(equalTo("novalidkey")));
         assertThat(translate.translate("testkeynovars", "test"), is(equalTo("testkeynovars")));
     }
 
