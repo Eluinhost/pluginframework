@@ -46,12 +46,23 @@ public abstract class Route {
      * @param arguments the arguments
      * @return true if matches, false if not
      */
-    public abstract boolean matches(CommandSender sender, Command command, String arguments);
+    protected abstract boolean matches(CommandSender sender, Command command, String arguments);
 
     public int getMaxMatches() {
         if(m_wrapped != null) {
             return m_wrapped.getMaxMatches();
         }
         return 0;
+    }
+
+    /**
+     * Does this restriction + all of it's children allow the parameters
+     * @param sender the command sender
+     * @param command the command
+     * @param arguments the arguments
+     * @return true if matches, false if not
+     */
+    public boolean allMatch(CommandSender sender, Command command, String arguments) {
+        return new RouteMatcher(this).matches(sender, command, arguments);
     }
 }

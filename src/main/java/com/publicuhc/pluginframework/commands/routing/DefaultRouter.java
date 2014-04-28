@@ -96,7 +96,7 @@ public class DefaultRouter implements Router {
         List<CommandProxy> proxies = new ArrayList<CommandProxy>();
         for (CommandProxy proxy : m_commands) {
             Route route = proxy.getRoute();
-            if( route.matches(sender, command, parameters )) {
+            if( route.allMatch(sender, command, parameters )) {
                 proxies.add(proxy);
             }
         }
@@ -108,7 +108,7 @@ public class DefaultRouter implements Router {
         List<TabCompleteProxy> proxies = new ArrayList<TabCompleteProxy>();
         for (TabCompleteProxy proxy : m_tabCompletes) {
             Route route = proxy.getRoute();
-            if( route.matches(sender, command, parameters) ){
+            if( route.allMatch(sender, command, parameters) ){
                 proxies.add(proxy);
             }
         }
