@@ -40,11 +40,11 @@ public abstract class Route {
     }
 
     /**
-     * Does this route + all subsequent chains match the given parameters
+     * Does this restriction allow the parameters
      * @param sender the command sender
      * @param command the command
      * @param arguments the arguments
-     * @return true if matches, false a chain failed
+     * @return true if matches, false if not
      */
     public abstract boolean matches(CommandSender sender, Command command, String arguments);
 
