@@ -32,7 +32,6 @@ import com.publicuhc.pluginframework.configuration.Configurator;
 import com.publicuhc.pluginframework.translate.Translate;
 import com.publicuhc.pluginframework.translate.TranslateModule;
 import org.bukkit.Server;
-import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginLoader;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -59,12 +58,11 @@ public abstract class FrameworkJavaPlugin extends JavaPlugin {
     public FrameworkJavaPlugin() {}
 
     @Override
-    public final void onLoad() {
+    public final void onEnable() {
         List<AbstractModule> modules = initialModules();
         if (modules == null) {
             modules = new ArrayList<AbstractModule>();
         }
-        final Plugin plugin = this;
         modules.add(new PluginModule(this));
         if (initUseDefaultBindings()) {
             modules.add(new CommandModule());
@@ -73,13 +71,13 @@ public abstract class FrameworkJavaPlugin extends JavaPlugin {
         }
         Injector injector = Guice.createInjector(modules);
         injector.injectMembers(this);
-        onFrameworkLoad();
+        onFrameworkEnable();
     }
 
     /**
      * Called when the framework is loaded
      */
-    public void onFrameworkLoad() {
+    public void onFrameworkEnable() {
     }
 
     /**
@@ -133,7 +131,7 @@ public abstract class FrameworkJavaPlugin extends JavaPlugin {
     }
 
     /**
-     * <b>ONLY USE THIS AFTER onLoad HAS BEEN CALLED. (onFrameworkLoad and later) otherwise it will return null</b>
+     * <b>ONLY USE THIS AFTER onLoad HAS BEEN CALLED. (onFrameworkEnable and later) otherwise it will return null</b>
      *
      * @return the router object
      */
@@ -142,7 +140,7 @@ public abstract class FrameworkJavaPlugin extends JavaPlugin {
     }
 
     /**
-     * <b>ONLY USE THIS AFTER onLoad HAS BEEN CALLED. (onFrameworkLoad and later) otherwise it will return null</b>
+     * <b>ONLY USE THIS AFTER onLoad HAS BEEN CALLED. (onFrameworkEnable and later) otherwise it will return null</b>
      *
      * @return the configurator object
      */
@@ -151,7 +149,7 @@ public abstract class FrameworkJavaPlugin extends JavaPlugin {
     }
 
     /**
-     * <b>ONLY USE THIS AFTER onEnable HAS BEEN CALLED. (onFrameworkLoad and later) otherwise it will return null</b>
+     * <b>ONLY USE THIS AFTER onEnable HAS BEEN CALLED. (onFrameworkEnable and later) otherwise it will return null</b>
      *
      * @return the translate object
      */

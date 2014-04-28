@@ -66,6 +66,12 @@ public class FrameworkJavaPluginTest {
 
         plugin.onLoad();
 
+        assertThat(plugin.getConfigurator(), is(nullValue()));
+        assertThat(plugin.getRouter(), is(nullValue()));
+        assertThat(plugin.getTranslate(), is(nullValue()));
+
+        plugin.onEnable();
+
         assertThat(plugin.getConfigurator(), is(instanceOf(DefaultConfigurator.class)));
         assertThat(plugin.getTranslate(), is(instanceOf(DefaultTranslate.class)));
         assertThat(plugin.getRouter(), is(instanceOf(DefaultRouter.class)));
@@ -90,6 +96,14 @@ public class FrameworkJavaPluginTest {
         assertThat(plugin.i, is(nullValue()));
 
         plugin.onLoad();
+
+        assertThat(plugin.getConfigurator(), is(nullValue()));
+        assertThat(plugin.getRouter(), is(nullValue()));
+        assertThat(plugin.getTranslate(), is(nullValue()));
+
+        assertThat(plugin.i, is(nullValue()));
+
+        plugin.onEnable();
 
         assertThat(plugin.getConfigurator(), is(instanceOf(DefaultConfigurator.class)));
         assertThat(plugin.getTranslate(), is(instanceOf(DefaultTranslate.class)));
@@ -116,6 +130,13 @@ public class FrameworkJavaPluginTest {
         assertThat(plugin.builder, is(nullValue()));
 
         plugin.onLoad();
+
+        assertThat(plugin.getConfigurator(), is(nullValue()));
+        assertThat(plugin.getRouter(), is(nullValue()));
+        assertThat(plugin.getTranslate(), is(nullValue()));
+        assertThat(plugin.builder, is(nullValue()));
+
+        plugin.onEnable();
 
         assertThat(plugin.getConfigurator(), is(instanceOf(TestPluginReplaceModules.TestConcreteConfigurator.class)));
         assertThat(plugin.getTranslate(), is(instanceOf(TestPluginReplaceModules.TestConcreteTranslate.class)));
