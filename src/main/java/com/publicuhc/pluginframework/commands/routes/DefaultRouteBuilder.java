@@ -76,6 +76,12 @@ public class DefaultRouteBuilder implements RouteBuilder {
     }
 
     @Override
+    public RouteBuilder restrictStartsWith(String startsWith) {
+        m_route = new StartsWithRestrictedRoute(m_route, startsWith);
+        return this;
+    }
+
+    @Override
     public RouteBuilder reset() {
         m_baseRoute = new BaseRoute();
         m_route = m_baseRoute;

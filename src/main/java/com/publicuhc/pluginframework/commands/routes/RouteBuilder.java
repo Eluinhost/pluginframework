@@ -73,6 +73,13 @@ public interface RouteBuilder {
     RouteBuilder restrictArgumentCount(int min, int max);
 
     /**
+     * Restrict based on if the arguments start with the string, case insensitive
+     * @param startsWith the string to check
+     * @return this
+     */
+    RouteBuilder restrictStartsWith(String startsWith);
+
+    /**
      * Reset the builder to build again
      * @return this
      */
