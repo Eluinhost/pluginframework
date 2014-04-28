@@ -41,6 +41,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.PluginCommand;
+import org.bukkit.plugin.PluginLogger;
 
 import java.lang.reflect.Method;
 import java.util.*;
@@ -86,7 +87,7 @@ public class DefaultRouter implements Router {
     private static final String ROUTE_INFO_SUFFIX = "Details";
 
     @Inject
-    protected DefaultRouter(Provider<CommandRequestBuilder> requestProvider, Injector injector, Logger logger, Translate translator, MethodChecker checker) {
+    protected DefaultRouter(Provider<CommandRequestBuilder> requestProvider, Injector injector, PluginLogger logger, Translate translator, MethodChecker checker) {
         m_requestProvider = requestProvider;
         m_injector = injector;
         m_logger = logger;

@@ -65,18 +65,12 @@ public abstract class FrameworkJavaPlugin extends JavaPlugin {
             modules = new ArrayList<AbstractModule>();
         }
         final Plugin plugin = this;
-        modules.add(new AbstractModule() {
-            @Override
-            protected void configure() {
-                bind(Plugin.class).toInstance(plugin);
-            }
-        });
+        modules.add(new PluginModule(this));
         if (initUseDefaultBindings()) {
             modules.add(new CommandModule());
             modules.add(new ConfigurationModule(this.getClassLoader()));
             modules.add(new TranslateModule());
         }
-        modules.add(new PluginModule(this));
         Injector injector = Guice.createInjector(modules);
         injector.injectMembers(this);
         onFrameworkLoad();

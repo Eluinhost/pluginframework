@@ -42,7 +42,7 @@ import java.io.File;
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.assertThat;
 import static org.powermock.api.mockito.PowerMockito.mock;
-import static org.powermock.api.mockito.PowerMockito.whenNew;
+import static org.powermock.api.mockito.PowerMockito.when;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({FrameworkJavaPlugin.class, PluginDescriptionFile.class, JavaPluginLoader.class})
@@ -56,7 +56,7 @@ public class FrameworkJavaPluginTest {
         File file1 = new File("target" + File.separator + "testdatafolder");
 
         PluginLogger logger = mock(PluginLogger.class);
-        whenNew(PluginLogger.class).withAnyArguments().thenReturn(logger);
+        when(server.getLogger()).thenReturn(logger);
 
         TestPluginDefaultModules plugin = new TestPluginDefaultModules(loader, server, pdf, file1, file1) { };
 
@@ -79,7 +79,7 @@ public class FrameworkJavaPluginTest {
         File file1 = new File("target" + File.separator + "testdatafolder");
 
         PluginLogger logger = mock(PluginLogger.class);
-        whenNew(PluginLogger.class).withAnyArguments().thenReturn(logger);
+        when(server.getLogger()).thenReturn(logger);
 
         TestPluginExtraModules plugin = new TestPluginExtraModules(loader, server, pdf, file1, file1);
 
@@ -106,7 +106,7 @@ public class FrameworkJavaPluginTest {
         File file1 = new File("target" + File.separator + "testdatafolder");
 
         PluginLogger logger = mock(PluginLogger.class);
-        whenNew(PluginLogger.class).withAnyArguments().thenReturn(logger);
+        when(server.getLogger()).thenReturn(logger);
 
         TestPluginReplaceModules plugin = new TestPluginReplaceModules(loader, server, pdf, file1, file1);
 

@@ -29,6 +29,7 @@ import com.publicuhc.pluginframework.commands.exceptions.AnnotationMissingExcept
 import com.publicuhc.pluginframework.commands.exceptions.InvalidMethodParametersException;
 import com.publicuhc.pluginframework.commands.exceptions.InvalidReturnTypeException;
 import com.publicuhc.pluginframework.commands.requests.CommandRequest;
+import org.bukkit.plugin.PluginLogger;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
@@ -42,7 +43,7 @@ public class DefaultMethodChecker implements MethodChecker {
     private final Logger m_logger;
 
     @Inject
-    protected DefaultMethodChecker(Logger logger) {
+    protected DefaultMethodChecker(PluginLogger logger) {
         m_logger = logger;
     }
 

@@ -171,6 +171,7 @@ public class CommandRequestTest {
         assertFalse(request.isArgPresent(1000));
     }
 
+    @SuppressWarnings("deprecation")
     @Test
     public void testGetPlayer() {
         mockStatic(Bukkit.class);

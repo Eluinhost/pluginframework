@@ -1,5 +1,5 @@
 /*
- * PluginModule.java
+ * PluginLoggerInjectable.java
  *
  * Copyright (c) 2014 Graham Howden <graham_howden1 at yahoo.co.uk>.
  *
@@ -21,25 +21,19 @@
 
 package com.publicuhc.pluginframework;
 
-import com.google.inject.AbstractModule;
-import com.google.inject.name.Names;
+import com.google.inject.Inject;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginLogger;
 
-import java.io.File;
+public class PluginLoggerInjectable extends PluginLogger {
 
-public class PluginModule extends AbstractModule {
-
-    private final Plugin m_plugin;
-
-    public PluginModule(Plugin plugin) {
-        m_plugin = plugin;
-    }
-
-    @Override
-    protected void configure() {
-        bind(File.class).annotatedWith(Names.named("dataFolder")).toInstance(m_plugin.getDataFolder());
-        bind(Plugin.class).toInstance(m_plugin);
-        bind(PluginLogger.class).to(PluginLoggerInjectable.class);
+    /**
+     * Creates a new PluginLogger that extracts the name from a plugin.
+     *
+     * @param context A reference to the plugin
+     */
+    @Inject
+    public PluginLoggerInjectable(Plugin context) {
+        super(context);
     }
 }

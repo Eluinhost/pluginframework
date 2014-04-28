@@ -40,11 +40,11 @@ import com.publicuhc.pluginframework.translate.Translate;
 import org.bukkit.Server;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginLoader;
+import org.bukkit.plugin.PluginLogger;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Logger;
 
 public class TestPluginReplaceModules extends FrameworkJavaPlugin {
 
@@ -85,7 +85,7 @@ public class TestPluginReplaceModules extends FrameworkJavaPlugin {
 
     public static class TestConcreteRouter extends DefaultRouter {
         @Inject
-        protected TestConcreteRouter(Provider<CommandRequestBuilder> requestProvider, Injector injector, Logger logger, Translate translate, MethodChecker checker) {
+        protected TestConcreteRouter(Provider<CommandRequestBuilder> requestProvider, Injector injector, PluginLogger logger, Translate translate, MethodChecker checker) {
             super(requestProvider, injector, logger, translate, checker);
         }
     }
@@ -113,7 +113,7 @@ public class TestPluginReplaceModules extends FrameworkJavaPlugin {
 
     public static class TestConcreteMethodChecker extends DefaultMethodChecker {
         @Inject
-        protected TestConcreteMethodChecker(Logger logger) {
+        protected TestConcreteMethodChecker(PluginLogger logger) {
             super(logger);
         }
     }

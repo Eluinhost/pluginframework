@@ -26,6 +26,10 @@ import com.publicuhc.pluginframework.commands.exceptions.CommandClassParseExcept
 import com.publicuhc.pluginframework.commands.exceptions.InvalidMethodParametersException;
 import com.publicuhc.pluginframework.commands.exceptions.InvalidReturnTypeException;
 import com.publicuhc.pluginframework.commands.requests.CommandRequest;
+import org.bukkit.Server;
+import org.bukkit.plugin.Plugin;
+import org.bukkit.plugin.PluginDescriptionFile;
+import org.bukkit.plugin.PluginLogger;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -34,6 +38,9 @@ import org.powermock.modules.junit4.PowerMockRunner;
 import java.lang.reflect.Method;
 import java.util.logging.Logger;
 
+import static org.powermock.api.mockito.PowerMockito.mock;
+import static org.powermock.api.mockito.PowerMockito.when;
+
 @RunWith(PowerMockRunner.class)
 public class DefaultMethodCheckerTest {
 
@@ -41,7 +48,15 @@ public class DefaultMethodCheckerTest {
 
     @Before
     public void onSetUp() {
-        checker = new DefaultMethodChecker(Logger.getAnonymousLogger());
+        Plugin plugin = mock(Plugin.class);
+        PluginDescriptionFile pdf = new PluginDescriptionFile("test", "0.1", "com.publicuhc.pluginframework.FrameworkJavaPlugin");
+        when(plugin.getDescription()).thenReturn(pdf);
+
+        Server server = mock(Server.class);
+        when(server.getLogger()).thenReturn(Logger.getAnonymousLogger());
+        when(plugin.getServer()).thenReturn(server);
+
+        checker = new DefaultMethodChecker(new PluginLogger(plugin));
     }
 
     @Test

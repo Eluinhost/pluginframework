@@ -25,7 +25,8 @@ import com.google.inject.AbstractModule;
 import com.google.inject.Guice;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
-import com.google.inject.name.Names;
+import com.publicuhc.pluginframework.PluginModule;
+import com.publicuhc.pluginframework.commands.CommandModule;
 import com.publicuhc.pluginframework.commands.annotation.CommandMethod;
 import com.publicuhc.pluginframework.commands.annotation.RouteInfo;
 import com.publicuhc.pluginframework.commands.annotation.TabCompletion;
@@ -35,20 +36,18 @@ import com.publicuhc.pluginframework.commands.exceptions.DetailsMethodNotFoundEx
 import com.publicuhc.pluginframework.commands.proxies.CommandProxy;
 import com.publicuhc.pluginframework.commands.proxies.TabCompleteProxy;
 import com.publicuhc.pluginframework.commands.requests.CommandRequest;
-import com.publicuhc.pluginframework.commands.requests.CommandRequestBuilder;
-import com.publicuhc.pluginframework.commands.requests.DefaultCommandRequestBuilder;
 import com.publicuhc.pluginframework.commands.routing.testcommands.*;
-import com.publicuhc.pluginframework.configuration.Configurator;
-import com.publicuhc.pluginframework.configuration.DefaultConfigurator;
-import com.publicuhc.pluginframework.translate.DefaultTranslate;
-import com.publicuhc.pluginframework.translate.Translate;
+import com.publicuhc.pluginframework.configuration.ConfigurationModule;
+import com.publicuhc.pluginframework.translate.TranslateModule;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Server;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.plugin.Plugin;
+import org.bukkit.plugin.PluginDescriptionFile;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -58,6 +57,7 @@ import org.powermock.modules.junit4.PowerMockRunner;
 import java.io.File;
 import java.util.Arrays;
 import java.util.List;
+import java.util.logging.Logger;
 
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.assertThat;
@@ -73,21 +73,29 @@ public class DefaultRouterTest {
 
     @Before
     public void setup() throws NoSuchMethodException {
-        Injector injector = Guice.createInjector(new AbstractModule() {
-            @Override
-            protected void configure() {
-                bind(Router.class).to(DefaultRouter.class);
-                bind(CommandRequestBuilder.class).to(DefaultCommandRequestBuilder.class);
-                bind(TestInterface.class).to(InjectorTest.class);
-                bind(Translate.class).to(DefaultTranslate.class);
-                bind(Configurator.class).to(DefaultConfigurator.class);
-                bind(Plugin.class).toInstance(mock(Plugin.class));
-                bind(File.class).annotatedWith(Names.named("dataFolder")).toInstance(new File("target" + File.separator + "testdatafolder"));
-                bind(ClassLoader.class).toInstance(getClass().getClassLoader());
-                bind(RouteBuilder.class).to(DefaultRouteBuilder.class);
-                bind(MethodChecker.class).to(DefaultMethodChecker.class);
-            }
-        });
+        Plugin plugin = mock(Plugin.class);
+        when(plugin.getDataFolder()).thenReturn(new File("target" + File.separator + "testdatafolder"));
+
+        PluginDescriptionFile pdf = new PluginDescriptionFile("test", "1.0", "com.publicuhc.pluginframework.FrameworkJavaPlugin");
+        when(plugin.getDescription()).thenReturn(pdf);
+
+        Server server = mock(Server.class);
+        when(server.getLogger()).thenReturn(Logger.getAnonymousLogger());
+        when(plugin.getServer()).thenReturn(server);
+
+        Injector injector = Guice.createInjector(
+                new PluginModule(plugin),
+                new CommandModule(),
+                new TranslateModule(),
+                new ConfigurationModule(getClass().getClassLoader()),
+                new AbstractModule() {
+                    @Override
+                    protected void configure() {
+                        bind(TestInterface.class).to(InjectorTest.class);
+                    }
+                }
+        );
+
         router = (DefaultRouter) injector.getInstance(Router.class);
     }
 
