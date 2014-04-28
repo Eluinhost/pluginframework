@@ -70,6 +70,12 @@ public class DefaultRouteBuilder implements RouteBuilder {
     }
 
     @Override
+    public RouteBuilder restrictArgumentCount(int min, int max) {
+        m_route = new ArgumentRestrictedRoute(m_route, min, max);
+        return this;
+    }
+
+    @Override
     public RouteBuilder reset() {
         m_baseRoute = new BaseRoute();
         m_route = m_baseRoute;

@@ -64,6 +64,15 @@ public interface RouteBuilder {
     RouteBuilder maxMatches(int matches);
 
     /**
+     * Restrict amount of arguments to within the limits
+     * if either parameter is less than 0 it will be ignored
+     * @param min the minimum
+     * @param max the maximum
+     * @return this
+     */
+    RouteBuilder restrictArgumentCount(int min, int max);
+
+    /**
      * Reset the builder to build again
      * @return this
      */
