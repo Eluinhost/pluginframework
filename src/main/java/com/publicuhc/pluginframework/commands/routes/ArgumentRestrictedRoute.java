@@ -24,6 +24,8 @@ package com.publicuhc.pluginframework.commands.routes;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 
+import java.util.StringTokenizer;
+
 public class ArgumentRestrictedRoute extends Route {
 
     private final int m_min;
@@ -43,7 +45,7 @@ public class ArgumentRestrictedRoute extends Route {
 
     @Override
     public boolean matches(CommandSender sender, Command command, String arguments) {
-        String[] tokens = arguments.split(" ");
-        return (m_min < 0 || tokens.length >= m_min) && (m_max < 0 || tokens.length <= m_max) && getNextChain().matches(sender, command, arguments);
+        int count = new StringTokenizer(arguments).countTokens();
+        return (m_min < 0 || count >= m_min) && (m_max < 0 || count <= m_max) && getNextChain().matches(sender, command, arguments);
     }
 }
