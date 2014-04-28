@@ -24,13 +24,9 @@ package com.publicuhc.pluginframework.commands.routes;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 
-import java.util.regex.Matcher;
-
 public class CommandRestrictedRoute extends Route {
 
     private final String m_command;
-
-    private Matcher m_matcher;
 
     public CommandRestrictedRoute(Route route, String command) {
         super(route);
