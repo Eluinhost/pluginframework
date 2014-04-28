@@ -24,13 +24,9 @@ package com.publicuhc.pluginframework.commands.routes;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 
-import java.util.regex.Matcher;
-
 public abstract class Route {
 
     private final Route m_wrapped;
-
-    private Matcher m_matcher;
 
     protected Route(Route route) {
         m_wrapped = route;
