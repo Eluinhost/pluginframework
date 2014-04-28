@@ -13,8 +13,12 @@ public class RouteMatcher {
 
     public boolean matches(CommandSender sender, Command command, String args) {
         Route currentRoute = m_route;
-        while(currentRoute.matches(sender, command, args)) {
+        while(currentRoute != null) {
+            if(!currentRoute.matches(sender, command, args)) {
+                return false;
+            }
             currentRoute = currentRoute.getNextChain();
         }
+        return true;
     }
 }
