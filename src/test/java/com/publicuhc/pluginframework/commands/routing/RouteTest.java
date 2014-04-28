@@ -49,7 +49,7 @@ public class RouteTest {
 
     @Test
     public void testBaseRoute() {
-        assertTrue(baseRoute.matches(mock(CommandSender.class), mock(Command.class), ""));
+        assertTrue(baseRoute.allMatch(mock(CommandSender.class), mock(Command.class), ""));
     }
 
     @Test
@@ -62,17 +62,17 @@ public class RouteTest {
 
         CommandRestrictedRoute route = new CommandRestrictedRoute(baseRoute, "valid");
 
-        assertTrue(route.matches(mock(CommandSender.class), valid, ""));
-        assertFalse(route.matches(mock(CommandSender.class), invalid, ""));
+        assertTrue(route.allMatch(mock(CommandSender.class), valid, ""));
+        assertFalse(route.allMatch(mock(CommandSender.class), invalid, ""));
     }
 
     @Test
     public void testPatternRestrictedRoute() {
         PatternRestrictedRoute route = new PatternRestrictedRoute(baseRoute, Pattern.compile("(valid|good)"));
 
-        assertTrue(route.matches(mock(CommandSender.class), mock(Command.class), "valid"));
-        assertTrue(route.matches(mock(CommandSender.class), mock(Command.class), "good"));
-        assertFalse(route.matches(mock(CommandSender.class), mock(Command.class), "invalid"));
+        assertTrue(route.allMatch(mock(CommandSender.class), mock(Command.class), "valid"));
+        assertTrue(route.allMatch(mock(CommandSender.class), mock(Command.class), "good"));
+        assertFalse(route.allMatch(mock(CommandSender.class), mock(Command.class), "invalid"));
     }
 
     @Test
@@ -85,8 +85,8 @@ public class RouteTest {
 
         PermissionRestrictedRoute route = new PermissionRestrictedRoute(baseRoute, "test.permission");
 
-        assertTrue(route.matches(goodsender, mock(Command.class), ""));
-        assertFalse(route.matches(badsender, mock(Command.class), ""));
+        assertTrue(route.allMatch(goodsender, mock(Command.class), ""));
+        assertFalse(route.allMatch(badsender, mock(Command.class), ""));
     }
 
     @Test
@@ -96,8 +96,8 @@ public class RouteTest {
 
         SenderTypeRestrictedRoute route = new SenderTypeRestrictedRoute(baseRoute, SenderType.PLAYER);
 
-        assertTrue(route.matches(player, mock(Command.class), ""));
-        assertFalse(route.matches(block, mock(Command.class), ""));
+        assertTrue(route.allMatch(player, mock(Command.class), ""));
+        assertFalse(route.allMatch(block, mock(Command.class), ""));
     }
 
     @Test
@@ -122,15 +122,15 @@ public class RouteTest {
         PermissionRestrictedRoute permissionRestricted = new PermissionRestrictedRoute(commandRestricted, "test.permission");
 
         //test valid first
-        assertTrue(permissionRestricted.matches(goodPlayer, valid, ""));
+        assertTrue(permissionRestricted.allMatch(goodPlayer, valid, ""));
 
         //test bad permission
-        assertFalse(permissionRestricted.matches(badPlayer, valid, ""));
+        assertFalse(permissionRestricted.allMatch(badPlayer, valid, ""));
 
         //test bad type
-        assertFalse(permissionRestricted.matches(block, valid, ""));
+        assertFalse(permissionRestricted.allMatch(block, valid, ""));
 
         //test bad command
-        assertFalse(permissionRestricted.matches(goodPlayer, invalid, ""));
+        assertFalse(permissionRestricted.allMatch(goodPlayer, invalid, ""));
     }
 }
