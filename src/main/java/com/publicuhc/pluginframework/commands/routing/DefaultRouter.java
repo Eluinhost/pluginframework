@@ -256,7 +256,7 @@ public class DefaultRouter implements Router {
                 proxy.trigger(request);
             } catch (ProxyTriggerException e) {
                 e.getActualException().printStackTrace();
-                sender.sendMessage(ChatColor.RED + "Error running command, check console for more information"); //TODO translate with API
+                sender.sendMessage(ChatColor.RED + "Error running command, check console for more information");
             }
         }
 
@@ -298,7 +298,7 @@ public class DefaultRouter implements Router {
                 results.addAll(proxy.trigger(request));
             } catch (ProxyTriggerException e) {
                 e.getActualException().printStackTrace();
-                sender.sendMessage(ChatColor.RED + "Error with tab completion, check the console for more information"); //TODO translate with API
+                sender.sendMessage(ChatColor.RED + "Error with tab completion, check the console for more information");
             }
         }
 
