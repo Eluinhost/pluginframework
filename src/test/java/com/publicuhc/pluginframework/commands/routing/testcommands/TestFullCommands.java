@@ -26,14 +26,11 @@ import com.publicuhc.pluginframework.commands.annotation.RouteInfo;
 import com.publicuhc.pluginframework.commands.annotation.TabCompletion;
 import com.publicuhc.pluginframework.commands.requests.CommandRequest;
 import com.publicuhc.pluginframework.commands.routing.RouteBuilder;
-import io.github.reggert.reb4j.Entity;
-import io.github.reggert.reb4j.Literal;
-import io.github.reggert.reb4j.Quantified;
-import io.github.reggert.reb4j.charclass.CharClass;
 import org.bukkit.Bukkit;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Pattern;
 
 public class TestFullCommands {
 
@@ -46,22 +43,8 @@ public class TestFullCommands {
     @RouteInfo
     public void banIPDetails(RouteBuilder builder) {
         builder.restrictCommand("banIP")
-                .restrictPermission("test.permission");
-        Quantified threeDigits = CharClass.Posix.DIGIT.repeat(1, 3);
-        Literal dot = Literal.literal(".");
-        Literal space = Literal.literal(" ");
-
-        builder.restrictPattern(
-                Entity.INPUT_BEGIN
-                        .andThen(threeDigits).andThen(dot)
-                        .andThen(threeDigits).andThen(dot)
-                        .andThen(threeDigits).andThen(dot)
-                        .andThen(threeDigits)
-                        .andThen(space)
-                        .andThen(CharClass.Java.WHITESPACE.negated().atLeast(1))
-                        .andThen(Entity.ANY_CHAR.anyTimes())
-                        .andThen(Entity.INPUT_END)
-        );
+                .restrictPermission("test.permission")
+                .restrictPattern(Pattern.compile("^([\\d]{1,3}.[\\d]{1,3}.[\\d]{1,3}.[\\d]{1,3}) (.*)$"));
     }
 
     @TabCompletion
@@ -75,20 +58,8 @@ public class TestFullCommands {
 
     @RouteInfo
     public void completeDetails(RouteBuilder builder) {
-        builder.restrictCommand("banIP");
-
-        Quantified threeDigits = CharClass.Posix.DIGIT.repeat(1, 3);
-        Literal dot = Literal.literal(".");
-
-        builder.restrictPattern(
-                Entity.INPUT_BEGIN
-                        .andThen(threeDigits).andThen(dot)
-                        .andThen(threeDigits).andThen(dot)
-                        .andThen(threeDigits).andThen(dot)
-                        .andThen(threeDigits)
-                        .andThen(Entity.INPUT_END)
-        );
-
-        builder.restrictPermission("test.permission");
+        builder.restrictCommand("banIP")
+                .restrictPattern(Pattern.compile("^([\\d]{1,3}.[\\d]{1,3}.[\\d]{1,3}.[\\d]{1,3})$"))
+                .restrictPermission("test.permission");
     }
 }
