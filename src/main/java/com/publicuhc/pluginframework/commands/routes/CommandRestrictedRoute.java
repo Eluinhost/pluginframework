@@ -1,5 +1,5 @@
 /*
- * Route.java
+ * CommandRestrictedRoute.java
  *
  * Copyright (c) 2014 Graham Howden <graham_howden1 at yahoo.co.uk>.
  *
@@ -19,43 +19,30 @@
  * along with PluginFramework.  If not, see <http ://www.gnu.org/licenses/>.
  */
 
-package com.publicuhc.pluginframework.commands.routing;
+package com.publicuhc.pluginframework.commands.routes;
 
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 
 import java.util.regex.Matcher;
 
-public abstract class Route {
+public class CommandRestrictedRoute extends Route {
 
-    private final Route m_wrapped;
+    private final String m_command;
 
     private Matcher m_matcher;
 
-    protected Route(Route route) {
-        m_wrapped = route;
+    public CommandRestrictedRoute(Route route, String command) {
+        super(route);
+        m_command = command;
     }
 
-    /**
-     * @return the next restriction in the chain or null if no chains left
-     */
-    public Route getNextChain() {
-        return m_wrapped;
+    @Override
+    public boolean matches(CommandSender sender, Command command, String arguments) {
+        return command.getName().equals(m_command) && getNextChain().matches(sender, command, arguments);
     }
 
-    /**
-     * Does this route + all subsequent chains match the given parameters
-     * @param sender the command sender
-     * @param command the command
-     * @param arguments the arguments
-     * @return true if matches, false a chain failed
-     */
-    abstract boolean matches(CommandSender sender, Command command, String arguments);
-
-    public int getMaxMatches() {
-        if(m_wrapped != null) {
-            return m_wrapped.getMaxMatches();
-        }
-        return 0;
+    public String getCommand() {
+        return m_command;
     }
 }

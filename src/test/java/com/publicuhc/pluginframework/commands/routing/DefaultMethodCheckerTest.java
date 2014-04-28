@@ -26,6 +26,7 @@ import com.publicuhc.pluginframework.commands.exceptions.CommandClassParseExcept
 import com.publicuhc.pluginframework.commands.exceptions.InvalidMethodParametersException;
 import com.publicuhc.pluginframework.commands.exceptions.InvalidReturnTypeException;
 import com.publicuhc.pluginframework.commands.requests.CommandRequest;
+import com.publicuhc.pluginframework.commands.routes.RouteBuilder;
 import org.bukkit.Server;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginDescriptionFile;

@@ -29,6 +29,7 @@ import com.publicuhc.pluginframework.commands.exceptions.AnnotationMissingExcept
 import com.publicuhc.pluginframework.commands.exceptions.InvalidMethodParametersException;
 import com.publicuhc.pluginframework.commands.exceptions.InvalidReturnTypeException;
 import com.publicuhc.pluginframework.commands.requests.CommandRequest;
+import com.publicuhc.pluginframework.commands.routes.RouteBuilder;
 import org.bukkit.plugin.PluginLogger;
 
 import java.lang.reflect.Method;

@@ -24,6 +24,8 @@ package com.publicuhc.pluginframework.commands;
 import com.google.inject.AbstractModule;
 import com.publicuhc.pluginframework.commands.requests.CommandRequestBuilder;
 import com.publicuhc.pluginframework.commands.requests.DefaultCommandRequestBuilder;
+import com.publicuhc.pluginframework.commands.routes.DefaultRouteBuilder;
+import com.publicuhc.pluginframework.commands.routes.RouteBuilder;
 import com.publicuhc.pluginframework.commands.routing.*;
 
 public class CommandModule extends AbstractModule {

@@ -21,7 +21,7 @@
 
 package com.publicuhc.pluginframework.commands.proxies;
 
-import com.publicuhc.pluginframework.commands.routing.Route;
+import com.publicuhc.pluginframework.commands.routes.Route;
 
 import java.lang.reflect.Method;
 

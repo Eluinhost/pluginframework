@@ -1,5 +1,5 @@
 /*
- * CommandRestrictedRoute.java
+ * PermissionRestrictedRoute.java
  *
  * Copyright (c) 2014 Graham Howden <graham_howden1 at yahoo.co.uk>.
  *
@@ -19,30 +19,22 @@
  * along with PluginFramework.  If not, see <http ://www.gnu.org/licenses/>.
  */
 
-package com.publicuhc.pluginframework.commands.routing;
+package com.publicuhc.pluginframework.commands.routes;
 
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 
-import java.util.regex.Matcher;
+public class PermissionRestrictedRoute extends Route {
 
-public class CommandRestrictedRoute extends Route {
+    private final String m_permission;
 
-    private final String m_command;
-
-    private Matcher m_matcher;
-
-    public CommandRestrictedRoute(Route route, String command) {
+    public PermissionRestrictedRoute(Route route, String permission) {
         super(route);
-        m_command = command;
+        m_permission = permission;
     }
 
     @Override
     public boolean matches(CommandSender sender, Command command, String arguments) {
-        return command.getName().equals(m_command) && getNextChain().matches(sender, command, arguments);
-    }
-
-    public String getCommand() {
-        return m_command;
+        return sender.hasPermission(m_permission) && getNextChain().matches(sender, command, arguments);
     }
 }

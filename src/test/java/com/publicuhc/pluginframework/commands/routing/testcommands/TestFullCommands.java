@@ -25,7 +25,7 @@ import com.publicuhc.pluginframework.commands.annotation.CommandMethod;
 import com.publicuhc.pluginframework.commands.annotation.RouteInfo;
 import com.publicuhc.pluginframework.commands.annotation.TabCompletion;
 import com.publicuhc.pluginframework.commands.requests.CommandRequest;
-import com.publicuhc.pluginframework.commands.routing.RouteBuilder;
+import com.publicuhc.pluginframework.commands.routes.RouteBuilder;
 import org.bukkit.Bukkit;
 
 import java.util.ArrayList;

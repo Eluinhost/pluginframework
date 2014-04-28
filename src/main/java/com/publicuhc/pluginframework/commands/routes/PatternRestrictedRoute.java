@@ -1,5 +1,5 @@
 /*
- * SenderTypeRestrictedRoute.java
+ * PatternRestrictedRoute.java
  *
  * Copyright (c) 2014 Graham Howden <graham_howden1 at yahoo.co.uk>.
  *
@@ -19,27 +19,35 @@
  * along with PluginFramework.  If not, see <http ://www.gnu.org/licenses/>.
  */
 
-package com.publicuhc.pluginframework.commands.routing;
+package com.publicuhc.pluginframework.commands.routes;
 
-import com.publicuhc.pluginframework.commands.requests.SenderType;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 
-import java.util.Arrays;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
-public class SenderTypeRestrictedRoute extends Route {
+public class PatternRestrictedRoute extends Route {
 
-    private final SenderType[] m_types;
+    private final Pattern m_pattern;
 
-    public SenderTypeRestrictedRoute(Route route, SenderType... types) {
+    private Matcher m_matcher;
+
+    public PatternRestrictedRoute(Route route, Pattern pattern) {
         super(route);
-        m_types = types;
+        m_pattern = pattern;
     }
 
     @Override
     public boolean matches(CommandSender sender, Command command, String arguments) {
-        SenderType type = SenderType.getFromCommandSender(sender);
+        //check arguments against the pattern
+        if(null == m_matcher) {
+            m_matcher = m_pattern.matcher(arguments);
+        } else {
+            m_matcher.reset(arguments);
+        }
 
-        return Arrays.asList(m_types).contains(type) && getNextChain().matches(sender, command, arguments);
+        //if the pattern wasn't correct this route chain fails
+        return m_matcher.matches() && getNextChain().matches(sender, command, arguments);
     }
 }

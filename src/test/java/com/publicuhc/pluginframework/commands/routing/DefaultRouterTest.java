@@ -36,6 +36,8 @@ import com.publicuhc.pluginframework.commands.exceptions.DetailsMethodNotFoundEx
 import com.publicuhc.pluginframework.commands.proxies.CommandProxy;
 import com.publicuhc.pluginframework.commands.proxies.TabCompleteProxy;
 import com.publicuhc.pluginframework.commands.requests.CommandRequest;
+import com.publicuhc.pluginframework.commands.routes.Route;
+import com.publicuhc.pluginframework.commands.routes.RouteBuilder;
 import com.publicuhc.pluginframework.commands.routing.testcommands.*;
 import com.publicuhc.pluginframework.configuration.ConfigurationModule;
 import com.publicuhc.pluginframework.translate.TranslateModule;

@@ -19,7 +19,7 @@
  * along with PluginFramework.  If not, see <http ://www.gnu.org/licenses/>.
  */
 
-package com.publicuhc.pluginframework.commands.routing;
+package com.publicuhc.pluginframework.commands.routes;
 
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;

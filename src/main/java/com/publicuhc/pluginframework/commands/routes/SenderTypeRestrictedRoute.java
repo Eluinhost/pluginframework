@@ -1,5 +1,5 @@
 /*
- * PermissionRestrictedRoute.java
+ * SenderTypeRestrictedRoute.java
  *
  * Copyright (c) 2014 Graham Howden <graham_howden1 at yahoo.co.uk>.
  *
@@ -19,22 +19,27 @@
  * along with PluginFramework.  If not, see <http ://www.gnu.org/licenses/>.
  */
 
-package com.publicuhc.pluginframework.commands.routing;
+package com.publicuhc.pluginframework.commands.routes;
 
+import com.publicuhc.pluginframework.commands.requests.SenderType;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 
-public class PermissionRestrictedRoute extends Route {
+import java.util.Arrays;
 
-    private final String m_permission;
+public class SenderTypeRestrictedRoute extends Route {
 
-    public PermissionRestrictedRoute(Route route, String permission) {
+    private final SenderType[] m_types;
+
+    public SenderTypeRestrictedRoute(Route route, SenderType... types) {
         super(route);
-        m_permission = permission;
+        m_types = types;
     }
 
     @Override
     public boolean matches(CommandSender sender, Command command, String arguments) {
-        return sender.hasPermission(m_permission) && getNextChain().matches(sender, command, arguments);
+        SenderType type = SenderType.getFromCommandSender(sender);
+
+        return Arrays.asList(m_types).contains(type) && getNextChain().matches(sender, command, arguments);
     }
 }
