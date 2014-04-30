@@ -22,7 +22,8 @@
 package com.publicuhc.pluginframework.commands.routing;
 
 import com.publicuhc.pluginframework.commands.requests.SenderType;
-import io.github.reggert.reb4j.Expression;
+
+import java.util.regex.Pattern;
 
 public interface RouteBuilder {
 
@@ -48,7 +49,7 @@ public interface RouteBuilder {
      * Restrict to a certain pattern
      * @param expression the expression
      */
-    RouteBuilder restrictPattern(Expression expression);
+    RouteBuilder restrictPattern(Pattern expression);
 
     /**
      * Restrict to these sender types

@@ -22,7 +22,8 @@
 package com.publicuhc.pluginframework.commands.routing;
 
 import com.publicuhc.pluginframework.commands.requests.SenderType;
-import io.github.reggert.reb4j.Expression;
+
+import java.util.regex.Pattern;
 
 public class DefaultRouteBuilder implements RouteBuilder {
 
@@ -51,8 +52,8 @@ public class DefaultRouteBuilder implements RouteBuilder {
     }
 
     @Override
-    public RouteBuilder restrictPattern(Expression expression) {
-        m_route = new PatternRestrictedRoute(m_route, expression.toPattern());
+    public RouteBuilder restrictPattern(Pattern expression) {
+        m_route = new PatternRestrictedRoute(m_route, expression);
         return this;
     }
 
