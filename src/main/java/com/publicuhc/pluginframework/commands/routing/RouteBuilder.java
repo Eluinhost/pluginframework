@@ -22,22 +22,49 @@
 package com.publicuhc.pluginframework.commands.routing;
 
 import com.publicuhc.pluginframework.commands.requests.SenderType;
-
-import java.util.regex.Pattern;
+import io.github.reggert.reb4j.Expression;
 
 public interface RouteBuilder {
 
+    /**
+     * Build into a route
+     * @return the route
+     */
     Route build();
 
-    void restrictCommand(String string);
+    /**
+     * Restrict by a command name
+     * @param string the command name
+     */
+    RouteBuilder restrictCommand(String string);
 
-    void restrictPermission(String permission);
+    /**
+     * Restrict to a specific permission
+     * @param permission the permission
+     */
+    RouteBuilder restrictPermission(String permission);
 
-    void restrictPattern(Pattern pattern);
+    /**
+     * Restrict to a certain pattern
+     * @param expression the expression
+     */
+    RouteBuilder restrictPattern(Expression expression);
 
-    void restrictSenderType(SenderType... types);
+    /**
+     * Restrict to these sender types
+     * @param types the senders to run for
+     */
+    RouteBuilder restrictSenderType(SenderType... types);
 
-    void maxMatches(int matches);
+    /**
+     * Only trigger command if number matched is <= this
+     * @param matches the max amount
+     */
+    RouteBuilder maxMatches(int matches);
 
-    void reset();
+    /**
+     * Reset the builder to build again
+     * @return this
+     */
+    RouteBuilder reset();
 }
