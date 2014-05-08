@@ -35,6 +35,7 @@ import org.bukkit.Server;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginLoader;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.mcstats.Metrics;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -45,6 +46,7 @@ public abstract class FrameworkJavaPlugin extends JavaPlugin {
     private Configurator m_configurator;
     private Translate m_translate;
     private Router m_router;
+    private Metrics m_metrics;
 
     /**
      * This method is intended for unit testing purposes. Its existence may be temporary.
@@ -98,6 +100,20 @@ public abstract class FrameworkJavaPlugin extends JavaPlugin {
      */
     public boolean initUseDefaultBindings() {
         return true;
+    }
+
+    @Inject
+    private void setMetrics(Metrics metrics) {
+        m_metrics = metrics;
+    }
+
+    /**
+     * <b>ONLY USE THIS AFTER onEnable HAS BEEN CALLED. (onFrameworkEnable and later) otherwise it will return null</b>
+     *
+     * @return the plugin metrics
+     */
+    public Metrics getMetrics() {
+        return m_metrics;
     }
 
     /**

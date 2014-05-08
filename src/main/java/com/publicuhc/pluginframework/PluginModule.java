@@ -23,8 +23,10 @@ package com.publicuhc.pluginframework;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.name.Names;
+import com.publicuhc.pluginframework.metrics.PluginMetrics;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginLogger;
+import org.mcstats.Metrics;
 
 import java.io.File;
 
@@ -41,5 +43,6 @@ public class PluginModule extends AbstractModule {
         bind(File.class).annotatedWith(Names.named("dataFolder")).toInstance(m_plugin.getDataFolder());
         bind(Plugin.class).toInstance(m_plugin);
         bind(PluginLogger.class).to(PluginLoggerInjectable.class);
+        bind(Metrics.class).to(PluginMetrics.class);
     }
 }
