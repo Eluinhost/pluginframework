@@ -35,7 +35,7 @@ public class CommandRestrictedRoute extends Route {
 
     @Override
     public boolean matches(CommandSender sender, Command command, String arguments) {
-        return command.getName().equalsIgnoreCase(m_command) && getNextChain().matches(sender, command, arguments);
+        return command.getName().equalsIgnoreCase(m_command);
     }
 
     public String getCommand() {

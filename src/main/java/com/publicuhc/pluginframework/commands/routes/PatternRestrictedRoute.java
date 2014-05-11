@@ -48,6 +48,6 @@ public class PatternRestrictedRoute extends Route {
         }
 
         //if the pattern wasn't correct this route chain fails
-        return m_matcher.matches() && getNextChain().matches(sender, command, arguments);
+        return m_matcher.matches();
     }
 }

@@ -46,6 +46,6 @@ public class ArgumentRestrictedRoute extends Route {
     @Override
     public boolean matches(CommandSender sender, Command command, String arguments) {
         int count = new StringTokenizer(arguments).countTokens();
-        return (m_min < 0 || count >= m_min) && (m_max < 0 || count <= m_max) && getNextChain().matches(sender, command, arguments);
+        return (m_min < 0 || count >= m_min) && (m_max < 0 || count <= m_max);
     }
 }

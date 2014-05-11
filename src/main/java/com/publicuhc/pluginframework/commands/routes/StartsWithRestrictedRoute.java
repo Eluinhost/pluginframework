@@ -40,6 +40,6 @@ public class StartsWithRestrictedRoute extends Route {
 
     @Override
     public boolean matches(CommandSender sender, Command command, String arguments) {
-        return arguments.toLowerCase().startsWith(m_startsWith.toLowerCase()) && getNextChain().matches(sender, command, arguments);
+        return arguments.toLowerCase().startsWith(m_startsWith.toLowerCase());
     }
 }

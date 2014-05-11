@@ -40,6 +40,6 @@ public class SenderTypeRestrictedRoute extends Route {
     public boolean matches(CommandSender sender, Command command, String arguments) {
         SenderType type = SenderType.getFromCommandSender(sender);
 
-        return Arrays.asList(m_types).contains(type) && getNextChain().matches(sender, command, arguments);
+        return Arrays.asList(m_types).contains(type);
     }
 }

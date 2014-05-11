@@ -35,6 +35,6 @@ public class PermissionRestrictedRoute extends Route {
 
     @Override
     public boolean matches(CommandSender sender, Command command, String arguments) {
-        return sender.hasPermission(m_permission) && getNextChain().matches(sender, command, arguments);
+        return sender.hasPermission(m_permission);
     }
 }
