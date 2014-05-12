@@ -46,7 +46,7 @@ public abstract class Route {
      * @param arguments the arguments
      * @return true if matches, false if not
      */
-    protected abstract boolean matches(CommandSender sender, Command command, String arguments);
+    protected abstract RouteMatch matches(CommandSender sender, Command command, String arguments);
 
     public int getMaxMatches() {
         if(m_wrapped != null) {
@@ -62,7 +62,7 @@ public abstract class Route {
      * @param arguments the arguments
      * @return true if matches, false if not
      */
-    public boolean allMatch(CommandSender sender, Command command, String arguments) {
+    public RouteMatch allMatch(CommandSender sender, Command command, String arguments) {
         return new RouteMatcher(this).matches(sender, command, arguments);
     }
 }

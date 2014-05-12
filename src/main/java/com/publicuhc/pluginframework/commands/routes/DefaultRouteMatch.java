@@ -1,5 +1,5 @@
 /*
- * RouteMatcher.java
+ * DefaultRouteMatch.java
  *
  * Copyright (c) 2014 Graham Howden <graham_howden1 at yahoo.co.uk>.
  *
@@ -21,34 +21,31 @@
 
 package com.publicuhc.pluginframework.commands.routes;
 
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandSender;
-
 import java.util.HashSet;
 import java.util.Set;
 
-public class RouteMatcher {
+public class DefaultRouteMatch implements RouteMatch {
 
-    private final Route m_route;
+    private final boolean m_matches;
+    private final Set<String> m_messages;
 
-    public RouteMatcher(Route route) {
-        m_route = route;
+    public DefaultRouteMatch(boolean matched, Set<String> errorMessages) {
+        m_matches = matched;
+        m_messages = errorMessages;
     }
 
-    public RouteMatch matches(CommandSender sender, Command command, String args) {
-        Route currentRoute = m_route;
-        Set<String> errors = new HashSet<String>();
-        boolean matches = true;
-        while(currentRoute != null) {
-            RouteMatch match = currentRoute.matches(sender, command, args);
-            errors.addAll(match.getErrorMessages());
-            if(!match.matches()) {
-                matches = false;
-                break;
-            }
-            currentRoute = currentRoute.getNextChain();
-        }
+    public DefaultRouteMatch(boolean matched) {
+        m_matches = matched;
+        m_messages = new HashSet<String>();
+    }
 
-        return new DefaultRouteMatch(matches, errors);
+    @Override
+    public boolean matches() {
+        return m_matches;
+    }
+
+    @Override
+    public Set<String> getErrorMessages() {
+        return m_messages;
     }
 }

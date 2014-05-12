@@ -1,5 +1,5 @@
 /*
- * RouteMatcher.java
+ * RouteMatch.java
  *
  * Copyright (c) 2014 Graham Howden <graham_howden1 at yahoo.co.uk>.
  *
@@ -21,34 +21,18 @@
 
 package com.publicuhc.pluginframework.commands.routes;
 
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandSender;
-
-import java.util.HashSet;
 import java.util.Set;
 
-public class RouteMatcher {
+public interface RouteMatch {
 
-    private final Route m_route;
+    /**
+     * @return whether the route matched or not
+     */
+    boolean matches();
 
-    public RouteMatcher(Route route) {
-        m_route = route;
-    }
+    /**
+     * @return the error messages if it didn't match and wants to display an error
+     */
+    Set<String> getErrorMessages();
 
-    public RouteMatch matches(CommandSender sender, Command command, String args) {
-        Route currentRoute = m_route;
-        Set<String> errors = new HashSet<String>();
-        boolean matches = true;
-        while(currentRoute != null) {
-            RouteMatch match = currentRoute.matches(sender, command, args);
-            errors.addAll(match.getErrorMessages());
-            if(!match.matches()) {
-                matches = false;
-                break;
-            }
-            currentRoute = currentRoute.getNextChain();
-        }
-
-        return new DefaultRouteMatch(matches, errors);
-    }
 }

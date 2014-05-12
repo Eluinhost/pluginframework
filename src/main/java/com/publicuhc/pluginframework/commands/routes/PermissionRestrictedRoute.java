@@ -21,20 +21,36 @@
 
 package com.publicuhc.pluginframework.commands.routes;
 
+import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+
+import java.util.HashSet;
+import java.util.Set;
 
 public class PermissionRestrictedRoute extends Route {
 
     private final String m_permission;
 
+    /**
+     * Make a route that restricts based on permission.
+     * This route WILL show an error message if it fails, make sure it is deeper in the chain if this causes issues.
+     * @param route the route to run after this route
+     * @param permission the permission to check
+     */
     public PermissionRestrictedRoute(Route route, String permission) {
         super(route);
         m_permission = permission;
     }
 
     @Override
-    public boolean matches(CommandSender sender, Command command, String arguments) {
-        return sender.hasPermission(m_permission);
+    public RouteMatch matches(CommandSender sender, Command command, String arguments) {
+        boolean matched = sender.hasPermission(m_permission);
+
+        Set<String> errors = new HashSet<String>();
+        if( !matched ) {
+            errors.add(ChatColor.RED + "You don't have the permission " + ChatColor.BLUE + m_permission);
+        }
+        return new DefaultRouteMatch(matched, errors);
     }
 }
