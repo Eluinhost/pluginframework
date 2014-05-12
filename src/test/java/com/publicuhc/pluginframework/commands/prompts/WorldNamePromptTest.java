@@ -30,8 +30,7 @@ import org.junit.runner.RunWith;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.powermock.api.mockito.PowerMockito.*;
 
 @RunWith(PowerMockRunner.class)
@@ -57,8 +56,9 @@ public class WorldNamePromptTest {
             }
         };
 
-        assertTrue(prompt.isInputValid(mock(ConversationContext.class), "testvalid"));
-        assertFalse(prompt.isInputValid(mock(ConversationContext.class), "invalid"));
+        assertThat(prompt.isInputValid(mock(ConversationContext.class), "testvalid")).isTrue();
+        assertThat(prompt.isInputValid(mock(ConversationContext.class), "testvalid")).isTrue();
+        assertThat(prompt.isInputValid(mock(ConversationContext.class), "invalid")).isFalse();
     }
 
 }

@@ -39,8 +39,7 @@ import org.powermock.modules.junit4.PowerMockRunner;
 
 import java.io.File;
 
-import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.powermock.api.mockito.PowerMockito.mock;
 import static org.powermock.api.mockito.PowerMockito.when;
 
@@ -60,21 +59,21 @@ public class FrameworkJavaPluginTest {
 
         TestPluginDefaultModules plugin = new TestPluginDefaultModules(loader, server, pdf, file1, file1) { };
 
-        assertThat(plugin.getConfigurator(), is(nullValue()));
-        assertThat(plugin.getRouter(), is(nullValue()));
-        assertThat(plugin.getTranslate(), is(nullValue()));
+        assertThat(plugin.getConfigurator()).isNull();
+        assertThat(plugin.getRouter()).isNull();
+        assertThat(plugin.getTranslate()).isNull();
 
         plugin.onLoad();
 
-        assertThat(plugin.getConfigurator(), is(nullValue()));
-        assertThat(plugin.getRouter(), is(nullValue()));
-        assertThat(plugin.getTranslate(), is(nullValue()));
+        assertThat(plugin.getConfigurator()).isNull();
+        assertThat(plugin.getRouter()).isNull();
+        assertThat(plugin.getTranslate()).isNull();
 
         plugin.onEnable();
 
-        assertThat(plugin.getConfigurator(), is(instanceOf(DefaultConfigurator.class)));
-        assertThat(plugin.getTranslate(), is(instanceOf(DefaultTranslate.class)));
-        assertThat(plugin.getRouter(), is(instanceOf(DefaultRouter.class)));
+        assertThat(plugin.getConfigurator()).isInstanceOf(DefaultConfigurator.class);
+        assertThat(plugin.getTranslate()).isInstanceOf(DefaultTranslate.class);
+        assertThat(plugin.getRouter()).isInstanceOf(DefaultRouter.class);
     }
 
     @Test
@@ -89,27 +88,27 @@ public class FrameworkJavaPluginTest {
 
         TestPluginExtraModules plugin = new TestPluginExtraModules(loader, server, pdf, file1, file1);
 
-        assertThat(plugin.getConfigurator(), is(nullValue()));
-        assertThat(plugin.getRouter(), is(nullValue()));
-        assertThat(plugin.getTranslate(), is(nullValue()));
+        assertThat(plugin.getConfigurator()).isNull();
+        assertThat(plugin.getRouter()).isNull();
+        assertThat(plugin.getTranslate()).isNull();
 
-        assertThat(plugin.i, is(nullValue()));
+        assertThat(plugin.i).isNull();
 
         plugin.onLoad();
 
-        assertThat(plugin.getConfigurator(), is(nullValue()));
-        assertThat(plugin.getRouter(), is(nullValue()));
-        assertThat(plugin.getTranslate(), is(nullValue()));
+        assertThat(plugin.getConfigurator()).isNull();
+        assertThat(plugin.getRouter()).isNull();
+        assertThat(plugin.getTranslate()).isNull();
 
-        assertThat(plugin.i, is(nullValue()));
+        assertThat(plugin.i).isNull();
 
         plugin.onEnable();
 
-        assertThat(plugin.getConfigurator(), is(instanceOf(DefaultConfigurator.class)));
-        assertThat(plugin.getTranslate(), is(instanceOf(DefaultTranslate.class)));
-        assertThat(plugin.getRouter(), is(instanceOf(DefaultRouter.class)));
+        assertThat(plugin.getConfigurator()).isInstanceOf(DefaultConfigurator.class);
+        assertThat(plugin.getTranslate()).isInstanceOf(DefaultTranslate.class);
+        assertThat(plugin.getRouter()).isInstanceOf(DefaultRouter.class);
 
-        assertThat(plugin.i, is(instanceOf(TestPluginExtraModules.TestConcrete.class)));
+        assertThat(plugin.i).isInstanceOf(TestPluginExtraModules.TestConcrete.class);
     }
 
     @Test
@@ -124,24 +123,24 @@ public class FrameworkJavaPluginTest {
 
         TestPluginReplaceModules plugin = new TestPluginReplaceModules(loader, server, pdf, file1, file1);
 
-        assertThat(plugin.getConfigurator(), is(nullValue()));
-        assertThat(plugin.getRouter(), is(nullValue()));
-        assertThat(plugin.getTranslate(), is(nullValue()));
-        assertThat(plugin.builder, is(nullValue()));
+        assertThat(plugin.getConfigurator()).isNull();
+        assertThat(plugin.getRouter()).isNull();
+        assertThat(plugin.getTranslate()).isNull();
+        assertThat(plugin.builder).isNull();
 
         plugin.onLoad();
 
-        assertThat(plugin.getConfigurator(), is(nullValue()));
-        assertThat(plugin.getRouter(), is(nullValue()));
-        assertThat(plugin.getTranslate(), is(nullValue()));
-        assertThat(plugin.builder, is(nullValue()));
+        assertThat(plugin.getConfigurator()).isNull();
+        assertThat(plugin.getRouter()).isNull();
+        assertThat(plugin.getTranslate()).isNull();
+        assertThat(plugin.builder).isNull();
 
         plugin.onEnable();
 
-        assertThat(plugin.getConfigurator(), is(instanceOf(TestPluginReplaceModules.TestConcreteConfigurator.class)));
-        assertThat(plugin.getTranslate(), is(instanceOf(TestPluginReplaceModules.TestConcreteTranslate.class)));
-        assertThat(plugin.getRouter(), is(instanceOf(TestPluginReplaceModules.TestConcreteRouter.class)));
-        assertThat(plugin.builder, is(instanceOf(TestPluginReplaceModules.TestConcreteCommandRequestBuilder.class)));
+        assertThat(plugin.getConfigurator()).isInstanceOf(TestPluginReplaceModules.TestConcreteConfigurator.class);
+        assertThat(plugin.getTranslate()).isInstanceOf(TestPluginReplaceModules.TestConcreteTranslate.class);
+        assertThat(plugin.getRouter()).isInstanceOf(TestPluginReplaceModules.TestConcreteRouter.class);
+        assertThat(plugin.builder).isInstanceOf(TestPluginReplaceModules.TestConcreteCommandRequestBuilder.class);
     }
 
     @Test(expected = IllegalStateException.class)

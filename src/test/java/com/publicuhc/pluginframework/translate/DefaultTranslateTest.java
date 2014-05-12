@@ -46,9 +46,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.powermock.api.mockito.PowerMockito.*;
 
 @RunWith(PowerMockRunner.class)
@@ -65,7 +63,7 @@ public class DefaultTranslateTest {
         when(p.getUniqueId()).thenReturn(uuid);
         translate.setLocaleForPlayer(p, "ru");
 
-        assertThat(configurator.getConfig("locales").getString("players." + uuid), is(equalTo("ru")));
+        assertThat(configurator.getConfig("locales").getString("players." + uuid)).isEqualTo("ru");
 
         mockStatic(Bukkit.class);
         PluginManager manager = mock(PluginManager.class);
@@ -73,7 +71,7 @@ public class DefaultTranslateTest {
 
         configurator.reloadConfig("locales");
 
-        assertThat(configurator.getConfig("locales").getString("players." + uuid), is(equalTo("ru")));
+        assertThat(configurator.getConfig("locales").getString("players." + uuid)).isEqualTo("ru");
     }
 
     @Test
@@ -83,35 +81,35 @@ public class DefaultTranslateTest {
         when(p.getUniqueId()).thenReturn(uuid);
 
         translate.setLocaleForPlayer(p, "fr");
-        assertThat(translate.getLocaleForSender(p), is(equalTo("fr")));
+        assertThat(translate.getLocaleForSender(p)).isEqualTo("fr");
 
         FileConfiguration config = configurator.getConfig("locales");
 
-        assertThat(translate.getLocaleForSender(mock(ConsoleCommandSender.class)), is(equalTo(config.getString("console"))));
-        assertThat(translate.getLocaleForSender(mock(BlockCommandSender.class)), is(equalTo(config.getString("commandBlock"))));
-        assertThat(translate.getLocaleForSender(mock(RemoteConsoleCommandSender.class)), is(equalTo(config.getString("remoteConsole"))));
+        assertThat(translate.getLocaleForSender(mock(ConsoleCommandSender.class))).isEqualTo(config.getString("console"));
+        assertThat(translate.getLocaleForSender(mock(BlockCommandSender.class))).isEqualTo(config.getString("commandBlock"));
+        assertThat(translate.getLocaleForSender(mock(RemoteConsoleCommandSender.class))).isEqualTo(config.getString("remoteConsole"));
 
         Player p2 = mock(Player.class);
         UUID uuid2 = UUID.randomUUID();
         when(p2.getUniqueId()).thenReturn(uuid2);
 
-        assertThat(translate.getLocaleForSender(p2), is(equalTo(config.getString("default"))));
+        assertThat(translate.getLocaleForSender(p2)).isEqualTo(config.getString("default"));
     }
 
     @Test
     public void testTranslateNoVars() {
-        assertThat(translate.translate("novalidkey", "test"), is(equalTo("novalidkey")));
-        assertThat(translate.translate("testkeynovars", "test"), is(equalTo("testkeynovars")));
+        assertThat(translate.translate("novalidkey", "test")).isEqualTo("novalidkey");
+        assertThat(translate.translate("testkeynovars", "test")).isEqualTo("testkeynovars");
     }
 
     @Test
     public void testTranslateSingleVar() {
-        assertThat(translate.translate("testkeyonevar", "test", "amount", "one"), is(equalTo("test key one var")));
+        assertThat(translate.translate("testkeyonevar", "test", "amount", "one")).isEqualTo("test key one var");
     }
 
     @Test
     public void testTranslateColourCode() {
-        assertThat(translate.translate("testkeycolour", "test"), is(equalTo(ChatColor.RED + "test key")));
+        assertThat(translate.translate("testkeycolour", "test")).isEqualTo(ChatColor.RED + "test key");
     }
 
     @Test
@@ -119,7 +117,7 @@ public class DefaultTranslateTest {
         Map<String, String> trans = new HashMap<String, String>();
         trans.put("var1", "one");
         trans.put("var2", "two");
-        assertThat(translate.translate("testkeymultivar", "test", trans), is(equalTo("test one two one test")));
+        assertThat(translate.translate("testkeymultivar", "test", trans)).isEqualTo("test one two one test");
     }
 
     @Before

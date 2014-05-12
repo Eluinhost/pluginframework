@@ -54,13 +54,10 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
 import java.io.File;
-import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Logger;
 
-import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.verify;
 import static org.powermock.api.mockito.PowerMockito.*;
 
@@ -101,20 +98,20 @@ public class DefaultRouterTest {
     @Test
     public void testRegisterCommandsInjectionObject() throws CommandClassParseException {
         TestObject object = new TestObject();
-        assertThat(object.getTestInterface(), is(nullValue()));
+        assertThat(object.getTestInterface()).isNull();
 
         router.registerCommands(object, true);
-        assertThat(object.getTestInterface(), is(not(nullValue())));
-        assertThat(object.getTestInterface().getMessage(), is(equalTo("SUCCESS")));
+        assertThat(object.getTestInterface()).isNotNull();
+        assertThat(object.getTestInterface().getMessage()).isEqualTo("SUCCESS");
     }
 
     @Test
     public void testRegisterCommandsInjectionClass() throws CommandClassParseException {
         Object object = router.registerCommands(TestObject.class);
-        assertTrue(object instanceof TestObject);
+        assertThat(object instanceof TestObject).isTrue();
         TestObject testObject = (TestObject) object;
-        assertThat(testObject.getTestInterface(), is(not(nullValue())));
-        assertThat(testObject.getTestInterface().getMessage(), is(equalTo("SUCCESS")));
+        assertThat(testObject.getTestInterface()).isNotNull();
+        assertThat(testObject.getTestInterface().getMessage()).isEqualTo("SUCCESS");
     }
 
     /*###############################
@@ -212,7 +209,7 @@ public class DefaultRouterTest {
 
         List<String> complete = router.onTabComplete(sender, command, "wtfisalabel", new String[]{"192.168.0.1"});
 
-        assertThat(complete, is(equalTo(Arrays.asList("1", "2", "3"))));
+        assertThat(complete).contains("1", "2", "3");
     }
 
     @Test
@@ -222,7 +219,7 @@ public class DefaultRouterTest {
         PluginCommand command = mock(PluginCommand.class);
         when(command.getName()).thenReturn("test");
         when(Bukkit.getPluginCommand("test")).thenReturn(command);
-        assertThat(router.onTabComplete(sender, command, "wtfisalabel", new String[]{"192.168.0.1"}), is(equalTo(Arrays.asList(new String[]{}))));
+        assertThat(router.onTabComplete(sender, command, "wtfisalabel", new String[]{"192.168.0.1"})).isEmpty();
     }
 
     @Test

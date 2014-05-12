@@ -28,8 +28,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.powermock.modules.junit4.PowerMockRunner;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.powermock.api.mockito.PowerMockito.mock;
 
 @RunWith(PowerMockRunner.class)
@@ -49,8 +48,8 @@ public class XZCoordinatePromptTest {
             }
         };
 
-        assertTrue(prompt.isInputValid(mock(ConversationContext.class), "100,-200"));
-        assertFalse(prompt.isInputValid(mock(ConversationContext.class), "dsklfj,as"));
+        assertThat(prompt.isInputValid(mock(ConversationContext.class), "100,-200")).isTrue();
+        assertThat(prompt.isInputValid(mock(ConversationContext.class), "dsklfj,as")).isFalse();
     }
 
 }

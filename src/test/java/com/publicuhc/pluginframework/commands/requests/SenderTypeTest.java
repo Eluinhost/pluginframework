@@ -30,8 +30,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.powermock.modules.junit4.PowerMockRunner;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.powermock.api.mockito.PowerMockito.mock;
 
 @RunWith(PowerMockRunner.class)
@@ -44,13 +43,13 @@ public class SenderTypeTest {
         BlockCommandSender commandblock = mock(BlockCommandSender.class);
         RemoteConsoleCommandSender remote = mock(RemoteConsoleCommandSender.class);
 
-        assertThat(SenderType.getFromCommandSender(player), is(SenderType.PLAYER));
-        assertThat(SenderType.getFromCommandSender(console), is(SenderType.CONSOLE));
-        assertThat(SenderType.getFromCommandSender(commandblock), is(SenderType.COMMAND_BLOCK));
-        assertThat(SenderType.getFromCommandSender(remote), is(SenderType.REMOTE_CONSOLE));
+        assertThat(SenderType.getFromCommandSender(player)).isEqualTo(SenderType.PLAYER);
+        assertThat(SenderType.getFromCommandSender(console)).isEqualTo(SenderType.CONSOLE);
+        assertThat(SenderType.getFromCommandSender(commandblock)).isEqualTo(SenderType.COMMAND_BLOCK);
+        assertThat(SenderType.getFromCommandSender(remote)).isEqualTo(SenderType.REMOTE_CONSOLE);
 
         CommandSender other = mock(CommandSender.class);
-        assertThat(SenderType.getFromCommandSender(other), is(SenderType.OTHER));
+        assertThat(SenderType.getFromCommandSender(other)).isEqualTo(SenderType.OTHER);
     }
 
 }

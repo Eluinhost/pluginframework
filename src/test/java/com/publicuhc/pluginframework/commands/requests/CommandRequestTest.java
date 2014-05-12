@@ -36,8 +36,7 @@ import org.powermock.modules.junit4.PowerMockRunner;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.*;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.powermock.api.mockito.PowerMockito.*;
@@ -52,13 +51,13 @@ public class CommandRequestTest {
 
     @Test
     public void testRemoveFirstArg() {
-        assertThat(request.getArg(0), is(equalTo("first")));
+        assertThat(request.getArg(0)).isEqualTo("first");
 
         int length = request.getArgs().size();
         request.removeFirstArg();
 
-        assertThat(request.getArgs().size(), is(equalTo(length - 1)));
-        assertThat(request.getArg(0), not(equalTo("first")));
+        assertThat(request.getArgs().size()).isEqualTo(length -1);
+        assertThat(request.getArg(0)).isNotEqualTo("first");
     }
 
     @Test
@@ -72,7 +71,7 @@ public class CommandRequestTest {
 
     @Test
     public void testGetFirstArg() {
-        assertThat(request.getFirstArg(), is(equalTo("first")));
+        assertThat(request.getFirstArg()).isEqualTo("first");
     }
 
     @Test
@@ -81,14 +80,14 @@ public class CommandRequestTest {
         CommandRequest request = new CommandRequest();
         request.setArgs(args);
 
-        assertThat(request.getFirstArg(), is(nullValue()));
+        assertThat(request.getFirstArg()).isNull();
     }
 
     @Test
     public void testGetLastArg() {
-        assertThat(request.getLastArg(), is(equalTo("last")));
+        assertThat(request.getLastArg()).isEqualTo("last");
         int length = request.getArgs().size();
-        assertThat(request.getLastArg(), is(equalTo(request.getArg(length - 1))));
+        assertThat(request.getLastArg()).isEqualTo(request.getArg(length - 1));
     }
 
     @Test
@@ -97,14 +96,14 @@ public class CommandRequestTest {
         CommandRequest request = new CommandRequest();
         request.setArgs(args);
 
-        assertThat(request.getLastArg(), is(nullValue()));
+        assertThat(request.getLastArg()).isNull();
     }
 
     @Test
     public void testIsArgInt() {
-        assertTrue(request.isArgInt(1));
-        assertFalse(request.isArgInt(2));
-        assertFalse(request.isArgInt(3));
+        assertThat(request.isArgInt(1)).isTrue();
+        assertThat(request.isArgInt(2)).isFalse();
+        assertThat(request.isArgInt(3)).isFalse();
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -114,9 +113,9 @@ public class CommandRequestTest {
 
     @Test
     public void testGetInt() {
-        assertThat(request.getInt(1), is(2));
-        assertThat(request.getInt(2), is(-1));
-        assertThat(request.getInt(3), is(-1));
+        assertThat(request.getInt(1)).isEqualTo(2);
+        assertThat(request.getInt(2)).isEqualTo(-1);
+        assertThat(request.getInt(3)).isEqualTo(-1);
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -133,9 +132,9 @@ public class CommandRequestTest {
         when(Bukkit.getWorld("2")).thenReturn(null);
         when(Bukkit.getWorld("10.23")).thenReturn(null);
 
-        assertThat(request.getWorld(1), is(nullValue()));
-        assertThat(request.getWorld(2), is(sameInstance(world)));
-        assertThat(request.getWorld(3), is(nullValue()));
+        assertThat(request.getWorld(1)).isNull();
+        assertThat(request.getWorld(2)).isSameAs(world);
+        assertThat(request.getWorld(3)).isNull();
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -151,9 +150,9 @@ public class CommandRequestTest {
 
     @Test
     public void testGetArg() {
-        assertThat(request.getArg(0), is(equalTo("first")));
-        assertThat(request.getArg(1), is(equalTo("2")));
-        assertThat(request.getArg(request.getArgs().size() - 1), is(equalTo("last")));
+        assertThat(request.getArg(0)).isEqualTo("first");
+        assertThat(request.getArg(1)).isEqualTo("2");
+        assertThat(request.getArg(request.getArgs().size() - 1)).isEqualTo("last");
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -163,12 +162,12 @@ public class CommandRequestTest {
 
     @Test
     public void testIsArgPresent() {
-        assertTrue(request.isArgPresent(0));
-        assertTrue(request.isArgPresent(2));
-        assertTrue(request.isArgPresent(4));
-        assertFalse(request.isArgPresent(23));
-        assertFalse(request.isArgPresent(-1));
-        assertFalse(request.isArgPresent(1000));
+        assertThat(request.isArgPresent(0)).isTrue();
+        assertThat(request.isArgPresent(2)).isTrue();
+        assertThat(request.isArgPresent(4)).isTrue();
+        assertThat(request.isArgPresent(23)).isFalse();
+        assertThat(request.isArgPresent(-1)).isFalse();
+        assertThat(request.isArgPresent(1000)).isFalse();
     }
 
     @SuppressWarnings("deprecation")
@@ -178,13 +177,13 @@ public class CommandRequestTest {
         Player mockPlayer = mock(Player.class);
         when(Bukkit.getPlayer("first")).thenReturn(mockPlayer);
 
-        assertThat(request.getPlayer(0), is(sameInstance(mockPlayer)));
+        assertThat(request.getPlayer(0)).isSameAs(mockPlayer);
 
         verifyStatic(times(1));
         Bukkit.getPlayer("first");
 
-        assertThat(request.getPlayer(1), is(nullValue()));
-        assertThat(request.getPlayer(4), is(nullValue()));
+        assertThat(request.getPlayer(1)).isNull();
+        assertThat(request.getPlayer(4)).isNull();
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -194,10 +193,10 @@ public class CommandRequestTest {
 
     @Test
     public void testIsArgNumber() {
-        assertTrue(request.isArgNumber(1));
-        assertFalse(request.isArgNumber(0));
-        assertTrue(request.isArgNumber(3));
-        assertFalse(request.isArgNumber(4));
+        assertThat(request.isArgNumber(1)).isTrue();
+        assertThat(request.isArgNumber(0)).isFalse();
+        assertThat(request.isArgNumber(3)).isTrue();
+        assertThat(request.isArgNumber(4)).isFalse();
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -207,8 +206,8 @@ public class CommandRequestTest {
 
     @Test
     public void testGetNumber() {
-        assertThat(request.getNumber(1).intValue(), is(2));
-        assertThat(request.getNumber(3), is(NumberUtils.createNumber("10.23")));
+        assertThat(request.getNumber(1).intValue()).isEqualTo(2);
+        assertThat(request.getNumber(3)).isEqualTo(NumberUtils.createNumber("10.23"));
     }
 
     @Test(expected = NumberFormatException.class)
@@ -223,10 +222,10 @@ public class CommandRequestTest {
 
     @Test
     public void testIsArgBoolean() {
-        assertTrue(request.isArgBoolean(5));
-        assertTrue(request.isArgBoolean(4));
-        assertFalse(request.isArgBoolean(3));
-        assertFalse(request.isArgBoolean(2));
+        assertThat(request.isArgBoolean(5)).isTrue();
+        assertThat(request.isArgBoolean(4)).isTrue();
+        assertThat(request.isArgBoolean(3)).isFalse();
+        assertThat(request.isArgBoolean(2)).isFalse();
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -236,8 +235,8 @@ public class CommandRequestTest {
 
     @Test
     public void testGetBoolean() {
-        assertTrue(request.getBoolean(4));
-        assertFalse(request.getBoolean(5));
+        assertThat(request.getBoolean(4)).isTrue();
+        assertThat(request.getBoolean(5)).isFalse();
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -247,17 +246,17 @@ public class CommandRequestTest {
 
     @Test
     public void testGetSender() {
-        assertThat(request.getSender(), is(sameInstance(sender)));
+        assertThat(request.getSender()).isSameAs(sender);
     }
 
     @Test
     public void testGetCommand() {
-        assertThat(request.getCommand(), is(sameInstance(command)));
+        assertThat(request.getCommand()).isSameAs(command);
     }
 
     @Test
     public void testGetSenderType() {
-        assertThat(request.getSenderType(), is(SenderType.PLAYER));
+        assertThat(request.getSenderType()).isEqualTo(SenderType.PLAYER);
     }
 
     @Before

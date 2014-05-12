@@ -24,7 +24,6 @@ package com.publicuhc.pluginframework.commands.requests;
 import com.publicuhc.pluginframework.translate.Translate;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
-import org.hamcrest.CoreMatchers;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -33,8 +32,7 @@ import org.powermock.modules.junit4.PowerMockRunner;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.*;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Matchers.any;
 import static org.powermock.api.mockito.PowerMockito.mock;
 import static org.powermock.api.mockito.PowerMockito.when;
@@ -48,8 +46,8 @@ public class DefaultCommandRequestBuilderTest {
     public void testCommand() {
         Command command = mock(Command.class);
 
-        assertThat(builder.setCommand(command), is(CoreMatchers.<CommandRequestBuilder>sameInstance(builder)));
-        assertThat(builder.getCommand(), is(sameInstance(command)));
+        assertThat(builder.setCommand(command)).isSameAs(builder);
+        assertThat(builder.getCommand()).isSameAs(command);
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -59,8 +57,8 @@ public class DefaultCommandRequestBuilderTest {
 
     @Test
     public void testCount() {
-        assertThat(builder.setCount(10), is(CoreMatchers.<CommandRequestBuilder>sameInstance(builder)));
-        assertThat(builder.getCount(), is(10));
+        assertThat(builder.setCount(10)).isSameAs(builder);
+        assertThat(builder.getCount()).isEqualTo(10);
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -72,16 +70,16 @@ public class DefaultCommandRequestBuilderTest {
     public void testArguments() {
         String[] args = {"arg1", "arg2", "arg3"};
 
-        assertThat(builder.setArguments(args), is(CoreMatchers.<CommandRequestBuilder>sameInstance(builder)));
-        assertThat(builder.getArguments(), is(equalTo(Arrays.asList(args))));
+        assertThat(builder.setArguments(args)).isSameAs(builder);
+        assertThat(builder.getArguments()).contains(args);
     }
 
     @Test
     public void testArgumentsList() {
         List<String> args = Arrays.asList("arg1", "arg2", "arg3");
 
-        assertThat(builder.setArguments(args), is(CoreMatchers.<CommandRequestBuilder>sameInstance(builder)));
-        assertThat(builder.getArguments(), is(equalTo(args)));
+        assertThat(builder.setArguments(args)).isSameAs(builder);
+        assertThat(builder.getArguments()).containsAll(args);
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -100,8 +98,8 @@ public class DefaultCommandRequestBuilderTest {
     public void testCommandSender() {
         CommandSender sender = mock(CommandSender.class);
 
-        assertThat(builder.setSender(sender), is(CoreMatchers.<CommandRequestBuilder>sameInstance(builder)));
-        assertThat(builder.getSender(), is(sameInstance(sender)));
+        assertThat(builder.setSender(sender)).isSameAs(builder);
+        assertThat(builder.getSender()).isSameAs(sender);
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -111,15 +109,15 @@ public class DefaultCommandRequestBuilderTest {
 
     @Test
     public void testIsValid() {
-        assertFalse(builder.isValid());
+        assertThat(builder.isValid()).isFalse();
         builder.setSender(mock(CommandSender.class));
-        assertFalse(builder.isValid());
+        assertThat(builder.isValid()).isFalse();
         builder.setArguments(new String[]{});
-        assertFalse(builder.isValid());
+        assertThat(builder.isValid()).isFalse();
         builder.setCommand(mock(Command.class));
-        assertFalse(builder.isValid());
+        assertThat(builder.isValid()).isFalse();
         builder.setCount(1);
-        assertTrue(builder.isValid());
+        assertThat(builder.isValid()).isTrue();
     }
 
     @Test
@@ -129,9 +127,9 @@ public class DefaultCommandRequestBuilderTest {
         builder.setCommand(mock(Command.class));
 
         builder.clear();
-        assertThat(builder.getSender(), is(nullValue()));
-        assertThat(builder.getArguments(), is(nullValue()));
-        assertThat(builder.getCommand(), is(nullValue()));
+        assertThat(builder.getSender()).isNull();
+        assertThat(builder.getArguments()).isNull();
+        assertThat(builder.getCommand()).isNull();
     }
 
     @Test
@@ -147,10 +145,10 @@ public class DefaultCommandRequestBuilderTest {
 
         CommandRequest request = builder.build();
 
-        assertThat(request.getArgs(), is(equalTo(Arrays.asList(args))));
-        assertThat(request.getCommand(), is(sameInstance(command)));
-        assertThat(request.getSender(), is(sameInstance(sender)));
-        assertThat(request.getCount(), is(1));
+        assertThat(request.getArgs()).contains(args);
+        assertThat(request.getCommand()).isSameAs(command);
+        assertThat(request.getSender()).isSameAs(sender);
+        assertThat(request.getCount()).isEqualTo(1);
     }
 
     @Test(expected = IllegalStateException.class)

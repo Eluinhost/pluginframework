@@ -34,9 +34,7 @@ import org.powermock.modules.junit4.PowerMockRunner;
 import java.io.File;
 import java.io.InputStream;
 
-import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -53,13 +51,13 @@ public class DefaultConfiguratorTest {
     @Test
     public void testGetResource() {
         InputStream stream = m_configurator.getResource("test.yml");
-        assertThat(stream, is(not(nullValue())));
+        assertThat(stream).isNotNull();
 
         stream = m_configurator.getResource("nonexisting.yml");
-        assertThat(stream, is(nullValue()));
+        assertThat(stream).isNull();
 
         stream = m_configurator.getResource("testfolder:subtest.yml");
-        assertThat(stream, is(not(nullValue())));
+        assertThat(stream).isNotNull();
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -70,12 +68,12 @@ public class DefaultConfiguratorTest {
     @Test
     public void testLoadConfig() {
         FileConfiguration configuration = m_configurator.loadConfig("test");
-        assertThat(configuration, is(not(nullValue())));
-        assertThat(configuration.getString("testString"), is(equalTo("teststring")));
+        assertThat(configuration).isNotNull();
+        assertThat(configuration.getString("testString")).isEqualTo("teststring");
 
         configuration = m_configurator.loadConfig("testfolder:subtest");
-        assertThat(configuration, is(not(nullValue())));
-        assertThat(configuration.getInt("test1"), is(20));
+        assertThat(configuration).isNotNull();
+        assertThat(configuration.getInt("test1")).isEqualTo(20);
     }
 
     @Test
@@ -83,21 +81,21 @@ public class DefaultConfiguratorTest {
         m_configurator.loadConfig("test");
         m_configurator.saveConfig("test");
         File configFile = new File(m_dataFolder, "test.yml");
-        assertTrue(configFile.exists());
+        assertThat(configFile.exists()).isTrue();
 
         m_configurator.loadConfig("testfolder:subtest");
         m_configurator.saveConfig("testfolder:subtest");
         configFile = new File(m_dataFolder, "testfolder" + File.separator + "subtest.yml");
-        assertTrue(configFile.exists());
+        assertThat(configFile.exists()).isTrue();
     }
 
     @Test
     public void testGetConfig() {
         FileConfiguration configuration = m_configurator.getConfig("test");
-        assertThat(configuration.getString("testString"), is(equalTo("teststring")));
+        assertThat(configuration.getString("testString")).isEqualTo("teststring");
 
         configuration = m_configurator.getConfig("testfolder:subtest");
-        assertThat(configuration.getInt("test1"), is(20));
+        assertThat(configuration.getInt("test1")).isEqualTo(20);
     }
 
     @Test
@@ -110,7 +108,7 @@ public class DefaultConfiguratorTest {
 
         m_configurator.reloadConfig("test");
 
-        assertThat(m_configurator.getConfig("test"), is(not(sameInstance(configuration))));
+        assertThat(m_configurator.getConfig("test")).isNotSameAs(configuration);
         verify(manager, times(1)).callEvent(any(ConfigFileReloadedEvent.class));
     }
 

@@ -35,11 +35,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.regex.Pattern;
 
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Matchers.anyString;
 import static org.powermock.api.mockito.PowerMockito.mock;
 import static org.powermock.api.mockito.PowerMockito.when;
@@ -55,50 +51,50 @@ public class RouteTest {
 
     @Test
     public void testBaseRoute() {
-        assertTrue(baseRoute.allMatch(mock(CommandSender.class), mock(Command.class), "").matches());
+        assertThat(baseRoute.allMatch(mock(CommandSender.class), mock(Command.class), "").matches()).isTrue();
     }
 
     @Test
     public void testArgumentRestrictedRoute() {
         ArgumentRestrictedRoute route = new ArgumentRestrictedRoute(baseRoute, 1, 2);
 
-        assertTrue(route.allMatch(mock(CommandSender.class), mock(Command.class), "one two").matches());
-        assertTrue(route.allMatch(mock(CommandSender.class), mock(Command.class), "one").matches());
-        assertFalse(route.allMatch(mock(CommandSender.class), mock(Command.class), "one two three").matches());
-        assertFalse(route.allMatch(mock(CommandSender.class), mock(Command.class), "").matches());
+        assertThat(route.allMatch(mock(CommandSender.class), mock(Command.class), "one two").matches()).isTrue();
+        assertThat(route.allMatch(mock(CommandSender.class), mock(Command.class), "one").matches()).isTrue();
+        assertThat(route.allMatch(mock(CommandSender.class), mock(Command.class), "one two three").matches()).isFalse();
+        assertThat(route.allMatch(mock(CommandSender.class), mock(Command.class), "").matches()).isFalse();
 
         route = new ArgumentRestrictedRoute(baseRoute, 0, -1);
 
-        assertTrue(route.allMatch(mock(CommandSender.class), mock(Command.class), "one two").matches());
-        assertTrue(route.allMatch(mock(CommandSender.class), mock(Command.class), "one").matches());
-        assertTrue(route.allMatch(mock(CommandSender.class), mock(Command.class), "one two three").matches());
-        assertTrue(route.allMatch(mock(CommandSender.class), mock(Command.class), "").matches());
+        assertThat(route.allMatch(mock(CommandSender.class), mock(Command.class), "one two").matches()).isTrue();
+        assertThat(route.allMatch(mock(CommandSender.class), mock(Command.class), "one").matches()).isTrue();
+        assertThat(route.allMatch(mock(CommandSender.class), mock(Command.class), "one two three").matches()).isTrue();
+        assertThat(route.allMatch(mock(CommandSender.class), mock(Command.class), "").matches()).isTrue();
 
         route = new ArgumentRestrictedRoute(baseRoute, -1, 0);
 
-        assertFalse(route.allMatch(mock(CommandSender.class), mock(Command.class), "one two").matches());
-        assertFalse(route.allMatch(mock(CommandSender.class), mock(Command.class), "one").matches());
-        assertFalse(route.allMatch(mock(CommandSender.class), mock(Command.class), "one two three").matches());
-        assertTrue(route.allMatch(mock(CommandSender.class), mock(Command.class), "").matches());
+        assertThat(route.allMatch(mock(CommandSender.class), mock(Command.class), "one two").matches()).isFalse();
+        assertThat(route.allMatch(mock(CommandSender.class), mock(Command.class), "one").matches()).isFalse();
+        assertThat(route.allMatch(mock(CommandSender.class), mock(Command.class), "one two three").matches()).isFalse();
+        assertThat(route.allMatch(mock(CommandSender.class), mock(Command.class), "").matches()).isTrue();
     }
 
     @Test
     public void testStartsWithRestrictedRoute() {
         StartsWithRestrictedRoute route = new StartsWithRestrictedRoute(baseRoute, "*");
 
-        assertTrue(route.allMatch(mock(CommandSender.class), mock(Command.class), "*one two").matches());
-        assertTrue(route.allMatch(mock(CommandSender.class), mock(Command.class), "* one").matches());
-        assertTrue(route.allMatch(mock(CommandSender.class), mock(Command.class), "*").matches());
-        assertFalse(route.allMatch(mock(CommandSender.class), mock(Command.class), "one two three").matches());
-        assertFalse(route.allMatch(mock(CommandSender.class), mock(Command.class), "").matches());
+        assertThat(route.allMatch(mock(CommandSender.class), mock(Command.class), "*one two").matches()).isTrue();
+        assertThat(route.allMatch(mock(CommandSender.class), mock(Command.class), "* one").matches()).isTrue();
+        assertThat(route.allMatch(mock(CommandSender.class), mock(Command.class), "*").matches()).isTrue();
+        assertThat(route.allMatch(mock(CommandSender.class), mock(Command.class), "one two three").matches()).isFalse();
+        assertThat(route.allMatch(mock(CommandSender.class), mock(Command.class), "").matches()).isFalse();
 
         route = new StartsWithRestrictedRoute(baseRoute, "OnE");
 
-        assertTrue(route.allMatch(mock(CommandSender.class), mock(Command.class), "one two").matches());
-        assertTrue(route.allMatch(mock(CommandSender.class), mock(Command.class), "ONE").matches());
-        assertTrue(route.allMatch(mock(CommandSender.class), mock(Command.class), "One two").matches());
-        assertFalse(route.allMatch(mock(CommandSender.class), mock(Command.class), "two one three").matches());
-        assertFalse(route.allMatch(mock(CommandSender.class), mock(Command.class), "").matches());
+        assertThat(route.allMatch(mock(CommandSender.class), mock(Command.class), "one two").matches()).isTrue();
+        assertThat(route.allMatch(mock(CommandSender.class), mock(Command.class), "ONE").matches()).isTrue();
+        assertThat(route.allMatch(mock(CommandSender.class), mock(Command.class), "One two").matches()).isTrue();
+        assertThat(route.allMatch(mock(CommandSender.class), mock(Command.class), "two one three").matches()).isFalse();
+        assertThat(route.allMatch(mock(CommandSender.class), mock(Command.class), "").matches()).isFalse();
     }
 
     @Test
@@ -111,17 +107,17 @@ public class RouteTest {
 
         CommandRestrictedRoute route = new CommandRestrictedRoute(baseRoute, "valid");
 
-        assertTrue(route.allMatch(mock(CommandSender.class), valid, "").matches());
-        assertFalse(route.allMatch(mock(CommandSender.class), invalid, "").matches());
+        assertThat(route.allMatch(mock(CommandSender.class), valid, "").matches()).isTrue();
+        assertThat(route.allMatch(mock(CommandSender.class), invalid, "").matches()).isFalse();
     }
 
     @Test
     public void testPatternRestrictedRoute() {
         PatternRestrictedRoute route = new PatternRestrictedRoute(baseRoute, Pattern.compile("(valid|good)"));
 
-        assertTrue(route.allMatch(mock(CommandSender.class), mock(Command.class), "valid").matches());
-        assertTrue(route.allMatch(mock(CommandSender.class), mock(Command.class), "good").matches());
-        assertFalse(route.allMatch(mock(CommandSender.class), mock(Command.class), "invalid").matches());
+        assertThat(route.allMatch(mock(CommandSender.class), mock(Command.class), "valid").matches()).isTrue();
+        assertThat(route.allMatch(mock(CommandSender.class), mock(Command.class), "good").matches()).isTrue();
+        assertThat(route.allMatch(mock(CommandSender.class), mock(Command.class), "invalid").matches()).isFalse();
     }
 
     @Test
@@ -134,11 +130,11 @@ public class RouteTest {
 
         PermissionRestrictedRoute route = new PermissionRestrictedRoute(baseRoute, "test.permission");
 
-        assertTrue(route.allMatch(goodsender, mock(Command.class), "").matches());
-        assertFalse(route.allMatch(badsender, mock(Command.class), "").matches());
+        assertThat(route.allMatch(goodsender, mock(Command.class), "").matches()).isTrue();
+        assertThat(route.allMatch(badsender, mock(Command.class), "").matches()).isFalse();
         Set<String> error = new HashSet<String>();
         error.add(ChatColor.RED + "You don't have the permission " + ChatColor.BLUE + "test.permission");
-        assertThat(route.allMatch(badsender, mock(Command.class), "").getErrorMessages(), is(equalTo(error)));
+        assertThat(route.allMatch(badsender, mock(Command.class), "").getErrorMessages()).isEqualTo(error);
     }
 
     @Test
@@ -148,8 +144,8 @@ public class RouteTest {
 
         SenderTypeRestrictedRoute route = new SenderTypeRestrictedRoute(baseRoute, SenderType.PLAYER);
 
-        assertTrue(route.allMatch(player, mock(Command.class), "").matches());
-        assertFalse(route.allMatch(block, mock(Command.class), "").matches());
+        assertThat(route.allMatch(player, mock(Command.class), "").matches()).isTrue();
+        assertThat(route.allMatch(block, mock(Command.class), "").matches()).isFalse();
     }
 
     @Test
@@ -174,15 +170,15 @@ public class RouteTest {
         PermissionRestrictedRoute permissionRestricted = new PermissionRestrictedRoute(commandRestricted, "test.permission");
 
         //test valid first
-        assertTrue(permissionRestricted.allMatch(goodPlayer, valid, "").matches());
+        assertThat(permissionRestricted.allMatch(goodPlayer, valid, "").matches()).isTrue();
 
         //test bad permission
-        assertFalse(permissionRestricted.allMatch(badPlayer, valid, "").matches());
+        assertThat(permissionRestricted.allMatch(badPlayer, valid, "").matches()).isFalse();
 
         //test bad type
-        assertFalse(permissionRestricted.allMatch(block, valid, "").matches());
+        assertThat(permissionRestricted.allMatch(block, valid, "").matches()).isFalse();
 
         //test bad command
-        assertFalse(permissionRestricted.allMatch(goodPlayer, invalid, "").matches());
+        assertThat(permissionRestricted.allMatch(goodPlayer, invalid, "").matches()).isFalse();
     }
 }
