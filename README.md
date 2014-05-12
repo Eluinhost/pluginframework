@@ -32,8 +32,9 @@ All command classes allow for dependency injection.
     }
 
     @RouteInfo
-    public MethodRoute echoCommandDetails() {
-        return new DefaultMethodRoute(new AnyRouteMatcher(), new SenderType[] { SenderType.CONSOLE }, "bukkit.command.tell", "echo");
+    public void echoCommandDetails(RouteBuilder builder) {
+        builder.restrictPermission("test.permission")
+                .restrictCommand("config");
     }
 
 ###Translate
@@ -55,7 +56,7 @@ Allows for the plugin class to be injected with it's dependencies. All registere
 Allows to supply new/override existing bindings within the plugin creation
 
 ####Example
-    //main plugin class does NOT get constructor injection and only get's injected just before onFrameworkLoad is called
+    //main plugin class does NOT get constructor injection and only get's injected just before onFrameworkEnable is called
     private CustomInterface interface;
 
     @Inject
