@@ -178,6 +178,7 @@
                             <include>org.sonatype.sisu:sisu-guice</include>
                             <include>javax.inject:javax.inject</include>
                             <include>aopalliance:aopalliance</include>
+                            <include>org.mcstats.bukkit:metrics</include>
                         </includes>
                     </artifactSet>
                     <relocations>
@@ -192,6 +193,10 @@
                         <relocation>
                             <pattern>org.aopalliance</pattern>
                             <shadedPattern>${project.groupId}.${project.artifactId}.aopalliance</shadedPattern>
+                        </relocation>
+                        <relocation>
+                            <pattern>org.mcstats</pattern>
+                            <shadedPattern>${project.groupId}.${project.artifactId}.metrics</shadedPattern>
                         </relocation>
                     </relocations>
                 </configuration>
