@@ -22,29 +22,11 @@
 package com.publicuhc.pluginframework.commands.routing;
 
 import com.publicuhc.pluginframework.commands.exceptions.CommandClassParseException;
-import com.publicuhc.pluginframework.commands.proxies.CommandProxy;
-import com.publicuhc.pluginframework.commands.proxies.TabCompleteProxy;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
 
 import java.util.List;
 
 public interface Router extends TabExecutor {
-
-    /**
-     * @param command    the command string
-     * @param parameters the parameters
-     * @return the list of matched commandproxy
-     */
-    List<CommandProxy> getCommandProxy(CommandSender sender, Command command, String parameters);
-
-    /**
-     * @param command    the command string
-     * @param parameters the parameters
-     * @return the list of matched tabcompleteproxy
-     */
-    List<TabCompleteProxy> getTabCompleteProxy(CommandSender sender, Command command, String parameters);
 
     /**
      * Register a class for commands, makes an instance

@@ -38,6 +38,7 @@ import com.publicuhc.pluginframework.commands.requests.CommandRequestBuilder;
 import com.publicuhc.pluginframework.commands.routes.CommandRestrictedRoute;
 import com.publicuhc.pluginframework.commands.routes.Route;
 import com.publicuhc.pluginframework.commands.routes.RouteBuilder;
+import com.publicuhc.pluginframework.commands.routes.RouteMatch;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -89,30 +90,6 @@ public class DefaultRouter implements Router {
         m_injector = injector;
         m_logger = logger;
         m_methodChecker = checker;
-    }
-
-    @Override
-    public List<CommandProxy> getCommandProxy(CommandSender sender, Command command, String parameters) {
-        List<CommandProxy> proxies = new ArrayList<CommandProxy>();
-        for (CommandProxy proxy : m_commands) {
-            Route route = proxy.getRoute();
-            if( route.matches(sender, command, parameters )) {
-                proxies.add(proxy);
-            }
-        }
-        return proxies;
-    }
-
-    @Override
-    public List<TabCompleteProxy> getTabCompleteProxy(CommandSender sender, Command command, String parameters) {
-        List<TabCompleteProxy> proxies = new ArrayList<TabCompleteProxy>();
-        for (TabCompleteProxy proxy : m_tabCompletes) {
-            Route route = proxy.getRoute();
-            if( route.matches(sender, command, parameters) ){
-                proxies.add(proxy);
-            }
-        }
-        return proxies;
     }
 
     @Override
@@ -220,18 +197,40 @@ public class DefaultRouter implements Router {
         }
 
         //get all the proxies that match the route
-        List<CommandProxy> proxies = getCommandProxy(sender, command, stringBuilder.toString());
+        List<CommandProxy> proxies = new ArrayList<CommandProxy>();
+        Set<String> errors = new HashSet<String>();
+        for (CommandProxy proxy : m_commands) {
+            Route route = proxy.getRoute();
+            RouteMatch match = route.allMatch(sender, command, stringBuilder.toString());
+            errors.addAll(match.getErrorMessages());
+            if (match.matches()) {
+                proxies.add(proxy);
+            }
+        }
 
         //no proxies found that matched the route
         if (proxies.isEmpty()) {
-            List<String> messages = m_noRouteMessages.get(command.getName());
-            //if there isn't any messages send the usage message
-            if (messages == null || messages.isEmpty()) {
-                return false;
+
+            //display the errors if we found any
+            if (!errors.isEmpty()) {
+                for (String message : errors) {
+                    sender.sendMessage(message);
+                }
             }
-            for (String message : messages) {
-                sender.sendMessage(message);
+            //otherwise show the list of default messages
+            else {
+                List<String> messages = m_noRouteMessages.get(command.getName());
+
+                //if there isn't any messages send the usage message from the plugin.yml
+                if (messages == null || messages.isEmpty()) {
+                    return false;
+                }
+
+                for (String message : messages) {
+                    sender.sendMessage(message);
+                }
             }
+
             return true;
         }
 
@@ -274,10 +273,16 @@ public class DefaultRouter implements Router {
         }
 
         //get all the proxies that match the route
-        List<TabCompleteProxy> proxies = getTabCompleteProxy(sender, command, stringBuilder.toString());
+        List<TabCompleteProxy> proxies = new ArrayList<TabCompleteProxy>();
+        for (TabCompleteProxy proxy : m_tabCompletes) {
+            Route route = proxy.getRoute();
+            if( route.allMatch(sender, command, stringBuilder.toString()).matches() ){
+                proxies.add(proxy);
+            }
+        }
 
         //no proxies found that matched the route
-        if (proxies == null) {
+        if (proxies.isEmpty()) {
             return new ArrayList<String>(0);
         }
 

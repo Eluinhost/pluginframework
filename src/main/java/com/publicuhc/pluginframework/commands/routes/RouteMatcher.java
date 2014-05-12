@@ -1,5 +1,5 @@
 /*
- * PermissionRestrictedRoute.java
+ * RouteMatcher.java
  *
  * Copyright (c) 2014 Graham Howden <graham_howden1 at yahoo.co.uk>.
  *
@@ -21,36 +21,34 @@
 
 package com.publicuhc.pluginframework.commands.routes;
 
-import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 
 import java.util.HashSet;
 import java.util.Set;
 
-public class PermissionRestrictedRoute extends Route {
+public class RouteMatcher {
 
-    private final String m_permission;
+    private final Route m_route;
 
-    /**
-     * Make a route that restricts based on permission.
-     * This route WILL show an error message if it fails, make sure it is deeper in the chain if this causes issues.
-     * @param route the route to run after this route
-     * @param permission the permission to check
-     */
-    public PermissionRestrictedRoute(Route route, String permission) {
-        super(route);
-        m_permission = permission;
+    public RouteMatcher(Route route) {
+        m_route = route;
     }
 
-    @Override
-    public RouteMatch matches(CommandSender sender, Command command, String arguments) {
-        boolean matched = sender.hasPermission(m_permission);
-
+    public RouteMatch matches(CommandSender sender, Command command, String args) {
+        Route currentRoute = m_route;
         Set<String> errors = new HashSet<String>();
-        if( !matched ) {
-            errors.add(ChatColor.RED + "You don't have the permission " + ChatColor.BLUE + m_permission);
+        boolean matches = true;
+        while(currentRoute != null) {
+            RouteMatch match = currentRoute.matches(sender, command, args);
+            errors.addAll(match.getErrorMessages());
+            if(!match.matches()) {
+                matches = false;
+                break;
+            }
+            currentRoute = currentRoute.getNextChain();
         }
-        return new DefaultRouteMatch(matched, errors);
+
+        return new DefaultRouteMatch(matches, errors);
     }
 }

@@ -22,24 +22,52 @@
 package com.publicuhc.pluginframework.commands.routes;
 
 import com.publicuhc.pluginframework.commands.requests.SenderType;
+import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 
 import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 public class SenderTypeRestrictedRoute extends Route {
 
-    private final SenderType[] m_types;
+    private final List<SenderType> m_types;
 
+    private final String m_errorMessage;
+
+    /**
+     * Make a route that restricts based on sender type.
+     * This route WILL show an error message if it fails, make sure it is deeper in the chain if this causes issues.
+     * @param route the route to run after this route
+     * @param types the allowed sender types
+     */
     public SenderTypeRestrictedRoute(Route route, SenderType... types) {
         super(route);
-        m_types = types;
+        m_types = Arrays.asList(types);
+
+        StringBuilder builder = new StringBuilder();
+        builder.append(ChatColor.RED);
+        builder.append("You must run this command as one of the following: ");
+        for (SenderType type : types) {
+            builder.append(type.name());
+            builder.append(" ");
+        }
+        m_errorMessage = builder.toString();
     }
 
     @Override
-    public boolean matches(CommandSender sender, Command command, String arguments) {
+    public RouteMatch matches(CommandSender sender, Command command, String arguments) {
         SenderType type = SenderType.getFromCommandSender(sender);
 
-        return Arrays.asList(m_types).contains(type) && getNextChain().matches(sender, command, arguments);
+        boolean matched = m_types.contains(type);
+
+        Set<String> errors = new HashSet<String>();
+        if (!matched) {
+            errors.add(m_errorMessage);
+        }
+
+        return new DefaultRouteMatch(matched, errors);
     }
 }

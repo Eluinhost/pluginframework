@@ -39,7 +39,7 @@ public class PatternRestrictedRoute extends Route {
     }
 
     @Override
-    public boolean matches(CommandSender sender, Command command, String arguments) {
+    public RouteMatch matches(CommandSender sender, Command command, String arguments) {
         //check arguments against the pattern
         if(null == m_matcher) {
             m_matcher = m_pattern.matcher(arguments);
@@ -47,7 +47,7 @@ public class PatternRestrictedRoute extends Route {
             m_matcher.reset(arguments);
         }
 
-        //if the pattern wasn't correct this route chain fails
-        return m_matcher.matches() && getNextChain().matches(sender, command, arguments);
+        //if the pattern wasn't correct fail
+        return new DefaultRouteMatch(m_matcher.matches());
     }
 }

@@ -1,5 +1,5 @@
 /*
- * StartsWithRestrictedRoute.java
+ * RouteMatch.java
  *
  * Copyright (c) 2014 Graham Howden <graham_howden1 at yahoo.co.uk>.
  *
@@ -21,25 +21,18 @@
 
 package com.publicuhc.pluginframework.commands.routes;
 
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandSender;
+import java.util.Set;
 
-public class StartsWithRestrictedRoute extends Route {
-
-    private final String m_startsWith;
+public interface RouteMatch {
 
     /**
-     * check to see if the arguements start with the given string case insensitive
-     * @param route the parent route
-     * @param startsWith the string to check
+     * @return whether the route matched or not
      */
-    public StartsWithRestrictedRoute(Route route, String startsWith) {
-        super(route);
-        m_startsWith = startsWith;
-    }
+    boolean matches();
 
-    @Override
-    public RouteMatch matches(CommandSender sender, Command command, String arguments) {
-        return new DefaultRouteMatch(arguments.toLowerCase().startsWith(m_startsWith.toLowerCase()));
-    }
+    /**
+     * @return the error messages if it didn't match and wants to display an error
+     */
+    Set<String> getErrorMessages();
+
 }
