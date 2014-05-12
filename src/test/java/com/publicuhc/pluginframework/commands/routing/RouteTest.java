@@ -59,6 +59,49 @@ public class RouteTest {
     }
 
     @Test
+    public void testArgumentRestrictedRoute() {
+        ArgumentRestrictedRoute route = new ArgumentRestrictedRoute(baseRoute, 1, 2);
+
+        assertTrue(route.allMatch(mock(CommandSender.class), mock(Command.class), "one two").matches());
+        assertTrue(route.allMatch(mock(CommandSender.class), mock(Command.class), "one").matches());
+        assertFalse(route.allMatch(mock(CommandSender.class), mock(Command.class), "one two three").matches());
+        assertFalse(route.allMatch(mock(CommandSender.class), mock(Command.class), "").matches());
+
+        route = new ArgumentRestrictedRoute(baseRoute, 0, -1);
+
+        assertTrue(route.allMatch(mock(CommandSender.class), mock(Command.class), "one two").matches());
+        assertTrue(route.allMatch(mock(CommandSender.class), mock(Command.class), "one").matches());
+        assertTrue(route.allMatch(mock(CommandSender.class), mock(Command.class), "one two three").matches());
+        assertTrue(route.allMatch(mock(CommandSender.class), mock(Command.class), "").matches());
+
+        route = new ArgumentRestrictedRoute(baseRoute, -1, 0);
+
+        assertFalse(route.allMatch(mock(CommandSender.class), mock(Command.class), "one two").matches());
+        assertFalse(route.allMatch(mock(CommandSender.class), mock(Command.class), "one").matches());
+        assertFalse(route.allMatch(mock(CommandSender.class), mock(Command.class), "one two three").matches());
+        assertTrue(route.allMatch(mock(CommandSender.class), mock(Command.class), "").matches());
+    }
+
+    @Test
+    public void testStartsWithRestrictedRoute() {
+        StartsWithRestrictedRoute route = new StartsWithRestrictedRoute(baseRoute, "*");
+
+        assertTrue(route.allMatch(mock(CommandSender.class), mock(Command.class), "*one two").matches());
+        assertTrue(route.allMatch(mock(CommandSender.class), mock(Command.class), "* one").matches());
+        assertTrue(route.allMatch(mock(CommandSender.class), mock(Command.class), "*").matches());
+        assertFalse(route.allMatch(mock(CommandSender.class), mock(Command.class), "one two three").matches());
+        assertFalse(route.allMatch(mock(CommandSender.class), mock(Command.class), "").matches());
+
+        route = new StartsWithRestrictedRoute(baseRoute, "OnE");
+
+        assertTrue(route.allMatch(mock(CommandSender.class), mock(Command.class), "one two").matches());
+        assertTrue(route.allMatch(mock(CommandSender.class), mock(Command.class), "ONE").matches());
+        assertTrue(route.allMatch(mock(CommandSender.class), mock(Command.class), "One two").matches());
+        assertFalse(route.allMatch(mock(CommandSender.class), mock(Command.class), "two one three").matches());
+        assertFalse(route.allMatch(mock(CommandSender.class), mock(Command.class), "").matches());
+    }
+
+    @Test
     public void testCommandRestrictedRoute() {
         Command valid = mock(Command.class);
         when(valid.getName()).thenReturn("valid");
