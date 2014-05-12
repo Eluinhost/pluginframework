@@ -33,8 +33,6 @@ import com.publicuhc.pluginframework.commands.annotation.TabCompletion;
 import com.publicuhc.pluginframework.commands.exceptions.BaseCommandNotFoundException;
 import com.publicuhc.pluginframework.commands.exceptions.CommandClassParseException;
 import com.publicuhc.pluginframework.commands.exceptions.DetailsMethodNotFoundException;
-import com.publicuhc.pluginframework.commands.proxies.CommandProxy;
-import com.publicuhc.pluginframework.commands.proxies.TabCompleteProxy;
 import com.publicuhc.pluginframework.commands.requests.CommandRequest;
 import com.publicuhc.pluginframework.commands.routes.Route;
 import com.publicuhc.pluginframework.commands.routes.RouteBuilder;
@@ -44,7 +42,6 @@ import com.publicuhc.pluginframework.translate.TranslateModule;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Server;
-import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.command.PluginCommand;
@@ -153,58 +150,6 @@ public class DefaultRouterTest {
     @Test(expected = CommandClassParseException.class)
     public void testExceptionRouteMethod() throws CommandClassParseException {
         router.registerCommands(TestExceptionRouteInfoCommands.class);
-    }
-
-    /*#########################
-     *#  test getCommandProxy #
-     *#######################*/
-
-    @Test
-    public void testGetCommandProxy() throws CommandClassParseException {
-        mockStatic(Bukkit.class);
-        PluginCommand command = mock(PluginCommand.class);
-        when(command.getName()).thenReturn("test");
-        when(Bukkit.getPluginCommand("test")).thenReturn(command);
-        CommandSender sender = mock(CommandSender.class);
-        router.registerCommands(TestValidCommands.class);
-
-        Command valid = mock(Command.class);
-        when(valid.getName()).thenReturn("test");
-
-        List<CommandProxy> proxies = router.getCommandProxy(sender, valid, "arg");
-        assertThat(proxies.size(), is(1));
-
-        Command invalid = mock(Command.class);
-        when(invalid.getName()).thenReturn("invalidtest");
-
-        proxies = router.getCommandProxy(sender, invalid, "arg");
-        assertThat(proxies.size(), is(0));
-    }
-
-    /*#############################
-     *#  test getTabCompleteProxy #
-     *###########################*/
-
-    @Test
-    public void testGetTabCompleteProxy() throws CommandClassParseException {
-        mockStatic(Bukkit.class);
-        PluginCommand command = mock(PluginCommand.class);
-        when(command.getName()).thenReturn("test");
-        when(Bukkit.getPluginCommand("test")).thenReturn(command);
-        CommandSender sender = mock(CommandSender.class);
-        router.registerCommands(TestValidCommands.class);
-
-        Command valid = mock(Command.class);
-        when(valid.getName()).thenReturn("test");
-
-        List<TabCompleteProxy> proxies = router.getTabCompleteProxy(sender, valid, "arg");
-        assertThat(proxies.size(), is(1));
-
-        Command invalid = mock(Command.class);
-        when(invalid.getName()).thenReturn("invalidtest");
-
-        proxies = router.getTabCompleteProxy(sender, invalid, "arg");
-        assertThat(proxies.size(), is(0));
     }
 
     /*###################

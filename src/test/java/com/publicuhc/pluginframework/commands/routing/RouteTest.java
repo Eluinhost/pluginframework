@@ -23,6 +23,7 @@ package com.publicuhc.pluginframework.commands.routing;
 
 import com.publicuhc.pluginframework.commands.requests.SenderType;
 import com.publicuhc.pluginframework.commands.routes.*;
+import org.bukkit.ChatColor;
 import org.bukkit.command.BlockCommandSender;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -30,8 +31,13 @@ import org.bukkit.entity.Player;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.HashSet;
+import java.util.Set;
 import java.util.regex.Pattern;
 
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.anyString;
@@ -49,7 +55,7 @@ public class RouteTest {
 
     @Test
     public void testBaseRoute() {
-        assertTrue(baseRoute.allMatch(mock(CommandSender.class), mock(Command.class), ""));
+        assertTrue(baseRoute.allMatch(mock(CommandSender.class), mock(Command.class), "").matches());
     }
 
     @Test
@@ -62,17 +68,17 @@ public class RouteTest {
 
         CommandRestrictedRoute route = new CommandRestrictedRoute(baseRoute, "valid");
 
-        assertTrue(route.allMatch(mock(CommandSender.class), valid, ""));
-        assertFalse(route.allMatch(mock(CommandSender.class), invalid, ""));
+        assertTrue(route.allMatch(mock(CommandSender.class), valid, "").matches());
+        assertFalse(route.allMatch(mock(CommandSender.class), invalid, "").matches());
     }
 
     @Test
     public void testPatternRestrictedRoute() {
         PatternRestrictedRoute route = new PatternRestrictedRoute(baseRoute, Pattern.compile("(valid|good)"));
 
-        assertTrue(route.allMatch(mock(CommandSender.class), mock(Command.class), "valid"));
-        assertTrue(route.allMatch(mock(CommandSender.class), mock(Command.class), "good"));
-        assertFalse(route.allMatch(mock(CommandSender.class), mock(Command.class), "invalid"));
+        assertTrue(route.allMatch(mock(CommandSender.class), mock(Command.class), "valid").matches());
+        assertTrue(route.allMatch(mock(CommandSender.class), mock(Command.class), "good").matches());
+        assertFalse(route.allMatch(mock(CommandSender.class), mock(Command.class), "invalid").matches());
     }
 
     @Test
@@ -85,8 +91,11 @@ public class RouteTest {
 
         PermissionRestrictedRoute route = new PermissionRestrictedRoute(baseRoute, "test.permission");
 
-        assertTrue(route.allMatch(goodsender, mock(Command.class), ""));
-        assertFalse(route.allMatch(badsender, mock(Command.class), ""));
+        assertTrue(route.allMatch(goodsender, mock(Command.class), "").matches());
+        assertFalse(route.allMatch(badsender, mock(Command.class), "").matches());
+        Set<String> error = new HashSet<String>();
+        error.add(ChatColor.RED + "You don't have the permission " + ChatColor.BLUE + "test.permission");
+        assertThat(route.allMatch(badsender, mock(Command.class), "").getErrorMessages(), is(equalTo(error)));
     }
 
     @Test
@@ -96,8 +105,8 @@ public class RouteTest {
 
         SenderTypeRestrictedRoute route = new SenderTypeRestrictedRoute(baseRoute, SenderType.PLAYER);
 
-        assertTrue(route.allMatch(player, mock(Command.class), ""));
-        assertFalse(route.allMatch(block, mock(Command.class), ""));
+        assertTrue(route.allMatch(player, mock(Command.class), "").matches());
+        assertFalse(route.allMatch(block, mock(Command.class), "").matches());
     }
 
     @Test
@@ -122,15 +131,15 @@ public class RouteTest {
         PermissionRestrictedRoute permissionRestricted = new PermissionRestrictedRoute(commandRestricted, "test.permission");
 
         //test valid first
-        assertTrue(permissionRestricted.allMatch(goodPlayer, valid, ""));
+        assertTrue(permissionRestricted.allMatch(goodPlayer, valid, "").matches());
 
         //test bad permission
-        assertFalse(permissionRestricted.allMatch(badPlayer, valid, ""));
+        assertFalse(permissionRestricted.allMatch(badPlayer, valid, "").matches());
 
         //test bad type
-        assertFalse(permissionRestricted.allMatch(block, valid, ""));
+        assertFalse(permissionRestricted.allMatch(block, valid, "").matches());
 
         //test bad command
-        assertFalse(permissionRestricted.allMatch(goodPlayer, invalid, ""));
+        assertFalse(permissionRestricted.allMatch(goodPlayer, invalid, "").matches());
     }
 }

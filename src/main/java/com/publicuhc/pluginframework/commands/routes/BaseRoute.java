@@ -48,7 +48,7 @@ public class BaseRoute extends Route {
     }
 
     @Override
-    public boolean matches(CommandSender sender, Command command, String arguments) {
-        return true;
+    public RouteMatch matches(CommandSender sender, Command command, String arguments) {
+        return new DefaultRouteMatch(true);
     }
 }
