@@ -1,5 +1,7 @@
 #PluginFramework
 
+[![Build Status](https://travis-ci.org/Eluinhost/pluginframework.svg?branch=master)](https://travis-ci.org/Eluinhost/pluginframework)
+
 This is a framework used to give extra features to [Bukkit](http://www.bukkit.org/ "Bukkit") plugins.
 
 For the wiki follow [this link](http://wiki.publicuhc.com/display/PLUGIN/PluginFramework)
