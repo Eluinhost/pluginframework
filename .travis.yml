@@ -1,0 +1,15 @@
+language: java
+cache:
+  directories:
+  - $HOME/.m2
+deploy:
+  provider: releases
+  all_branches: true
+  skip_cleanup: true
+  api_key:
+    secure: CdZX+FPVcvN3hP6ornhLQ/8dG+6igzYRWHG5+I1qwQkreSUL0yfBFuODSCfzuhBAGAPWL77cYKD75Lowp5x/JK148Nt/Bzwo/Mda7SeTHWCNTFM1e+xeQRsVG0FxmyS0qkqzPOr/9RMsRrbcKLCtBNJRtiaR9m8LYk9bK+GSpsQ=
+  file: target/*.jar
+  on:
+    tags: true
+    repo: Eluinhost/pluginframework
+language: java
