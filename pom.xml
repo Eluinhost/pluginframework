@@ -80,19 +80,19 @@
     </repositories>
 
     <issueManagement>
-        <system>JIRA</system>
-        <url>http://jira.publicuhc.com/browse/PLUGIN</url>
+        <system>Github Issues</system>
+        <url>https://github.com/Eluinhost/pluginframework/issues</url>
     </issueManagement>
 
     <ciManagement>
-        <system>Bamboo</system>
-        <url>http://bamboo.publicuhc.com/browse/UHC-FRAMEWORK</url>
+        <system>TravisCI</system>
+        <url>https://travis-ci.org/Eluinhost/pluginframework</url>
     </ciManagement>
 
     <scm>
-        <connection>scm:http://stash.publicuhc.com/scm/uhc/pluginframework.git</connection>
+        <connection>scm:https://github.com/Eluinhost/pluginframework.git</connection>
         <tag>HEAD</tag>
-        <url>http://stash.publicuhc.com/scm/uhc/pluginframework.git</url>
+        <url>https://github.com/Eluinhost/pluginframework</url>
     </scm>
 
     <dependencies>
