@@ -26,9 +26,5 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
 @Documented
-public @interface CommandMethod {
-    public static final String RUN_METHOD = "run_method";
-
-    public String command();
-    public String options() default RUN_METHOD;
-}
+public @interface CommandOptions
+{}
