@@ -12,4 +12,6 @@ deploy:
   on:
     tags: true
     repo: Eluinhost/pluginframework
-language: java
+branches:
+  only:
+    - master
