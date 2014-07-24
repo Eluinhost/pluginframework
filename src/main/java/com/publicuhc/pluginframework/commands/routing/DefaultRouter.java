@@ -44,6 +44,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.PluginCommand;
+import org.bukkit.craftbukkit.libs.joptsimple.OptionParser;
 import org.bukkit.plugin.PluginLogger;
 
 import java.lang.reflect.Method;
@@ -95,6 +96,56 @@ public class DefaultRouter implements Router {
         Object o = m_injector.getInstance(klass);
         registerCommands(o, false);
         return o;
+    }
+
+    /**
+     * Parses the method as a command method and adds to proxy ready for trigger
+     *
+     * @param method the method to trigger
+     * @param instance the instance to call the method on
+     * @param annotation the annotation for the method
+     *
+     * @throws com.publicuhc.pluginframework.commands.exceptions.BaseCommandNotFoundException when command provided is invalid
+     * @throws com.publicuhc.pluginframework.commands.exceptions.CommandClassParseException when error parsing the class to define the method
+     */
+    private void parseCommandMethod(Object instance, Method method, CommandMethod annotation) throws CommandClassParseException
+    {
+        OptionParser parser;
+
+        //get our option parser for this command
+        if(annotation.options().equals(CommandMethod.RUN_METHOD)) {
+            //get the method with same name but OptionParser as it's arg
+            Method optionsMethod;
+            try {
+                optionsMethod = instance.getClass().getMethod(method.getName(), OptionParser.class);
+            } catch(NoSuchMethodException e) {
+                m_logger.log(Level.SEVERE, "Error getting method " + method.getName() + " with argument OptionParser for null option parameter");
+                throw new CommandClassParseException();
+            }
+
+            //make a new parser and invoke the method with it
+            parser = new OptionParser();
+            try {
+                optionsMethod.invoke(instance, parser);
+            } catch(Exception ex) {
+                m_logger.log(Level.SEVERE, "Error getting options from parser in method " + method.getName());
+                throw new CommandClassParseException();
+            }
+        } else {
+            //parse the annotation value in as our parser
+            parser = new OptionParser(annotation.options());
+        }
+
+        String commandName = annotation.command();
+        PluginCommand command = Bukkit.getPluginCommand(commandName);
+        if (command == null)
+            throw new BaseCommandNotFoundException(commandName);
+
+        //register ourselves as the executor and tab completer
+        command.setExecutor(this);
+        command.setTabCompleter(this);
+
+        //TODO register the proxy to the command to run when required
     }
 
     @Override
