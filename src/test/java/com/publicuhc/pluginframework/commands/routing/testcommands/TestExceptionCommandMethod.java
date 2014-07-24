@@ -37,7 +37,7 @@ public class TestExceptionCommandMethod {
     }
 
     @RouteInfo
-    public void exceptionDetails(RouteBuilder builder) {
+    public void exception(RouteBuilder builder) {
         builder.restrictCommand("test");
     }
 
@@ -47,7 +47,7 @@ public class TestExceptionCommandMethod {
     }
 
     @RouteInfo
-    public void tabexceptionDetails(RouteBuilder builder) {
+    public void tabexception(RouteBuilder builder) {
         builder.restrictCommand("test");
     }
 }

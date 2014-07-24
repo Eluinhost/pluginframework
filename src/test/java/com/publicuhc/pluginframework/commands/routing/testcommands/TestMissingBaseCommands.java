@@ -34,7 +34,7 @@ public class TestMissingBaseCommands {
     }
 
     @RouteInfo
-    public void commandMissingDetails(RouteBuilder builder) {
+    public void commandMissing(RouteBuilder builder) {
         builder.restrictCommand("unknowncommand");
     }
 }

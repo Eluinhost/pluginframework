@@ -41,12 +41,12 @@ public class TestValidCommands {
     }
 
     @RouteInfo
-    public void testCommandDetails(RouteBuilder builder) {
+    public void testCommand(RouteBuilder builder) {
         builder.restrictCommand("test");
     }
 
     @RouteInfo
-    public void testTabCompleteDetails(RouteBuilder builder) {
+    public void testTabComplete(RouteBuilder builder) {
         builder.restrictCommand("test");
     }
 }
