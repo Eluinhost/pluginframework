@@ -82,8 +82,6 @@ public class DefaultRouter implements Router {
 
     private final Logger m_logger;
 
-    private static final String ROUTE_INFO_SUFFIX = "Details";
-
     @Inject
     protected DefaultRouter(Provider<CommandRequestBuilder> requestProvider, Injector injector, PluginLogger logger, MethodChecker checker) {
         m_requestProvider = requestProvider;
@@ -128,9 +126,9 @@ public class DefaultRouter implements Router {
             //get the method with the details we need
             Method routeInfo;
             try {
-                routeInfo = klass.getMethod(method.getName() + ROUTE_INFO_SUFFIX, RouteBuilder.class);
+                routeInfo = klass.getMethod(method.getName(), RouteBuilder.class);
             } catch (NoSuchMethodException e) {
-                m_logger.log(Level.SEVERE, "No method found with the name " + method.getName() + ROUTE_INFO_SUFFIX);
+                m_logger.log(Level.SEVERE, "No method found with the name " + method.getName());
                 throw new DetailsMethodNotFoundException();
             }
 

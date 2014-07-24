@@ -41,7 +41,7 @@ public class TestFullCommands {
     }
 
     @RouteInfo
-    public void banIPDetails(RouteBuilder builder) {
+    public void banIP(RouteBuilder builder) {
         builder.restrictCommand("banIP")
                 .restrictPermission("test.permission")
                 .restrictPattern(Pattern.compile("^([\\d]{1,3}.[\\d]{1,3}.[\\d]{1,3}.[\\d]{1,3}) (.*)$"));
@@ -57,7 +57,7 @@ public class TestFullCommands {
     }
 
     @RouteInfo
-    public void completeDetails(RouteBuilder builder) {
+    public void complete(RouteBuilder builder) {
         builder.restrictCommand("banIP")
                 .restrictPattern(Pattern.compile("^([\\d]{1,3}.[\\d]{1,3}.[\\d]{1,3}.[\\d]{1,3})$"))
                 .restrictPermission("test.permission");
