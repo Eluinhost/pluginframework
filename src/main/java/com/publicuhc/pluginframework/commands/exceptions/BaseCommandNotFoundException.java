@@ -26,6 +26,7 @@ public class BaseCommandNotFoundException extends CommandClassParseException {
     private String m_commandName;
 
     public BaseCommandNotFoundException(String commandName) {
+        super("Command " + commandName + " not found");
         m_commandName = commandName;
     }
 

@@ -21,4 +21,8 @@
 
 package com.publicuhc.pluginframework.commands.exceptions;
 
-public class InvalidMethodParametersException extends CommandClassParseException { }
+public class InvalidMethodParametersException extends CommandClassParseException {
+    public InvalidMethodParametersException(String message) {
+        super(message);
+    }
+}

@@ -21,4 +21,8 @@
 
 package com.publicuhc.pluginframework.commands.exceptions;
 
-public class InvalidReturnTypeException extends CommandClassParseException { }
+public class InvalidReturnTypeException extends CommandClassParseException {
+    public InvalidReturnTypeException(String message) {
+        super(message);
+    }
+}

@@ -21,4 +21,8 @@
 
 package com.publicuhc.pluginframework.commands.exceptions;
 
-public class DetailsMethodNotFoundException extends CommandClassParseException { }
+public class DetailsMethodNotFoundException extends CommandClassParseException {
+    public DetailsMethodNotFoundException(String message) {
+        super(message);
+    }
+}

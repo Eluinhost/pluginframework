@@ -21,4 +21,9 @@
 
 package com.publicuhc.pluginframework.commands.exceptions;
 
-public class CommandClassParseException extends Exception { }
+public class CommandClassParseException extends Exception {
+    public CommandClassParseException(String message)
+    {
+        super(message);
+    }
+}

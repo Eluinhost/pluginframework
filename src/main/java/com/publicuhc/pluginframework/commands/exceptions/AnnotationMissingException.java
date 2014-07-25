@@ -21,4 +21,10 @@
 
 package com.publicuhc.pluginframework.commands.exceptions;
 
-public class AnnotationMissingException extends CommandClassParseException { }
+import java.lang.annotation.Annotation;
+
+public class AnnotationMissingException extends CommandClassParseException {
+    public AnnotationMissingException(String message) {
+        super(message);
+    }
+}
