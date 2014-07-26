@@ -1,4 +1,4 @@
-package com.publicuhc.pluginframework.commands.routing;
+package com.publicuhc.pluginframework.routing;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;

@@ -1,6 +1,7 @@
-package com.publicuhc.pluginframework.commands.routing;
+package com.publicuhc.pluginframework.routing;
 
 import com.publicuhc.pluginframework.commands.exceptions.CommandClassParseException;
+import com.publicuhc.pluginframework.routing.CommandRoute;
 
 import java.lang.reflect.Method;
 

@@ -1,4 +1,4 @@
-package com.publicuhc.pluginframework.commands.routing;
+package com.publicuhc.pluginframework.routing;
 
 import com.publicuhc.pluginframework.commands.routes.Route;
 

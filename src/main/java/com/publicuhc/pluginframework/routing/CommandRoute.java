@@ -1,4 +1,4 @@
-package com.publicuhc.pluginframework.commands.routing;
+package com.publicuhc.pluginframework.routing;
 
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
