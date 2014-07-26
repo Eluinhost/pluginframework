@@ -28,7 +28,7 @@ import com.publicuhc.pluginframework.commands.routes.RouteBuilder;
 
 public class TestMissingBaseCommands {
 
-    @CommandMethod
+    @CommandMethod(command = "unknowncommand")
     public void commandMissing(CommandRequest request) {
 
     }

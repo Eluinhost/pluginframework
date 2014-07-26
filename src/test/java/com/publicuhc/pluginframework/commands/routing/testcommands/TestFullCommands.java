@@ -34,7 +34,7 @@ import java.util.regex.Pattern;
 
 public class TestFullCommands {
 
-    @CommandMethod
+    @CommandMethod(command = "banIP")
     public void banIP(CommandRequest request) {
         Bukkit.banIP(request.getArg(0));
         request.sendMessage("banned with message " + request.getArg(1));

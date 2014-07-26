@@ -31,7 +31,7 @@ import java.util.List;
 
 public class TestExceptionCommandMethod {
 
-    @CommandMethod
+    @CommandMethod(command = "test")
     public void exception(CommandRequest request) {
         throw new IllegalAccessError();
     }

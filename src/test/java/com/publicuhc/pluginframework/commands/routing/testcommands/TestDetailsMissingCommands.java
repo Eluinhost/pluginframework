@@ -26,7 +26,7 @@ import com.publicuhc.pluginframework.commands.requests.CommandRequest;
 
 public class TestDetailsMissingCommands {
 
-    @CommandMethod
+    @CommandMethod(command = "test")
     public void detailsMissingCommand(CommandRequest request) {
 
     }

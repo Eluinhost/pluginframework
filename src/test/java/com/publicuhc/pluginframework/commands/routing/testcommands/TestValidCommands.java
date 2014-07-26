@@ -32,7 +32,7 @@ import java.util.List;
 
 public class TestValidCommands {
 
-    @CommandMethod
+    @CommandMethod(command = "test")
     public void testCommand(CommandRequest request) {}
 
     @TabCompletion

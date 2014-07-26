@@ -28,7 +28,7 @@ import com.publicuhc.pluginframework.commands.routes.RouteBuilder;
 
 public class TestExceptionRouteInfoCommands {
 
-    @CommandMethod
+    @CommandMethod(command = "test")
     public void command(CommandRequest request) {
 
     }

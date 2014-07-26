@@ -307,7 +307,7 @@ public class DefaultRouterTest {
          *
          * @param request n/a
          */
-        @CommandMethod
+        @CommandMethod(command = "test")
         public void onValidCommandMethod(CommandRequest request) {}
 
         /**
@@ -315,7 +315,7 @@ public class DefaultRouterTest {
          *
          * @param string n/a
          */
-        @CommandMethod
+        @CommandMethod(command = "test")
         public void onInvalidParameters(String string) {}
 
         /**
