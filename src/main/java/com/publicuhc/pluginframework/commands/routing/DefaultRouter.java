@@ -120,7 +120,7 @@ public class DefaultRouter implements Router {
                 optionsMethod = instance.getClass().getMethod(method.getName(), OptionParser.class);
             } catch(NoSuchMethodException e) {
                 m_logger.log(Level.SEVERE, "Error getting method " + method.getName() + " with argument OptionParser for null option parameter");
-                throw new CommandClassParseException();
+                throw new CommandClassParseException("Method of same name with OptionParser parameter not found");
             }
 
             //make a new parser and invoke the method with it
@@ -129,7 +129,7 @@ public class DefaultRouter implements Router {
                 optionsMethod.invoke(instance, parser);
             } catch(Exception ex) {
                 m_logger.log(Level.SEVERE, "Error getting options from parser in method " + method.getName());
-                throw new CommandClassParseException();
+                throw new CommandClassParseException("Exception thrown fetching optionparser");
             }
         } else {
             //parse the annotation value in as our parser
@@ -180,7 +180,7 @@ public class DefaultRouter implements Router {
                 routeInfo = klass.getMethod(method.getName(), RouteBuilder.class);
             } catch (NoSuchMethodException e) {
                 m_logger.log(Level.SEVERE, "No method found with the name " + method.getName());
-                throw new DetailsMethodNotFoundException();
+                throw new DetailsMethodNotFoundException("Method " + method.getName() + " not found");
             }
 
             //throws exceptions if not valid
@@ -193,7 +193,7 @@ public class DefaultRouter implements Router {
             } catch (Exception e) {
                 e.printStackTrace();
                 m_logger.log(Level.SEVERE, "Error getting route info from the method " + routeInfo.getName());
-                throw new CommandClassParseException();
+                throw new CommandClassParseException("RouteInfo method threw an exception");
             }
 
             Route methodRoute = builder.build();

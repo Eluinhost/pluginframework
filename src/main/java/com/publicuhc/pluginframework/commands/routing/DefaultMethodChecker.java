@@ -55,7 +55,7 @@ public class DefaultMethodChecker implements MethodChecker {
 
         //only allow list returns
         if (!List.class.isAssignableFrom(method.getReturnType())) {
-            throw new InvalidReturnTypeException();
+            throw new InvalidReturnTypeException("Method does not return a list");
         }
 
         Type type = method.getGenericReturnType();
@@ -64,7 +64,7 @@ public class DefaultMethodChecker implements MethodChecker {
         ParameterizedType ptype = (ParameterizedType) type;
         Type[] types = ptype.getActualTypeArguments();
         if (types.length != 1 || !String.class.isAssignableFrom((Class) types[0])) {
-            throw new InvalidReturnTypeException();
+            throw new InvalidReturnTypeException("Method does not return String");
         }
     }
 
@@ -83,21 +83,21 @@ public class DefaultMethodChecker implements MethodChecker {
     protected void checkForCommandRequestParameter(Method method) throws InvalidMethodParametersException {
         if (method.getParameterTypes().length != 1 || !CommandRequest.class.isAssignableFrom(method.getParameterTypes()[0])) {
             m_logger.log(Level.SEVERE, "Method " + method.getName() + " has incorrect parameters");
-            throw new InvalidMethodParametersException();
+            throw new InvalidMethodParametersException("Method does not have a CommandRequest parameter");
         }
     }
 
     protected void checkForBuilderParameter(Method method) throws InvalidMethodParametersException {
         if (method.getParameterTypes().length != 1 || !RouteBuilder.class.isAssignableFrom(method.getParameterTypes()[0])) {
             m_logger.log(Level.SEVERE, "Method " + method.getName() + " has incorrect parameters");
-            throw new InvalidMethodParametersException();
+            throw new InvalidMethodParametersException("Method does not have a RouteBuilder parameter");
         }
     }
 
     protected void checkForAnnotationPresent(Class annotation, Method method) throws AnnotationMissingException {
         if(null == method.getAnnotation(annotation)) {
             m_logger.log(Level.SEVERE, "Method " + method.getName() + " does not have the @"+annotation.getName()+" annotation");
-            throw new AnnotationMissingException();
+            throw new AnnotationMissingException("Annotation " + annotation.getName() + " not found");
         }
     }
 }
