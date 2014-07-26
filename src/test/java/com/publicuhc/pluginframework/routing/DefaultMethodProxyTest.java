@@ -44,6 +44,43 @@ public class DefaultMethodProxyTest {
         assertThat(returns).isSameAs("test");
     }
 
+    @Test
+    public void testSpeedRegular()
+    {
+        TestObject object = new TestObject();
+        long start = System.currentTimeMillis();
+        for(int i = 0; i<1000000; i++) {
+            object.getArg("test");
+        }
+        System.out.println("Regular object, 1 Million invocations: " + (System.currentTimeMillis() - start) + "ms");
+    }
+
+    @Test
+    public void testSpeedReflection() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        TestObject object = new TestObject();
+
+        long start = System.currentTimeMillis();
+        for(int i = 0; i<1000000; i++) {
+            Method method = TestObject.class.getMethod("getArg", String.class);
+            method.invoke(object, "test");
+        }
+        System.out.println("Reflection, 1 Million invocations: " + (System.currentTimeMillis() - start) + "ms");
+
+    }
+
+    @Test
+    public void testSpeedReflectionWithCache() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        TestObject object = new TestObject();
+        Method method = TestObject.class.getMethod("getArg", String.class);
+
+        DefaultMethodProxy proxy = new DefaultMethodProxy(object, method);
+        long start = System.currentTimeMillis();
+        for(int i = 0; i<1000000; i++) {
+            proxy.invoke("test");
+        }
+        System.out.println("Reflection with cache, 1 Million invocations: " + (System.currentTimeMillis() - start) + "ms");
+    }
+
     private class TestObject {
         public static final String TEST_STRING = "TEST STRING";
 
