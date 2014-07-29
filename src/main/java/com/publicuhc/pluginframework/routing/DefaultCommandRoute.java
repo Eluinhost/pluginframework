@@ -7,15 +7,16 @@ import org.bukkit.craftbukkit.libs.joptsimple.OptionParser;
 import org.bukkit.craftbukkit.libs.joptsimple.OptionSet;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.List;
 
 public class DefaultCommandRoute implements CommandRoute {
 
     private MethodProxy proxy;
     private OptionParser parser;
+    private String commandName;
 
-    public DefaultCommandRoute(MethodProxy proxy, OptionParser parser)
+    public DefaultCommandRoute(String commandName, MethodProxy proxy, OptionParser parser)
     {
+        this.commandName = commandName;
         this.proxy = proxy;
         this.parser = parser;
     }
@@ -57,5 +58,17 @@ public class DefaultCommandRoute implements CommandRoute {
         } catch (IllegalAccessException e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public String getCommandName()
+    {
+        return commandName;
+    }
+
+    @Override
+    public void setCommandName(String name)
+    {
+        this.commandName = name;
     }
 }

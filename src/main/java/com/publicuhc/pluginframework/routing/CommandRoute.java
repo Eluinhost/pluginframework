@@ -4,7 +4,6 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.craftbukkit.libs.joptsimple.OptionException;
 import org.bukkit.craftbukkit.libs.joptsimple.OptionParser;
-import org.bukkit.craftbukkit.libs.joptsimple.OptionSet;
 
 public interface CommandRoute {
 
@@ -27,6 +26,16 @@ public interface CommandRoute {
      * @return the proxy to run on command trigger
      */
     public MethodProxy getProxy();
+
+    /**
+     * @return the name of the command to run on
+     */
+    public String getCommandName();
+
+    /**
+     * @param name the name of the command to run on
+     */
+    public void setCommandName(String name);
 
     /**
      * Run this command route
