@@ -10,9 +10,9 @@ import java.lang.reflect.InvocationTargetException;
 
 public class DefaultCommandRoute implements CommandRoute {
 
-    private MethodProxy proxy;
-    private OptionParser parser;
-    private String commandName;
+    private final MethodProxy proxy;
+    private final OptionParser parser;
+    private final String commandName;
 
     public DefaultCommandRoute(String commandName, MethodProxy proxy, OptionParser parser)
     {
@@ -25,18 +25,6 @@ public class DefaultCommandRoute implements CommandRoute {
     public OptionParser getOptionDetails()
     {
         return parser;
-    }
-
-    @Override
-    public void setOptionDetails(OptionParser options)
-    {
-        parser = options;
-    }
-
-    @Override
-    public void setProxy(MethodProxy proxy)
-    {
-        this.proxy = proxy;
     }
 
     @Override
@@ -64,11 +52,5 @@ public class DefaultCommandRoute implements CommandRoute {
     public String getCommandName()
     {
         return commandName;
-    }
-
-    @Override
-    public void setCommandName(String name)
-    {
-        this.commandName = name;
     }
 }

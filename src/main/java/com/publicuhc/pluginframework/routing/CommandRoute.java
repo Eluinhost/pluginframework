@@ -13,16 +13,6 @@ public interface CommandRoute {
     public OptionParser getOptionDetails();
 
     /**
-     * @param options the option details that define the allowed options
-     */
-    public void setOptionDetails(OptionParser options);
-
-    /**
-     * @param proxy the proxy to run on command trigger
-     */
-    public void setProxy(MethodProxy proxy);
-
-    /**
      * @return the proxy to run on command trigger
      */
     public MethodProxy getProxy();
@@ -31,11 +21,6 @@ public interface CommandRoute {
      * @return the name of the command to run on
      */
     public String getCommandName();
-
-    /**
-     * @param name the name of the command to run on
-     */
-    public void setCommandName(String name);
 
     /**
      * Run this command route
