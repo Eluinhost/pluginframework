@@ -22,8 +22,6 @@ import static org.powermock.api.mockito.PowerMockito.spy;
 @RunWith(PowerMockRunner.class)
 public class DefaultCommandRouteTest
 {
-    private DefaultCommandRoute route;
-    private MethodProxy proxy;
     private OptionParser parser;
     private TestClass testObject;
 
@@ -31,15 +29,17 @@ public class DefaultCommandRouteTest
     public void onStartup() throws NoSuchMethodException
     {
         testObject = mock(TestClass.class);
-        Method method = TestClass.class.getMethod("testMethod", Command.class, CommandSender.class, OptionSet.class);
-        proxy = spy(new DefaultMethodProxy(testObject, method));
         parser = mock(OptionParser.class);
-        route = new DefaultCommandRoute("test", proxy, parser);
     }
 
     @Test
-    public void testValidInvocation() throws InvocationTargetException, IllegalAccessException
+    public void testValidInvocation() throws InvocationTargetException, IllegalAccessException, NoSuchMethodException
     {
+        Method method = TestClass.class.getMethod("testMethod", Command.class, CommandSender.class, OptionSet.class);
+        MethodProxy proxy = spy(new DefaultMethodProxy(testObject, method));
+        parser = mock(OptionParser.class);
+        DefaultCommandRoute route = new DefaultCommandRoute("test", proxy, parser);
+
         Command command = mock(Command.class);
         CommandSender sender = mock(CommandSender.class);
         String[] args = new String[]{"1", "2"};
@@ -51,12 +51,37 @@ public class DefaultCommandRouteTest
         verify(testObject, times(1)).testMethod(same(command), same(sender), any(OptionSet.class));
     }
 
+    @Test
+    public void testExceptionInvocation() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException
+    {
+        Method method = TestClass.class.getMethod("testExceptionMethod", Command.class, CommandSender.class, OptionSet.class);
+        MethodProxy proxy = spy(new DefaultMethodProxy(testObject, method));
+        parser = mock(OptionParser.class);
+        DefaultCommandRoute route = new DefaultCommandRoute("test", proxy, parser);
+
+        Command command = mock(Command.class);
+        CommandSender sender = mock(CommandSender.class);
+        String[] args = new String[]{"1", "2"};
+
+        route.run(command, sender, args);
+
+        verify(parser, times(1)).parse(args);
+        verify(proxy, times(1)).invoke(same(command), same(sender), any(OptionSet.class));
+        verify(testObject, times(1)).testExceptionMethod(same(command), same(sender), any(OptionSet.class));
+
+        //TODO runs even if exceptions are thrown, we want to throw the original exception to use elsewhere
+    }
+
     private class TestClass
     {
         public static final String TEST_STRING = "TEST STRING";
         public String testMethod(Command command, CommandSender sender, OptionSet set)
         {
             return TEST_STRING;
+        }
+        public String testExceptionMethod(Command command, CommandSender sender, OptionSet set)
+        {
+            throw new IllegalStateException();
         }
     }
 }
