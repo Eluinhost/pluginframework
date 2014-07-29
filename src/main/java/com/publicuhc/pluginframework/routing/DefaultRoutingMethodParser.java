@@ -5,19 +5,11 @@ import com.publicuhc.pluginframework.commands.exceptions.AnnotationMissingExcept
 import com.publicuhc.pluginframework.commands.exceptions.CommandClassParseException;
 import org.bukkit.craftbukkit.libs.joptsimple.OptionParser;
 
-import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
-public class DefaultRoutingMethodParser implements RoutingMethodParser {
-
-    /**
-     * @param annotation the annotation to look for
-     * @return true if found, false otherwise
-     */
-    public static <T extends Annotation> T getAnnotation(Method method, Class<T> annotation) {
-        return method.getAnnotation(annotation);
-    }
+public class DefaultRoutingMethodParser extends RoutingMethodParser
+{
 
     /**
      * Returns an OptionParser after it has been pased through a method
@@ -68,5 +60,11 @@ public class DefaultRoutingMethodParser implements RoutingMethodParser {
         MethodProxy proxy = new DefaultMethodProxy(instance, method);
 
         return new DefaultCommandRoute(proxy, optionParser);
+    }
+
+    @Override
+    public boolean hasCommandMethodAnnotation(Method method)
+    {
+        return getAnnotation(method, CommandMethod.class) != null;
     }
 }
