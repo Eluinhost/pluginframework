@@ -1,5 +1,7 @@
 package com.publicuhc.pluginframework.routing;
 
+import com.publicuhc.pluginframework.routing.exception.CommandInvocationException;
+import junit.framework.AssertionFailedError;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.craftbukkit.libs.joptsimple.OptionParser;
@@ -33,7 +35,7 @@ public class DefaultCommandRouteTest
     }
 
     @Test
-    public void testValidInvocation() throws InvocationTargetException, IllegalAccessException, NoSuchMethodException
+    public void testValidInvocation() throws InvocationTargetException, IllegalAccessException, NoSuchMethodException, CommandInvocationException
     {
         Method method = TestClass.class.getMethod("testMethod", Command.class, CommandSender.class, OptionSet.class);
         MethodProxy proxy = spy(new DefaultMethodProxy(testObject, method));
@@ -63,13 +65,14 @@ public class DefaultCommandRouteTest
         CommandSender sender = mock(CommandSender.class);
         String[] args = new String[]{"1", "2"};
 
-        route.run(command, sender, args);
-
-        verify(parser, times(1)).parse(args);
-        verify(proxy, times(1)).invoke(same(command), same(sender), any(OptionSet.class));
-        verify(testObject, times(1)).testExceptionMethod(same(command), same(sender), any(OptionSet.class));
-
-        //TODO runs even if exceptions are thrown, we want to throw the original exception to use elsewhere
+        try {
+            route.run(command, sender, args);
+            verify(parser, times(1)).parse(args);
+            verify(proxy, times(1)).invoke(same(command), same(sender), any(OptionSet.class));
+            verify(testObject, times(1)).testExceptionMethod(same(command), same(sender), any(OptionSet.class));
+            return;
+        } catch(CommandInvocationException ignored) {}
+        throw new AssertionFailedError("Expected CommandInvocationException");
     }
 
     private class TestClass

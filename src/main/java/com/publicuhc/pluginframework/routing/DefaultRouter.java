@@ -24,6 +24,7 @@ package com.publicuhc.pluginframework.routing;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
 import com.publicuhc.pluginframework.commands.exceptions.CommandClassParseException;
+import com.publicuhc.pluginframework.routing.exception.CommandInvocationException;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.craftbukkit.libs.joptsimple.OptionException;
@@ -153,6 +154,8 @@ public class DefaultRouter implements Router
                 ex.printStackTrace();
                 return false;
             }
+        } catch(CommandInvocationException e) {
+            e.printStackTrace();
         }
         return true;
     }

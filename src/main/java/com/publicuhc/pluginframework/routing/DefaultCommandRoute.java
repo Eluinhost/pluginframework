@@ -1,12 +1,11 @@
 package com.publicuhc.pluginframework.routing;
 
+import com.publicuhc.pluginframework.routing.exception.CommandInvocationException;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.craftbukkit.libs.joptsimple.OptionException;
 import org.bukkit.craftbukkit.libs.joptsimple.OptionParser;
 import org.bukkit.craftbukkit.libs.joptsimple.OptionSet;
-
-import java.lang.reflect.InvocationTargetException;
 
 public class DefaultCommandRoute implements CommandRoute {
 
@@ -34,17 +33,13 @@ public class DefaultCommandRoute implements CommandRoute {
     }
 
     @Override
-    public void run(Command command, CommandSender sender, String[] args) throws OptionException
+    public void run(Command command, CommandSender sender, String[] args) throws OptionException, CommandInvocationException
     {
-        OptionSet optionSet = parser.parse(args);
-
         try {
+            OptionSet optionSet = parser.parse(args);
             proxy.invoke(command, sender, optionSet);
-            //TODO catch the exceptions and throw it wrapped for whatever runs this to catch
-        } catch (InvocationTargetException e) {
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
+        } catch (Exception e) {
+            throw new CommandInvocationException(e);
         }
     }
 
