@@ -1,5 +1,6 @@
 package com.publicuhc.pluginframework.routing;
 
+import com.publicuhc.pluginframework.TestObject;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.powermock.modules.junit4.PowerMockRunner;
@@ -34,20 +35,5 @@ public class DefaultMethodProxyTest
 
         assertThat(returns).isInstanceOf(String.class);
         assertThat(returns).isSameAs("test");
-    }
-
-    public class TestObject
-    {
-        public static final String TEST_STRING = "TEST STRING";
-
-        public String getNoArg()
-        {
-            return TEST_STRING;
-        }
-
-        public String getArg(String arg)
-        {
-            return arg;
-        }
     }
 }
