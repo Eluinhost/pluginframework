@@ -103,7 +103,6 @@ public class DefaultMethodProxyTest
     public void testSpeedInvokeDynamicCallsite() throws Throwable
     {
         MethodHandle handle = MethodHandles.lookup().findVirtual(TestObject.class, "getArg", MethodType.methodType(String.class, String.class));
-        handle.bindTo(new TestObject());
         CallSite site = new ConstantCallSite(handle);
 
         long start = System.currentTimeMillis();
