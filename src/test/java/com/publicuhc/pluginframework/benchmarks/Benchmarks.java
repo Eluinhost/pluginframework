@@ -1,4 +1,4 @@
-package com.publicuhc.pluginframework;
+package com.publicuhc.pluginframework.benchmarks;
 
 import org.openjdk.jmh.runner.Runner;
 import org.openjdk.jmh.runner.RunnerException;

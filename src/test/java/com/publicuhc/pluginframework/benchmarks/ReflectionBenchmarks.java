@@ -1,5 +1,6 @@
-package com.publicuhc.pluginframework;
+package com.publicuhc.pluginframework.benchmarks;
 
+import com.publicuhc.pluginframework.TestObject;
 import org.openjdk.jmh.annotations.*;
 
 import java.lang.invoke.*;
@@ -10,7 +11,7 @@ import java.util.concurrent.TimeUnit;
 @State(Scope.Thread)
 @BenchmarkMode(Mode.AverageTime)
 @OutputTimeUnit(TimeUnit.NANOSECONDS)
-public class ReflectionBenchmark
+public class ReflectionBenchmarks
 {
     private TestObject instance;
     private Method method;
