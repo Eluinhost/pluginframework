@@ -113,7 +113,7 @@ public class DefaultRouter implements Router {
         OptionParser parser;
 
         //get our option parser for this command
-        if(annotation.options().equals(CommandMethod.RUN_METHOD)) {
+        if(annotation.options()) {
             //get the method with same name but OptionParser as it's arg
             Method optionsMethod;
             try {
@@ -133,7 +133,7 @@ public class DefaultRouter implements Router {
             }
         } else {
             //parse the annotation value in as our parser
-            parser = new OptionParser(annotation.options());
+            parser = new OptionParser();
         }
 
         String commandName = annotation.command();
