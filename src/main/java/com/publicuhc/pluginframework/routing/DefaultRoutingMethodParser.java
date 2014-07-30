@@ -4,8 +4,11 @@ import com.publicuhc.pluginframework.routing.exception.AnnotationMissingExceptio
 import com.publicuhc.pluginframework.routing.exception.CommandParseException;
 import com.publicuhc.pluginframework.routing.proxy.MethodProxy;
 import com.publicuhc.pluginframework.routing.proxy.ReflectionMethodProxy;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandSender;
 import org.bukkit.craftbukkit.libs.joptsimple.OptionException;
 import org.bukkit.craftbukkit.libs.joptsimple.OptionParser;
+import org.bukkit.craftbukkit.libs.joptsimple.OptionSet;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -33,6 +36,13 @@ public class DefaultRoutingMethodParser extends RoutingMethodParser
         return parser;
     }
 
+    protected boolean areCommandMethodParametersCorrect(Method method)
+    {
+        Class[] types = method.getParameterTypes();
+
+        return types.length == 3 && types[0].equals(Command.class) && types[1].equals(CommandSender.class) && types[2].equals(OptionSet.class);
+    }
+
     @Override
     public CommandRoute parseCommandMethodAnnotation(Method method, Object instance) throws CommandParseException
     {
@@ -40,6 +50,9 @@ public class DefaultRoutingMethodParser extends RoutingMethodParser
 
         if(null == annotation)
             throw new AnnotationMissingException(method, CommandMethod.class);
+
+        if(!areCommandMethodParametersCorrect(method))
+            throw new CommandParseException("Invalid command method parameters at " + method.getName());
 
         String options = annotation.options();
 
