@@ -31,9 +31,9 @@ public class ReflectionMethodProxyTest
         Method method = TestObject.class.getMethod("getArg", String.class);
         ReflectionMethodProxy proxy = new ReflectionMethodProxy(new TestObject(), method);
 
-        Object returns = proxy.invoke("test");
+        Object returns = proxy.invoke(TestObject.TEST_STRING);
 
         assertThat(returns).isInstanceOf(String.class);
-        assertThat(returns).isSameAs("test");
+        assertThat(returns).isSameAs(TestObject.TEST_STRING);
     }
 }
