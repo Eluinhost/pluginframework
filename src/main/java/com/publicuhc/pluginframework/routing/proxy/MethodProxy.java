@@ -1,16 +1,16 @@
 package com.publicuhc.pluginframework.routing.proxy;
 
-public interface MethodProxy {
+public interface MethodProxy<T> {
 
     /**
      * @param instance the instance to run against
      */
-    void setInstance(Object instance);
+    public void setInstance(T instance);
 
     /**
      * @return the instance to run with
      */
-    Object getInstance();
+    public T getInstance();
 
     /**
      * Invoke the method with the given arguments
