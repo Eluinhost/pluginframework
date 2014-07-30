@@ -48,10 +48,8 @@ public class DefaultRoutingMethodParser extends RoutingMethodParser
         if(annotation.options().equals(CommandMethod.RUN_METHOD)) {
             try {
                 optionParser = getOptionsForMethod(method, instance);
-            } catch (NoSuchMethodException e) {
-                throw new CommandParseException("No options given and no options method " + instance.getClass().getName() + "#" + method.getName() + " with argument OptionParser not found");
             } catch (Exception e) {
-                throw new CommandParseException("Exception occured running the options method");
+                throw new CommandParseException("Exception occured when trying to run the options method " + method.getName(), e);
             }
         } else {
             //parse the annotation value in as our parser
