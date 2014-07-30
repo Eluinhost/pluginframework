@@ -3,7 +3,7 @@ package com.publicuhc.pluginframework.routing.proxy;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
-public class DefaultMethodProxy implements MethodProxy {
+public class ReflectionMethodProxy implements MethodProxy {
 
     private Object instance;
     private Method method;
@@ -13,7 +13,7 @@ public class DefaultMethodProxy implements MethodProxy {
      * @param instance the instance to call on
      * @param method the method to call
      */
-    public DefaultMethodProxy(Object instance, Method method)
+    public ReflectionMethodProxy(Object instance, Method method)
     {
         this.instance = instance;
         this.method = method;

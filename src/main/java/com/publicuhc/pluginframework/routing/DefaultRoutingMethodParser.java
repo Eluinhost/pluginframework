@@ -3,7 +3,7 @@ package com.publicuhc.pluginframework.routing;
 import com.publicuhc.pluginframework.commands.annotation.CommandMethod;
 import com.publicuhc.pluginframework.commands.exceptions.AnnotationMissingException;
 import com.publicuhc.pluginframework.commands.exceptions.CommandClassParseException;
-import com.publicuhc.pluginframework.routing.proxy.DefaultMethodProxy;
+import com.publicuhc.pluginframework.routing.proxy.ReflectionMethodProxy;
 import com.publicuhc.pluginframework.routing.proxy.MethodProxy;
 import org.bukkit.craftbukkit.libs.joptsimple.OptionParser;
 
@@ -59,7 +59,7 @@ public class DefaultRoutingMethodParser extends RoutingMethodParser
             optionParser = new OptionParser(options);
         }
 
-        MethodProxy proxy = new DefaultMethodProxy(instance, method);
+        MethodProxy proxy = new ReflectionMethodProxy(instance, method);
 
         return new DefaultCommandRoute(annotation.command(), proxy, optionParser);
     }

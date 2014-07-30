@@ -1,7 +1,7 @@
 package com.publicuhc.pluginframework.routing;
 
 import com.publicuhc.pluginframework.routing.exception.CommandInvocationException;
-import com.publicuhc.pluginframework.routing.proxy.DefaultMethodProxy;
+import com.publicuhc.pluginframework.routing.proxy.ReflectionMethodProxy;
 import com.publicuhc.pluginframework.routing.proxy.MethodProxy;
 import junit.framework.AssertionFailedError;
 import org.bukkit.command.Command;
@@ -40,7 +40,7 @@ public class DefaultCommandRouteTest
     public void testValidInvocation() throws InvocationTargetException, IllegalAccessException, NoSuchMethodException, CommandInvocationException
     {
         Method method = TestClass.class.getMethod("testMethod", Command.class, CommandSender.class, OptionSet.class);
-        MethodProxy proxy = spy(new DefaultMethodProxy(testObject, method));
+        MethodProxy proxy = spy(new ReflectionMethodProxy(testObject, method));
         parser = mock(OptionParser.class);
         DefaultCommandRoute route = new DefaultCommandRoute("test", proxy, parser);
 
@@ -59,7 +59,7 @@ public class DefaultCommandRouteTest
     public void testExceptionInvocation() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException
     {
         Method method = TestClass.class.getMethod("testExceptionMethod", Command.class, CommandSender.class, OptionSet.class);
-        MethodProxy proxy = spy(new DefaultMethodProxy(testObject, method));
+        MethodProxy proxy = spy(new ReflectionMethodProxy(testObject, method));
         parser = mock(OptionParser.class);
         DefaultCommandRoute route = new DefaultCommandRoute("test", proxy, parser);
 

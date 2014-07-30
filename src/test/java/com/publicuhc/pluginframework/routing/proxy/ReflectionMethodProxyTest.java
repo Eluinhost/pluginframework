@@ -11,13 +11,13 @@ import java.lang.reflect.Method;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(PowerMockRunner.class)
-public class DefaultMethodProxyTest
+public class ReflectionMethodProxyTest
 {
     @Test
     public void testInvokeNoArg() throws InvocationTargetException, IllegalAccessException, NoSuchMethodException
     {
         Method method = TestObject.class.getMethod("getNoArg");
-        DefaultMethodProxy proxy = new DefaultMethodProxy(new TestObject(), method);
+        ReflectionMethodProxy proxy = new ReflectionMethodProxy(new TestObject(), method);
 
         Object returns = proxy.invoke();
 
@@ -29,7 +29,7 @@ public class DefaultMethodProxyTest
     public void testInvokeWithArg() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException
     {
         Method method = TestObject.class.getMethod("getArg", String.class);
-        DefaultMethodProxy proxy = new DefaultMethodProxy(new TestObject(), method);
+        ReflectionMethodProxy proxy = new ReflectionMethodProxy(new TestObject(), method);
 
         Object returns = proxy.invoke("test");
 
