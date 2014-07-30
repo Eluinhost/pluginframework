@@ -44,7 +44,7 @@ public class DefaultRouter implements Router
     /**
      * Stores the message to send a player if a route wasn't found for the given command and parameters
      */
-    private final HashMap<String, List<String>> noRouteMessages = new HashMap<String, List<String>>();
+    protected final HashMap<String, List<String>> noRouteMessages = new HashMap<String, List<String>>();
 
     /**
      * Used to inject all parameters needed to the command classes when added
@@ -59,7 +59,7 @@ public class DefaultRouter implements Router
     /**
      * Stores map of command name -> route for invocation later on
      */
-    private final HashMap<String, CommandRoute> commands = new HashMap<String, CommandRoute>();
+    protected final HashMap<String, CommandRoute> commands = new HashMap<String, CommandRoute>();
 
     @Inject
     protected DefaultRouter(RoutingMethodParser parser, Injector injector)
