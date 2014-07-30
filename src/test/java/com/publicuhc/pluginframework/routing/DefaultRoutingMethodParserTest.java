@@ -33,7 +33,7 @@ public class DefaultRoutingMethodParserTest
     }
 
     //sample methods to use in tests
-    @CommandMethod(command = "test")
+    @CommandMethod(command = "test", options = true)
     public String commandWithAnnotation(Command command, CommandSender sender, OptionSet set)
     {
         return "TEST_STRING";
@@ -48,17 +48,19 @@ public class DefaultRoutingMethodParserTest
     public void commandWithoutAnnotation(Command command, CommandSender sender, OptionSet set)
     {}
 
-    @CommandMethod(command = "test", options = "a:b::")
+    @CommandMethod(command = "test", options = true)
     public String commandWithAnnotationOptions(Command command, CommandSender sender, OptionSet set)
     {
         return "TEST_STRING";
     }
 
-    @CommandMethod(command = "test", options = "a:b::**")
-    public void commandWithInvalidAnnotationOptions(Command command, CommandSender sender, OptionSet set)
-    {}
+    public void commandWithAnnotationOptions(OptionParser optionParser)
+    {
+        optionParser.accepts("a").withRequiredArg();
+        optionParser.accepts("b").withOptionalArg();
+    }
 
-    @CommandMethod(command = "test")
+    @CommandMethod(command = "test", options = true)
     public void commandWithAnnotationButNoOptions(Command command, CommandSender sender, OptionSet set)
     {}
 
@@ -111,6 +113,11 @@ public class DefaultRoutingMethodParserTest
         assertThat(set.valueOf("a")).isEqualTo("2");
         assertThat(set.valueOf("b")).isEqualTo("test");
         assertThat(set.nonOptionArguments()).containsExactly("bleh", "random", "words");
+
+        try {
+            set = optionParser.parse("-b=test");
+            throw new AssertionFailedError("Expected OptionException for missing argument a");
+        } catch (OptionException ignored) {}
     }
 
     //actual tests
@@ -183,19 +190,6 @@ public class DefaultRoutingMethodParserTest
         assertThat(route.getCommandName()).isEqualTo("test");
         assertOptionsValidStrings(route.getOptionDetails());
         assertThat(route.getProxy().invoke(mock(Command.class), mock(CommandSender.class), mock(OptionSet.class))).isEqualTo("TEST_STRING");
-    }
-
-    @Test
-    public void test_parse_method_annotation_with_invalid_options() throws Throwable
-    {
-        Method method = DefaultRoutingMethodParserTest.class.getDeclaredMethod("commandWithInvalidAnnotationOptions", Command.class, CommandSender.class, OptionSet.class);
-
-        try {
-            parser.parseCommandMethodAnnotation(method, this);
-            throw new AssertionFailedError("Expected CommandParseException");
-        } catch(CommandParseException ex) {
-            assertThat(ex.getCause()).isInstanceOf(OptionException.class);
-        }
     }
 
     @Test
