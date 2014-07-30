@@ -3,6 +3,8 @@ package com.publicuhc.pluginframework.routing;
 import com.publicuhc.pluginframework.commands.annotation.CommandMethod;
 import com.publicuhc.pluginframework.commands.exceptions.AnnotationMissingException;
 import com.publicuhc.pluginframework.commands.exceptions.CommandClassParseException;
+import com.publicuhc.pluginframework.routing.proxy.DefaultMethodProxy;
+import com.publicuhc.pluginframework.routing.proxy.MethodProxy;
 import org.bukkit.craftbukkit.libs.joptsimple.OptionParser;
 
 import java.lang.reflect.InvocationTargetException;

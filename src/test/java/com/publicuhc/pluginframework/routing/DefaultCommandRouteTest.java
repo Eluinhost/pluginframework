@@ -1,6 +1,8 @@
 package com.publicuhc.pluginframework.routing;
 
 import com.publicuhc.pluginframework.routing.exception.CommandInvocationException;
+import com.publicuhc.pluginframework.routing.proxy.DefaultMethodProxy;
+import com.publicuhc.pluginframework.routing.proxy.MethodProxy;
 import junit.framework.AssertionFailedError;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;

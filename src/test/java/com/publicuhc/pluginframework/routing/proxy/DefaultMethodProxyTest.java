@@ -1,4 +1,4 @@
-package com.publicuhc.pluginframework.routing;
+package com.publicuhc.pluginframework.routing.proxy;
 
 import com.publicuhc.pluginframework.TestObject;
 import org.junit.Test;
