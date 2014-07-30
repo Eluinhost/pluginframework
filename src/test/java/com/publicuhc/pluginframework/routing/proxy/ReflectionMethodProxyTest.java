@@ -9,6 +9,10 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.powermock.api.mockito.PowerMockito.spy;
 
 @RunWith(PowerMockRunner.class)
 public class ReflectionMethodProxyTest
@@ -16,24 +20,30 @@ public class ReflectionMethodProxyTest
     @Test
     public void testInvokeNoArg() throws InvocationTargetException, IllegalAccessException, NoSuchMethodException
     {
+        TestObject object = spy(new TestObject());
         Method method = TestObject.class.getMethod("getNoArg");
-        ReflectionMethodProxy proxy = new ReflectionMethodProxy(new TestObject(), method);
+        ReflectionMethodProxy proxy = new ReflectionMethodProxy(object, method);
 
         Object returns = proxy.invoke();
 
         assertThat(returns).isInstanceOf(String.class);
         assertThat(returns).isSameAs(TestObject.TEST_STRING);
+        verify(object, times(1)).getNoArg();
+        verifyNoMoreInteractions(object);
     }
 
     @Test
     public void testInvokeWithArg() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException
     {
+        TestObject object = spy(new TestObject());
         Method method = TestObject.class.getMethod("getArg", String.class);
-        ReflectionMethodProxy proxy = new ReflectionMethodProxy(new TestObject(), method);
+        ReflectionMethodProxy proxy = new ReflectionMethodProxy(object, method);
 
         Object returns = proxy.invoke(TestObject.TEST_STRING);
 
         assertThat(returns).isInstanceOf(String.class);
         assertThat(returns).isSameAs(TestObject.TEST_STRING);
+        verify(object, times(1)).getArg(TestObject.TEST_STRING);
+        verifyNoMoreInteractions(object);
     }
 }
