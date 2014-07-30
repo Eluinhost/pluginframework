@@ -1,10 +1,10 @@
 package com.publicuhc.pluginframework.routing;
 
 import com.publicuhc.pluginframework.commands.annotation.CommandMethod;
-import com.publicuhc.pluginframework.commands.exceptions.AnnotationMissingException;
-import com.publicuhc.pluginframework.commands.exceptions.CommandClassParseException;
-import com.publicuhc.pluginframework.routing.proxy.ReflectionMethodProxy;
+import com.publicuhc.pluginframework.routing.exception.AnnotationMissingException;
+import com.publicuhc.pluginframework.routing.exception.CommandParseException;
 import com.publicuhc.pluginframework.routing.proxy.MethodProxy;
+import com.publicuhc.pluginframework.routing.proxy.ReflectionMethodProxy;
 import org.bukkit.craftbukkit.libs.joptsimple.OptionParser;
 
 import java.lang.reflect.InvocationTargetException;
@@ -34,12 +34,12 @@ public class DefaultRoutingMethodParser extends RoutingMethodParser
     }
 
     @Override
-    public CommandRoute parseCommandMethodAnnotation(Method method, Object instance) throws CommandClassParseException
+    public CommandRoute parseCommandMethodAnnotation(Method method, Object instance) throws CommandParseException
     {
         CommandMethod annotation = getAnnotation(method, CommandMethod.class);
 
         if(null == annotation)
-            throw new AnnotationMissingException("@CommandMethod annotation missing on method " + instance.getClass().getName() + "#" + method.getName());
+            throw new AnnotationMissingException(method, CommandMethod.class);
 
         String options = annotation.options();
 
@@ -50,9 +50,9 @@ public class DefaultRoutingMethodParser extends RoutingMethodParser
             try {
                 optionParser = getOptionsForMethod(method, instance);
             } catch (NoSuchMethodException e) {
-                throw new CommandClassParseException("No options given and no options method " + instance.getClass().getName() + "#" + method.getName() + " with argument OptionParser not found");
+                throw new CommandParseException("No options given and no options method " + instance.getClass().getName() + "#" + method.getName() + " with argument OptionParser not found");
             } catch (Exception e) {
-                throw new CommandClassParseException("Exception occured running the options method");
+                throw new CommandParseException("Exception occured running the options method");
             }
         } else {
             //parse the annotation value in as our parser

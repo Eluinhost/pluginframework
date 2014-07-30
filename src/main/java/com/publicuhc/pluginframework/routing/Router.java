@@ -21,7 +21,7 @@
 
 package com.publicuhc.pluginframework.routing;
 
-import com.publicuhc.pluginframework.commands.exceptions.CommandClassParseException;
+import com.publicuhc.pluginframework.routing.exception.CommandParseException;
 import org.bukkit.command.TabExecutor;
 
 import java.util.List;
@@ -33,8 +33,9 @@ public interface Router extends TabExecutor {
      *
      * @param klass the class to register commands for
      * @return the created object after injection
+     * @throws com.publicuhc.pluginframework.routing.exception.CommandParseException when failing to parse any commands in the class
      */
-    Object registerCommands(Class klass) throws CommandClassParseException;
+    Object registerCommands(Class klass) throws CommandParseException;
 
     /**
      * Register an already created class for commands and (optionally) inject dependencies
@@ -44,8 +45,9 @@ public interface Router extends TabExecutor {
      * </b>
      * @param object the object to register commands for
      * @param inject whether to inject dependencies or not (no constructor injection)
+     * @throws com.publicuhc.pluginframework.routing.exception.CommandParseException when failing to parse any commands in the class
      */
-    void registerCommands(Object object, boolean inject) throws CommandClassParseException;
+    void registerCommands(Object object, boolean inject) throws CommandParseException;
 
     /**
      * Set the messages to be displayed if a command is triggered but has no method to call

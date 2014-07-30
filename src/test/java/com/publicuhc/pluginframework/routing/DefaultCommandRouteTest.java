@@ -51,7 +51,7 @@ public class DefaultCommandRouteTest
         try {
             route.run(command, sender, args);
         } catch(CommandInvocationException ex) {
-            throw ex.getWrappedException();
+            throw ex.getCause();
         }
         verify(parser, times(1)).parse(args);
         verify(proxy, times(1)).invoke(same(command), same(sender), any(OptionSet.class));

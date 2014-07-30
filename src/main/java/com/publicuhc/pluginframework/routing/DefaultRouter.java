@@ -23,8 +23,8 @@ package com.publicuhc.pluginframework.routing;
 
 import com.google.inject.Inject;
 import com.google.inject.Injector;
-import com.publicuhc.pluginframework.commands.exceptions.CommandClassParseException;
 import com.publicuhc.pluginframework.routing.exception.CommandInvocationException;
+import com.publicuhc.pluginframework.routing.exception.CommandParseException;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.craftbukkit.libs.joptsimple.OptionException;
@@ -67,7 +67,7 @@ public class DefaultRouter implements Router
     }
 
     @Override
-    public Object registerCommands(Class klass) throws CommandClassParseException
+    public Object registerCommands(Class klass) throws CommandParseException
     {
         //grab an instance of the class after injection
         Object o = injector.getInstance(klass);
@@ -80,7 +80,7 @@ public class DefaultRouter implements Router
     }
 
     @Override
-    public void registerCommands(Object object, boolean inject) throws CommandClassParseException
+    public void registerCommands(Object object, boolean inject) throws CommandParseException
     {
         //inject if we need to
         if(inject) {
