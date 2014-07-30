@@ -207,7 +207,7 @@ public class DefaultRouterTest
     public class InvalidCommandClass
     {
         //invalid because missing options method
-        @CommandMethod(command = "testcommand")
+        @CommandMethod(command = "testcommand", options = true)
         public void testCommand(Command command, CommandSender sender, OptionSet set)
         {}
     }
