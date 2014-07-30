@@ -22,7 +22,7 @@ public class DefaultRoutingMethodParser extends RoutingMethodParser
      * @return the optionparser after being run through the method
      * @throws NoSuchMethodException if the method cannot be found
      */
-    private OptionParser getOptionsForMethod(Method method, Object instance) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException
+    protected OptionParser getOptionsForMethod(Method method, Object instance) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException
     {
         Method optionsMethod = instance.getClass().getMethod(method.getName(), OptionParser.class);
 
