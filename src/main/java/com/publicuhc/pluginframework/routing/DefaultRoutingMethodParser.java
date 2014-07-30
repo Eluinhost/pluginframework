@@ -6,7 +6,6 @@ import com.publicuhc.pluginframework.routing.proxy.MethodProxy;
 import com.publicuhc.pluginframework.routing.proxy.ReflectionMethodProxy;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
-import org.bukkit.craftbukkit.libs.joptsimple.OptionException;
 import org.bukkit.craftbukkit.libs.joptsimple.OptionParser;
 import org.bukkit.craftbukkit.libs.joptsimple.OptionSet;
 
@@ -54,24 +53,17 @@ public class DefaultRoutingMethodParser extends RoutingMethodParser
         if(!areCommandMethodParametersCorrect(method))
             throw new CommandParseException("Invalid command method parameters at " + method.getName());
 
-        String options = annotation.options();
-
         OptionParser optionParser;
         
         //get our option parser for this command
-        if(annotation.options().equals(CommandMethod.RUN_METHOD)) {
+        if(annotation.options()) {
             try {
                 optionParser = getOptionsForMethod(method, instance);
             } catch (Exception e) {
                 throw new CommandParseException("Exception occured when trying to run the options method for " + method.getName(), e);
             }
         } else {
-            try {
-                //parse the annotation value in as our parser
-                optionParser = new OptionParser(options);
-            } catch (OptionException ex) {
-                throw new CommandParseException("Invalid options for command method " + method.getName(), ex);
-            }
+            optionParser = new OptionParser();
         }
 
         MethodProxy proxy = new ReflectionMethodProxy(instance, method);

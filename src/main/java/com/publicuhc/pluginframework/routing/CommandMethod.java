@@ -28,8 +28,6 @@ import java.lang.annotation.*;
 @Documented
 public @interface CommandMethod
 {
-    public static final String RUN_METHOD = "run_method";
-
     public String command();
-    public String options() default RUN_METHOD;
+    public boolean options() default false;
 }
