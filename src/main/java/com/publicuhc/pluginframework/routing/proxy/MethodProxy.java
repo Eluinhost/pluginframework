@@ -1,9 +1,6 @@
 package com.publicuhc.pluginframework.routing.proxy;
 
-import com.publicuhc.pluginframework.commands.routes.Route;
-
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 
 public interface MethodProxy {
 
@@ -16,16 +13,6 @@ public interface MethodProxy {
      * @return the instance to run with
      */
     Object getInstance();
-
-    /**
-     * @param method the method to run on command run
-     */
-    void setMethod(Method method);
-
-    /**
-     * @return the method to run the command on
-     */
-    public Method getMethod();
 
     /**
      * Invoke the method with the given arguments

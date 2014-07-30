@@ -32,18 +32,6 @@ public class ReflectionMethodProxy implements MethodProxy {
     }
 
     @Override
-    public void setMethod(Method method)
-    {
-        this.method = method;
-    }
-
-    @Override
-    public Method getMethod()
-    {
-        return this.method;
-    }
-
-    @Override
     public Object invoke(Object... args) throws InvocationTargetException, IllegalAccessException
     {
         return method.invoke(instance, args);
