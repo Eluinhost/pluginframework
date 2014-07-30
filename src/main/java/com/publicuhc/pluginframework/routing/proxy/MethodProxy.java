@@ -1,7 +1,5 @@
 package com.publicuhc.pluginframework.routing.proxy;
 
-import java.lang.reflect.InvocationTargetException;
-
 public interface MethodProxy {
 
     /**
@@ -19,6 +17,7 @@ public interface MethodProxy {
      *
      * @param args the args to call the method with
      * @return the object returned by the method
+     * @throws java.lang.Throwable any error caused during invocation
      */
-    public Object invoke(Object... args) throws InvocationTargetException, IllegalAccessException;
+    public Object invoke(Object... args) throws Throwable;
 }
