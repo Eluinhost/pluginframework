@@ -1,8 +1,8 @@
 package com.publicuhc.pluginframework.routing;
 
 import com.publicuhc.pluginframework.routing.exception.CommandInvocationException;
-import com.publicuhc.pluginframework.routing.proxy.ReflectionMethodProxy;
 import com.publicuhc.pluginframework.routing.proxy.MethodProxy;
+import com.publicuhc.pluginframework.routing.proxy.ReflectionMethodProxy;
 import junit.framework.AssertionFailedError;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -13,7 +13,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.powermock.modules.junit4.PowerMockRunner;
 
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 import static org.mockito.Matchers.any;
@@ -37,7 +36,7 @@ public class DefaultCommandRouteTest
     }
 
     @Test
-    public void testValidInvocation() throws InvocationTargetException, IllegalAccessException, NoSuchMethodException, CommandInvocationException
+    public void testValidInvocation() throws Throwable
     {
         Method method = TestClass.class.getMethod("testMethod", Command.class, CommandSender.class, OptionSet.class);
         MethodProxy proxy = spy(new ReflectionMethodProxy(testObject, method));
@@ -56,7 +55,7 @@ public class DefaultCommandRouteTest
     }
 
     @Test
-    public void testExceptionInvocation() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException
+    public void testExceptionInvocation() throws Throwable
     {
         Method method = TestClass.class.getMethod("testExceptionMethod", Command.class, CommandSender.class, OptionSet.class);
         MethodProxy proxy = spy(new ReflectionMethodProxy(testObject, method));
