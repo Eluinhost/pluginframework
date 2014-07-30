@@ -15,6 +15,7 @@ public interface CommandOptionsParser {
      * @param args the args to parse
      * @return the parsed optionset
      * @throws org.bukkit.craftbukkit.libs.joptsimple.OptionException when failing parsing the args or required args are not present
+     * @throws com.publicuhc.pluginframework.routing.exception.OptionMissingException when a required option is missing
      */
     public OptionSet parse(String... args);
 }
