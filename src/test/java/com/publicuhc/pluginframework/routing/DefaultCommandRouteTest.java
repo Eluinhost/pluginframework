@@ -15,6 +15,7 @@ import org.powermock.modules.junit4.PowerMockRunner;
 
 import java.lang.reflect.Method;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.same;
 import static org.mockito.Mockito.times;
@@ -31,7 +32,7 @@ public class DefaultCommandRouteTest
     @Before
     public void onStartup() throws NoSuchMethodException
     {
-        testObject = mock(TestClass.class);
+        testObject = new TestClass();
         parser = mock(OptionParser.class);
     }
 
@@ -39,26 +40,7 @@ public class DefaultCommandRouteTest
     public void testValidInvocation() throws Throwable
     {
         Method method = TestClass.class.getMethod("testMethod", Command.class, CommandSender.class, OptionSet.class);
-        MethodProxy proxy = spy(new ReflectionMethodProxy(testObject, method));
-        parser = mock(OptionParser.class);
-        DefaultCommandRoute route = new DefaultCommandRoute("test", proxy, parser);
-
-        Command command = mock(Command.class);
-        CommandSender sender = mock(CommandSender.class);
-        String[] args = new String[]{"1", "2"};
-
-        route.run(command, sender, args);
-
-        verify(parser, times(1)).parse(args);
-        verify(proxy, times(1)).invoke(same(command), same(sender), any(OptionSet.class));
-        verify(testObject, times(1)).testMethod(same(command), same(sender), any(OptionSet.class));
-    }
-
-    @Test
-    public void testExceptionInvocation() throws Throwable
-    {
-        Method method = TestClass.class.getMethod("testExceptionMethod", Command.class, CommandSender.class, OptionSet.class);
-        MethodProxy proxy = spy(new ReflectionMethodProxy(testObject, method));
+        MethodProxy proxy = spy(new ReflectionMethodProxy<TestClass>(testObject, method));
         parser = mock(OptionParser.class);
         DefaultCommandRoute route = new DefaultCommandRoute("test", proxy, parser);
 
@@ -68,24 +50,56 @@ public class DefaultCommandRouteTest
 
         try {
             route.run(command, sender, args);
-            verify(parser, times(1)).parse(args);
-            verify(proxy, times(1)).invoke(same(command), same(sender), any(OptionSet.class));
-            verify(testObject, times(1)).testExceptionMethod(same(command), same(sender), any(OptionSet.class));
-            return;
-        } catch(CommandInvocationException ignored) {}
-        throw new AssertionFailedError("Expected CommandInvocationException");
+        } catch(CommandInvocationException ex) {
+            throw ex.getWrappedException();
+        }
+        verify(parser, times(1)).parse(args);
+        verify(proxy, times(1)).invoke(same(command), same(sender), any(OptionSet.class));
+
+        assertThat(testObject.wasRan()).isTrue();
     }
 
-    private class TestClass
+    @Test
+    public void testExceptionInvocation() throws Throwable
     {
-        public static final String TEST_STRING = "TEST STRING";
-        public String testMethod(Command command, CommandSender sender, OptionSet set)
-        {
-            return TEST_STRING;
+        Method method = TestClass.class.getMethod("exceptionMethod", Command.class, CommandSender.class, OptionSet.class);
+        MethodProxy proxy = spy(new ReflectionMethodProxy<TestClass>(testObject, method));
+        parser = mock(OptionParser.class);
+        DefaultCommandRoute route = new DefaultCommandRoute("test", proxy, parser);
+
+        Command command = mock(Command.class);
+        CommandSender sender = mock(CommandSender.class);
+        String[] args = new String[]{"1", "2"};
+
+        try {
+            route.run(command, sender, args);
+            throw new AssertionFailedError("Expected CommandInvocationException");
+        } catch(CommandInvocationException ignored) {
+            verify(parser, times(1)).parse(args);
+            verify(proxy, times(1)).invoke(same(command), same(sender), any(OptionSet.class));
+            assertThat(testObject.wasRan()).isFalse();
         }
-        public String testExceptionMethod(Command command, CommandSender sender, OptionSet set)
+    }
+
+    public static class TestClass
+    {
+        private boolean ran = false;
+
+        public void testMethod(Command command, CommandSender sender, OptionSet set)
+        {
+            setRan(true);
+        }
+        public void exceptionMethod(Command command, CommandSender sender, OptionSet set)
         {
             throw new IllegalStateException();
+        }
+        public void setRan(boolean ran)
+        {
+            this.ran = ran;
+        }
+        public boolean wasRan()
+        {
+            return ran;
         }
     }
 }
