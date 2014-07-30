@@ -22,7 +22,6 @@
 package com.publicuhc.pluginframework.commands.routing;
 
 import com.google.inject.Inject;
-import com.publicuhc.pluginframework.commands.annotation.CommandMethod;
 import com.publicuhc.pluginframework.commands.annotation.RouteInfo;
 import com.publicuhc.pluginframework.commands.annotation.TabCompletion;
 import com.publicuhc.pluginframework.commands.exceptions.AnnotationMissingException;
@@ -30,6 +29,7 @@ import com.publicuhc.pluginframework.commands.exceptions.InvalidMethodParameters
 import com.publicuhc.pluginframework.commands.exceptions.InvalidReturnTypeException;
 import com.publicuhc.pluginframework.commands.requests.CommandRequest;
 import com.publicuhc.pluginframework.commands.routes.RouteBuilder;
+import com.publicuhc.pluginframework.routing.CommandMethod;
 import org.bukkit.plugin.PluginLogger;
 
 import java.lang.reflect.Method;
