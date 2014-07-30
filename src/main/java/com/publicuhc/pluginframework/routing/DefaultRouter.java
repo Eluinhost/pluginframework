@@ -25,8 +25,10 @@ import com.google.inject.Inject;
 import com.google.inject.Injector;
 import com.publicuhc.pluginframework.routing.exception.CommandInvocationException;
 import com.publicuhc.pluginframework.routing.exception.CommandParseException;
+import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.PluginCommand;
 import org.bukkit.craftbukkit.libs.joptsimple.OptionException;
 
 import java.io.IOException;
@@ -93,8 +95,22 @@ public class DefaultRouter implements Router
         //get all of the classes methods
         Method[] methods = klass.getDeclaredMethods();
         for(Method method : methods) {
+            //if it's a command method
             if(parser.hasCommandMethodAnnotation(method)) {
+
+                //attempt to parse the route
                 CommandRoute route = parser.parseCommandMethodAnnotation(method, object);
+
+                PluginCommand command = Bukkit.getPluginCommand(route.getCommandName());
+                //if the command required is 'ungettable' throw an error
+                if(null == command)
+                    throw new CommandParseException("Cannot register the command with name " + route.getCommandName());
+
+                //set ourselves as the executor for the command
+                command.setExecutor(this);
+                command.setTabCompleter(this);
+
+                //add to command map
                 commands.put(route.getCommandName(), route);
             }
             //TODO tab complete
