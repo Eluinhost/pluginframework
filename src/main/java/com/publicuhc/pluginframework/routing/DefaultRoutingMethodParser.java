@@ -4,6 +4,7 @@ import com.publicuhc.pluginframework.routing.exception.AnnotationMissingExceptio
 import com.publicuhc.pluginframework.routing.exception.CommandParseException;
 import com.publicuhc.pluginframework.routing.proxy.MethodProxy;
 import com.publicuhc.pluginframework.routing.proxy.ReflectionMethodProxy;
+import org.bukkit.craftbukkit.libs.joptsimple.OptionException;
 import org.bukkit.craftbukkit.libs.joptsimple.OptionParser;
 
 import java.lang.reflect.InvocationTargetException;
@@ -49,11 +50,15 @@ public class DefaultRoutingMethodParser extends RoutingMethodParser
             try {
                 optionParser = getOptionsForMethod(method, instance);
             } catch (Exception e) {
-                throw new CommandParseException("Exception occured when trying to run the options method " + method.getName(), e);
+                throw new CommandParseException("Exception occured when trying to run the options method for " + method.getName(), e);
             }
         } else {
-            //parse the annotation value in as our parser
-            optionParser = new OptionParser(options);
+            try {
+                //parse the annotation value in as our parser
+                optionParser = new OptionParser(options);
+            } catch (OptionException ex) {
+                throw new CommandParseException("Invalid options for command method " + method.getName(), ex);
+            }
         }
 
         MethodProxy proxy = new ReflectionMethodProxy(instance, method);
