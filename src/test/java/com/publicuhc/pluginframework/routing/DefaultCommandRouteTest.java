@@ -40,7 +40,7 @@ public class DefaultCommandRouteTest
     public void test_valid_invocation() throws Throwable
     {
         Method method = TestClass.class.getMethod("testMethod", Command.class, CommandSender.class, OptionSet.class);
-        MethodProxy proxy = spy(new ReflectionMethodProxy<TestClass>(testObject, method));
+        MethodProxy proxy = spy(new ReflectionMethodProxy(testObject, method));
         DefaultCommandRoute route = new DefaultCommandRoute("test", proxy, parser);
 
         Command command = mock(Command.class);
@@ -62,7 +62,7 @@ public class DefaultCommandRouteTest
     public void test_invocation_with_exception() throws Throwable
     {
         Method method = TestClass.class.getMethod("exceptionMethod", Command.class, CommandSender.class, OptionSet.class);
-        MethodProxy proxy = spy(new ReflectionMethodProxy<TestClass>(testObject, method));
+        MethodProxy proxy = spy(new ReflectionMethodProxy(testObject, method));
         DefaultCommandRoute route = new DefaultCommandRoute("test", proxy, parser);
 
         Command command = mock(Command.class);

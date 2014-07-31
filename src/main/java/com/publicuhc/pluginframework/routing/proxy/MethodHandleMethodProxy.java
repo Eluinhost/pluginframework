@@ -4,7 +4,7 @@ import net.minecraft.util.com.google.common.collect.ObjectArrays;
 
 import java.lang.invoke.MethodHandle;
 
-public class MethodHandleMethodProxy<T> implements MethodProxy<T>
+public class MethodHandleMethodProxy<T> implements MethodProxy
 {
 
     private T instance;
@@ -23,9 +23,9 @@ public class MethodHandleMethodProxy<T> implements MethodProxy<T>
     }
 
     @Override
-    public void setInstance(T instance)
+    public void setInstance(Object instance)
     {
-        this.instance = instance;
+        this.instance = (T) instance;
     }
 
     @Override
