@@ -40,30 +40,21 @@ public class CommandRequest {
     private List<String> m_args;
     private CommandSender m_sender;
     private Command m_command;
-    private String m_locale;
     private OptionSet m_optionSet;
 
     public static UUID INVALID_ID = new UUID(0L, 0L);
 
-    public CommandRequest(Command command, CommandSender sender, OptionSet set, String locale)
+    public CommandRequest(Command command, CommandSender sender, OptionSet set)
     {
         m_command = command;
         m_sender = sender;
         m_args = set.nonOptionArguments();
         m_optionSet = set;
-        m_locale = locale;
     }
 
     public OptionSet getOptions()
     {
         return m_optionSet;
-    }
-
-    /**
-     * @return Get the locale for this request
-     */
-    public String getLocale() {
-        return m_locale;
     }
 
     /**
