@@ -33,7 +33,7 @@ public class DefaultCommandOptionsParserTest
     }
 
     @Test
-    public void testValidArguments()
+    public void test_parsing_with_valid_arguments()
     {
         OptionSet set = optionsParser.parse("--a=a", "-b=b", "-c", "-d", "d", "extra", "args");
 
@@ -59,19 +59,19 @@ public class DefaultCommandOptionsParserTest
     }
 
     @Test(expected = OptionMissingException.class)
-    public void testMissingArgumentsA()
+    public void test_parsing_with_missing_a_argument()
     {
         optionsParser.parse("-b=b", "-c", "-d", "d", "extra", "args");
     }
 
     @Test(expected = OptionMissingException.class)
-    public void testMissingArgumentsB()
+    public void test_parsing_with_missing_b_argument()
     {
         optionsParser.parse("--a=a", "-c", "-d", "d", "extra", "args");
     }
 
     @Test(expected = OptionMissingException.class)
-    public void testMissingArgumentsC()
+    public void test_parsing_with_missing_c_argument()
     {
         optionsParser.parse("--a=a", "-b=b", "-d", "d", "extra", "args");
     }

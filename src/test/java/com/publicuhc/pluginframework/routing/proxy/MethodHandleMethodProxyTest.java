@@ -17,7 +17,7 @@ import static org.powermock.api.mockito.PowerMockito.spy;
 public class MethodHandleMethodProxyTest
 {
     @Test
-    public void testInvokeNoArg() throws Throwable
+    public void test_invoking_with_no_arguments() throws Throwable
     {
         TestObject object = spy(new TestObject());
         MethodHandle method = MethodHandles.lookup().findVirtual(TestObject.class, "getNoArg", MethodType.methodType(String.class));
@@ -32,7 +32,7 @@ public class MethodHandleMethodProxyTest
     }
 
     @Test
-    public void testInvokeWithArg() throws Throwable
+    public void test_invoking_with_arguments() throws Throwable
     {
         TestObject object = spy(new TestObject());
         MethodHandle method = MethodHandles.lookup().findVirtual(TestObject.class, "getArg", MethodType.methodType(String.class, String.class));

@@ -16,7 +16,7 @@ import static org.powermock.api.mockito.PowerMockito.spy;
 public class ReflectionMethodProxyTest
 {
     @Test
-    public void testInvokeNoArg() throws InvocationTargetException, IllegalAccessException, NoSuchMethodException
+    public void test_invoking_without_arguments() throws InvocationTargetException, IllegalAccessException, NoSuchMethodException
     {
         TestObject object = spy(new TestObject());
         Method method = TestObject.class.getMethod("getNoArg");
@@ -31,7 +31,7 @@ public class ReflectionMethodProxyTest
     }
 
     @Test
-    public void testInvokeWithArg() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException
+    public void test_invoking_with_arguments() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException
     {
         TestObject object = spy(new TestObject());
         Method method = TestObject.class.getMethod("getArg", String.class);
