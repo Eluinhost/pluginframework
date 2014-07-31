@@ -1,16 +1,14 @@
 package com.publicuhc.pluginframework.routing.parser;
 
 import com.publicuhc.pluginframework.routing.CommandMethod;
+import com.publicuhc.pluginframework.routing.CommandRequest;
 import com.publicuhc.pluginframework.routing.CommandRoute;
 import com.publicuhc.pluginframework.routing.DefaultCommandRoute;
 import com.publicuhc.pluginframework.routing.exception.AnnotationMissingException;
 import com.publicuhc.pluginframework.routing.exception.CommandParseException;
 import com.publicuhc.pluginframework.routing.proxy.MethodProxy;
 import com.publicuhc.pluginframework.routing.proxy.ReflectionMethodProxy;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandSender;
 import org.bukkit.craftbukkit.libs.joptsimple.OptionParser;
-import org.bukkit.craftbukkit.libs.joptsimple.OptionSet;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -45,7 +43,7 @@ public class DefaultRoutingMethodParser extends RoutingMethodParser
     {
         Class[] types = method.getParameterTypes();
 
-        return types.length == 3 && types[0].equals(Command.class) && types[1].equals(CommandSender.class) && types[2].equals(OptionSet.class);
+        return types.length == 1 && types[0].equals(CommandRequest.class);
     }
 
     @Override
