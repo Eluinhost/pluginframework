@@ -39,7 +39,7 @@ public class DefaultCommandRoute implements CommandRoute
     {
         try {
             OptionSet optionSet = parser.parse(args);
-            proxy.invoke(command, sender, optionSet);
+            proxy.invoke(new CommandRequest(command, sender, optionSet));
         } catch(OptionException e) {
             throw e;
         } catch(Throwable e) {
