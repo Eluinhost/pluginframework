@@ -31,9 +31,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.craftbukkit.libs.joptsimple.OptionSet;
 import org.bukkit.entity.Player;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 public class CommandRequest {
 
@@ -48,7 +46,7 @@ public class CommandRequest {
     {
         m_command = command;
         m_sender = sender;
-        m_args = set.nonOptionArguments();
+        m_args = new ArrayList<String>(set.nonOptionArguments());
         m_optionSet = set;
     }
 
@@ -71,6 +69,15 @@ public class CommandRequest {
      */
     public List<String> getArgs() {
         return null == m_args ? null : Collections.unmodifiableList(m_args);
+    }
+
+    /**
+     * Used for testing
+     * @param args the arguments to use
+     */
+    protected void setArgs(String... args)
+    {
+        m_args = Arrays.asList(args);
     }
 
     /**
