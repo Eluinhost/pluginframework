@@ -24,23 +24,21 @@ package com.publicuhc.pluginframework.testplugins;
 import com.google.inject.AbstractModule;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
-import com.google.inject.Provider;
 import com.google.inject.name.Named;
 import com.publicuhc.pluginframework.FrameworkJavaPlugin;
-import com.publicuhc.pluginframework.commands.requests.CommandRequestBuilder;
-import com.publicuhc.pluginframework.commands.requests.DefaultCommandRequestBuilder;
-import com.publicuhc.pluginframework.commands.routing.DefaultMethodChecker;
-import com.publicuhc.pluginframework.commands.routing.DefaultRouter;
-import com.publicuhc.pluginframework.commands.routing.MethodChecker;
-import com.publicuhc.pluginframework.commands.routing.Router;
 import com.publicuhc.pluginframework.configuration.Configurator;
 import com.publicuhc.pluginframework.configuration.DefaultConfigurator;
+import com.publicuhc.pluginframework.routing.DefaultRouter;
+import com.publicuhc.pluginframework.routing.Router;
+import com.publicuhc.pluginframework.routing.parser.CommandOptionsParser;
+import com.publicuhc.pluginframework.routing.parser.DefaultCommandOptionsParser;
+import com.publicuhc.pluginframework.routing.parser.DefaultRoutingMethodParser;
+import com.publicuhc.pluginframework.routing.parser.RoutingMethodParser;
 import com.publicuhc.pluginframework.translate.DefaultTranslate;
 import com.publicuhc.pluginframework.translate.Translate;
 import org.bukkit.Server;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginLoader;
-import org.bukkit.plugin.PluginLogger;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -58,7 +56,7 @@ public class TestPluginReplaceModules extends FrameworkJavaPlugin {
     }
 
     @Inject
-    public CommandRequestBuilder builder;
+    public CommandOptionsParser parser;
 
     @Override
     public boolean initUseDefaultBindings() {
@@ -74,19 +72,21 @@ public class TestPluginReplaceModules extends FrameworkJavaPlugin {
                 bind(Router.class).to(TestConcreteRouter.class);
                 bind(Configurator.class).to(TestConcreteConfigurator.class);
                 bind(Translate.class).to(TestConcreteTranslate.class);
-                bind(CommandRequestBuilder.class).to(TestConcreteCommandRequestBuilder.class);
+                bind(RoutingMethodParser.class).to(TestRoutingMethodParser.class);
+                bind(CommandOptionsParser.class).to(TestCommandOptionsParser.class);
                 bind(ClassLoader.class).toInstance(getClass().getClassLoader());
-                bind(MethodChecker.class).to(TestConcreteMethodChecker.class);
             }
         };
         modules.add(module);
         return modules;
     }
 
-    public static class TestConcreteRouter extends DefaultRouter {
+    public static class TestConcreteRouter extends DefaultRouter
+    {
         @Inject
-        protected TestConcreteRouter(Provider<CommandRequestBuilder> requestProvider, Injector injector, PluginLogger logger, MethodChecker checker) {
-            super(requestProvider, injector, logger, checker);
+        protected TestConcreteRouter(RoutingMethodParser parser, Injector injector)
+        {
+            super(parser, injector);
         }
     }
 
@@ -104,17 +104,7 @@ public class TestPluginReplaceModules extends FrameworkJavaPlugin {
         }
     }
 
-    public static class TestConcreteCommandRequestBuilder extends DefaultCommandRequestBuilder {
-        @Inject
-        public TestConcreteCommandRequestBuilder(Translate translate) {
-            super(translate);
-        }
-    }
+    public static class TestRoutingMethodParser extends DefaultRoutingMethodParser {}
 
-    public static class TestConcreteMethodChecker extends DefaultMethodChecker {
-        @Inject
-        protected TestConcreteMethodChecker(PluginLogger logger) {
-            super(logger);
-        }
-    }
+    public static class TestCommandOptionsParser extends DefaultCommandOptionsParser {}
 }

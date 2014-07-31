@@ -19,8 +19,9 @@
  * along with PluginFramework.  If not, see <http ://www.gnu.org/licenses/>.
  */
 
-package com.publicuhc.pluginframework.commands.requests;
+package com.publicuhc.pluginframework.routing;
 
+import com.publicuhc.pluginframework.routing.SenderType;
 import org.bukkit.command.BlockCommandSender;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;

@@ -19,8 +19,10 @@
  * along with PluginFramework.  If not, see <http ://www.gnu.org/licenses/>.
  */
 
-package com.publicuhc.pluginframework.commands.requests;
+package com.publicuhc.pluginframework.routing;
 
+import com.publicuhc.pluginframework.routing.CommandRequest;
+import com.publicuhc.pluginframework.routing.SenderType;
 import org.apache.commons.lang.math.NumberUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.World;

@@ -19,7 +19,7 @@
  * along with PluginFramework.  If not, see <http ://www.gnu.org/licenses/>.
  */
 
-package com.publicuhc.pluginframework.commands.requests;
+package com.publicuhc.pluginframework.routing;
 
 import com.publicuhc.pluginframework.util.UUIDFetcher;
 import org.apache.commons.lang.BooleanUtils;
