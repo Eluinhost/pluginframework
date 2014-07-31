@@ -12,10 +12,26 @@ public class DefaultCommandOptionsParser implements CommandOptionsParser {
     private final OptionParser parser;
     private final String[] requiredOptions;
 
+    /**
+     * Creates a new options parser that uses the given {@link org.bukkit.craftbukkit.libs.joptsimple.OptionParser} and
+     * adds non-optional options
+     *
+     * @param parser the parser to use
+     * @param required array of required option names
+     */
     public DefaultCommandOptionsParser(OptionParser parser, String[] required)
     {
         this.parser = parser;
         this.requiredOptions = required;
+    }
+
+    /**
+     * Creates a new options parser that has no options
+     */
+    public DefaultCommandOptionsParser()
+    {
+        this.parser = new OptionParser();
+        this.requiredOptions = new String[0];
     }
 
     public String[] getRequiredOptions()
