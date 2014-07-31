@@ -1,7 +1,7 @@
 /*
  * DefaultConfigurator.java
  *
- * Copyright (c) 2014 Graham Howden <graham_howden1 at yahoo.co.uk>.
+ * Copyright (c) 2014. Graham Howden <graham_howden1 at yahoo.co.uk>.
  *
  * This file is part of PluginFramework.
  *
