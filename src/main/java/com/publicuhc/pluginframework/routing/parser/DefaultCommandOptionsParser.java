@@ -1,4 +1,4 @@
-package com.publicuhc.pluginframework.routing;
+package com.publicuhc.pluginframework.routing.parser;
 
 import com.publicuhc.pluginframework.routing.exception.OptionMissingException;
 import org.bukkit.craftbukkit.libs.joptsimple.OptionParser;

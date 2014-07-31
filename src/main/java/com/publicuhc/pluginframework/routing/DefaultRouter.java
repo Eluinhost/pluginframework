@@ -25,6 +25,7 @@ import com.google.inject.Inject;
 import com.google.inject.Injector;
 import com.publicuhc.pluginframework.routing.exception.CommandInvocationException;
 import com.publicuhc.pluginframework.routing.exception.CommandParseException;
+import com.publicuhc.pluginframework.routing.parser.RoutingMethodParser;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;

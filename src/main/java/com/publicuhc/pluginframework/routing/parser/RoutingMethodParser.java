@@ -1,5 +1,6 @@
-package com.publicuhc.pluginframework.routing;
+package com.publicuhc.pluginframework.routing.parser;
 
+import com.publicuhc.pluginframework.routing.CommandRoute;
 import com.publicuhc.pluginframework.routing.exception.CommandParseException;
 
 import java.lang.annotation.Annotation;

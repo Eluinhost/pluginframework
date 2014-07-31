@@ -2,6 +2,7 @@ package com.publicuhc.pluginframework.routing;
 
 import com.google.inject.Injector;
 import com.publicuhc.pluginframework.routing.exception.CommandParseException;
+import com.publicuhc.pluginframework.routing.parser.DefaultRoutingMethodParser;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
