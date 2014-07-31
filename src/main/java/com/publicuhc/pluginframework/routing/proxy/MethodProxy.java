@@ -1,6 +1,7 @@
 package com.publicuhc.pluginframework.routing.proxy;
 
-public interface MethodProxy<T> {
+public interface MethodProxy<T>
+{
 
     /**
      * @param instance the instance to run against

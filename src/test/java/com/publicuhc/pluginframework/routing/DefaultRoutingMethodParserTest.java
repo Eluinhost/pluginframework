@@ -135,9 +135,10 @@ public class DefaultRoutingMethodParserTest
         assertThat(set.nonOptionArguments()).containsExactly("bleh", "random", "words");
 
         try {
-            set = optionParser.parse("-b=test");
+            optionParser.parse("-b=test");
             throw new AssertionFailedError("Expected OptionException for missing argument a");
-        } catch (OptionException ignored) {}
+        } catch(OptionException ignored) {
+        }
     }
 
     //actual tests

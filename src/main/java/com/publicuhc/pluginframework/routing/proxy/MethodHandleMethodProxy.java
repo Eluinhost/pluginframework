@@ -4,15 +4,17 @@ import net.minecraft.util.com.google.common.collect.ObjectArrays;
 
 import java.lang.invoke.MethodHandle;
 
-public class MethodHandleMethodProxy<T> implements MethodProxy<T> {
+public class MethodHandleMethodProxy<T> implements MethodProxy<T>
+{
 
     private T instance;
     private MethodHandle method;
 
     /**
      * Setup a method proxy that will call the given method on the instance given
+     *
      * @param instance the instance to call on
-     * @param method the method to call
+     * @param method   the method to call
      */
     public MethodHandleMethodProxy(T instance, MethodHandle method)
     {

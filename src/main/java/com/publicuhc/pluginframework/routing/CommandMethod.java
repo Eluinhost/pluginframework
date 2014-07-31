@@ -29,5 +29,6 @@ import java.lang.annotation.*;
 public @interface CommandMethod
 {
     public String command();
+
     public boolean options() default false;
 }

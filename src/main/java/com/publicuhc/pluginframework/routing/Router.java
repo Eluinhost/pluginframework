@@ -26,7 +26,8 @@ import org.bukkit.command.TabExecutor;
 
 import java.util.List;
 
-public interface Router extends TabExecutor {
+public interface Router extends TabExecutor
+{
 
     /**
      * Register a class for commands, creates a new instance using the DI injector
@@ -40,9 +41,10 @@ public interface Router extends TabExecutor {
     /**
      * Register an already created class for commands and (optionally) inject dependencies
      * <b>
-     *     If injecting dependencies construction injection doesn't happen,
-     *     use {@link #registerCommands(Class)} to do constructor injection</b>
+     * If injecting dependencies construction injection doesn't happen,
+     * use {@link #registerCommands(Class)} to do constructor injection</b>
      * </b>
+     *
      * @param object the object to register commands for
      * @param inject whether to inject dependencies or not (no constructor injection)
      * @throws com.publicuhc.pluginframework.routing.exception.CommandParseException when failing to parse any commands in the class
@@ -53,7 +55,7 @@ public interface Router extends TabExecutor {
      * Set the messages to be displayed if a command is triggered but has no method to call
      *
      * @param commandName the name of the command
-     * @param message the messages to send
+     * @param message     the messages to send
      */
     void setDefaultMessageForCommand(String commandName, List<String> message);
 
@@ -61,7 +63,7 @@ public interface Router extends TabExecutor {
      * Set a message to be displayed if a command is triggered but has no method to call.
      *
      * @param commandName the name of the command
-     * @param message the message to send
+     * @param message     the message to send
      * @see #setDefaultMessageForCommand(String, java.util.List)
      */
     void setDefaultMessageForCommand(String commandName, String message);

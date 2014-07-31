@@ -19,7 +19,7 @@ public class DefaultRoutingMethodParser extends RoutingMethodParser
      * Returns an OptionParser after it has been pased through a method
      * of the same name but only one argument of type OptionParser
      *
-     * @param method the original method
+     * @param method   the original method
      * @param instance the instance to run on
      * @return the optionparser after being run through the method
      * @throws NoSuchMethodException if the method cannot be found
@@ -57,12 +57,12 @@ public class DefaultRoutingMethodParser extends RoutingMethodParser
             throw new CommandParseException("Invalid command method parameters at " + method.getName());
 
         CommandOptionsParser optionParser;
-        
+
         //get our option parser for this command
         if(annotation.options()) {
             try {
                 optionParser = getOptionsForMethod(method, instance);
-            } catch (Exception e) {
+            } catch(Exception e) {
                 throw new CommandParseException("Exception occured when trying to run the options method for " + method.getName(), e);
             }
         } else {

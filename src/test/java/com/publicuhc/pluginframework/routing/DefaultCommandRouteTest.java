@@ -86,14 +86,17 @@ public class DefaultCommandRouteTest
         {
             setRan(true);
         }
+
         public void exceptionMethod(Command command, CommandSender sender, OptionSet set)
         {
             throw new IllegalStateException();
         }
+
         public void setRan(boolean ran)
         {
             this.ran = ran;
         }
+
         public boolean wasRan()
         {
             return ran;

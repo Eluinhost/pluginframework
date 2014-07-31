@@ -7,7 +7,8 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.craftbukkit.libs.joptsimple.OptionException;
 import org.bukkit.craftbukkit.libs.joptsimple.OptionSet;
 
-public class DefaultCommandRoute implements CommandRoute {
+public class DefaultCommandRoute implements CommandRoute
+{
 
     private final MethodProxy proxy;
     private final CommandOptionsParser parser;
@@ -38,7 +39,7 @@ public class DefaultCommandRoute implements CommandRoute {
         try {
             OptionSet optionSet = parser.parse(args);
             proxy.invoke(command, sender, optionSet);
-        } catch (OptionException e) {
+        } catch(OptionException e) {
             throw e;
         } catch(Throwable e) {
             throw new CommandInvocationException("Exception thrown when running the command " + command.getName(), e);
