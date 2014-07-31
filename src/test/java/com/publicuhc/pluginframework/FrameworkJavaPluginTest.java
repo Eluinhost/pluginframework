@@ -21,8 +21,8 @@
 
 package com.publicuhc.pluginframework;
 
-import com.publicuhc.pluginframework.commands.routing.DefaultRouter;
 import com.publicuhc.pluginframework.configuration.DefaultConfigurator;
+import com.publicuhc.pluginframework.routing.DefaultRouter;
 import com.publicuhc.pluginframework.testplugins.TestPluginDefaultModules;
 import com.publicuhc.pluginframework.testplugins.TestPluginExtraModules;
 import com.publicuhc.pluginframework.testplugins.TestPluginReplaceModules;
@@ -126,21 +126,21 @@ public class FrameworkJavaPluginTest {
         assertThat(plugin.getConfigurator()).isNull();
         assertThat(plugin.getRouter()).isNull();
         assertThat(plugin.getTranslate()).isNull();
-        assertThat(plugin.builder).isNull();
+        assertThat(plugin.parser).isNull();
 
         plugin.onLoad();
 
         assertThat(plugin.getConfigurator()).isNull();
         assertThat(plugin.getRouter()).isNull();
         assertThat(plugin.getTranslate()).isNull();
-        assertThat(plugin.builder).isNull();
+        assertThat(plugin.parser).isNull();
 
         plugin.onEnable();
 
         assertThat(plugin.getConfigurator()).isInstanceOf(TestPluginReplaceModules.TestConcreteConfigurator.class);
         assertThat(plugin.getTranslate()).isInstanceOf(TestPluginReplaceModules.TestConcreteTranslate.class);
         assertThat(plugin.getRouter()).isInstanceOf(TestPluginReplaceModules.TestConcreteRouter.class);
-        assertThat(plugin.builder).isInstanceOf(TestPluginReplaceModules.TestConcreteCommandRequestBuilder.class);
+        assertThat(plugin.parser).isInstanceOf(TestPluginReplaceModules.TestCommandOptionsParser.class);
     }
 
     @Test(expected = IllegalStateException.class)
