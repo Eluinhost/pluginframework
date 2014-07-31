@@ -28,6 +28,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.craftbukkit.libs.joptsimple.OptionSet;
 import org.bukkit.entity.Player;
 
 import java.util.Collections;
@@ -39,38 +40,23 @@ public class CommandRequest {
     private List<String> m_args;
     private CommandSender m_sender;
     private Command m_command;
-    private int m_count = -1;
     private String m_locale;
+    private OptionSet m_optionSet;
 
     public static UUID INVALID_ID = new UUID(0L, 0L);
 
-    protected CommandRequest setArgs(List<String> args) {
-        m_args = args;
-        return this;
-    }
-
-    protected CommandRequest setCommand(Command command) {
+    public CommandRequest(Command command, CommandSender sender, OptionSet set, String locale)
+    {
         m_command = command;
-        return this;
-    }
-
-    protected CommandRequest setCommandSender(CommandSender sender) {
         m_sender = sender;
-        return this;
-    }
-
-    protected CommandRequest setCount(int count) {
-        m_count = count;
-        return this;
-    }
-
-    protected CommandRequest setLocale(String locale) {
+        m_args = set.nonOptionArguments();
+        m_optionSet = set;
         m_locale = locale;
-        return this;
     }
 
-    protected boolean isValid() {
-        return m_args != null && m_sender != null && m_command != null && m_count > -1 && m_locale != null;
+    public OptionSet getOptions()
+    {
+        return m_optionSet;
     }
 
     /**
@@ -285,12 +271,5 @@ public class CommandRequest {
             throw new IllegalArgumentException("Index must be within the size of the argument list");
         }
         return BooleanUtils.toBoolean(m_args.get(index));
-    }
-
-    /**
-     * @return the amount of routes matched
-     */
-    public int getCount() {
-        return m_count;
     }
 }
