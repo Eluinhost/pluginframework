@@ -11,17 +11,18 @@ import org.bukkit.craftbukkit.libs.joptsimple.OptionSet;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Matchers;
 import org.powermock.modules.junit4.PowerMockRunner;
 
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.same;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.powermock.api.mockito.PowerMockito.mock;
-import static org.powermock.api.mockito.PowerMockito.spy;
+import static org.powermock.api.mockito.PowerMockito.*;
 
 @RunWith(PowerMockRunner.class)
 public class DefaultCommandRouteTest
@@ -34,12 +35,18 @@ public class DefaultCommandRouteTest
     {
         testObject = new TestClass();
         parser = mock(CommandOptionsParser.class);
+        OptionSet set = mock(OptionSet.class);
+        when(parser.parse(Matchers.<String[]>anyVararg())).thenReturn(set);
+        List<String> nonOptions = new ArrayList<String>();
+        nonOptions.add("a");
+        nonOptions.add("abc");
+        when(set.nonOptionArguments()).thenReturn(nonOptions);
     }
 
     @Test
     public void test_valid_invocation() throws Throwable
     {
-        Method method = TestClass.class.getMethod("testMethod", Command.class, CommandSender.class, OptionSet.class);
+        Method method = TestClass.class.getMethod("testMethod", CommandRequest.class);
         MethodProxy proxy = spy(new ReflectionMethodProxy(testObject, method));
         DefaultCommandRoute route = new DefaultCommandRoute("test", proxy, parser);
 
@@ -53,7 +60,7 @@ public class DefaultCommandRouteTest
             throw ex.getCause();
         }
         verify(parser, times(1)).parse(args);
-        verify(proxy, times(1)).invoke(same(command), same(sender), any(OptionSet.class));
+        verify(proxy, times(1)).invoke(any(CommandRequest.class));
 
         assertThat(testObject.wasRan()).isTrue();
     }
@@ -61,7 +68,7 @@ public class DefaultCommandRouteTest
     @Test
     public void test_invocation_with_exception() throws Throwable
     {
-        Method method = TestClass.class.getMethod("exceptionMethod", Command.class, CommandSender.class, OptionSet.class);
+        Method method = TestClass.class.getMethod("exceptionMethod", CommandRequest.class);
         MethodProxy proxy = spy(new ReflectionMethodProxy(testObject, method));
         DefaultCommandRoute route = new DefaultCommandRoute("test", proxy, parser);
 
@@ -74,7 +81,7 @@ public class DefaultCommandRouteTest
             throw new AssertionFailedError("Expected CommandInvocationException");
         } catch(CommandInvocationException ignored) {
             verify(parser, times(1)).parse(args);
-            verify(proxy, times(1)).invoke(same(command), same(sender), any(OptionSet.class));
+            verify(proxy, times(1)).invoke(any(CommandRequest.class));
             assertThat(testObject.wasRan()).isFalse();
         }
     }
@@ -83,12 +90,12 @@ public class DefaultCommandRouteTest
     {
         private boolean ran = false;
 
-        public void testMethod(Command command, CommandSender sender, OptionSet set)
+        public void testMethod(CommandRequest request)
         {
             setRan(true);
         }
 
-        public void exceptionMethod(Command command, CommandSender sender, OptionSet set)
+        public void exceptionMethod(CommandRequest request)
         {
             throw new IllegalStateException();
         }

@@ -59,10 +59,10 @@ public class DefaultRouterTest
         assertThat(route.getCommandName()).isEqualTo("testcommand");
         assertThat(route.getProxy().getInstance()).isInstanceOf(ValidCommandClass.class);
 
-        CommandSender sender = mock(CommandSender.class);
-        route.getProxy().invoke(mock(Command.class), sender, mock(OptionSet.class));
-        verify(sender, times(1)).sendMessage("success");
-        verifyNoMoreInteractions(sender);
+        CommandRequest request = mock(CommandRequest.class);
+        route.getProxy().invoke(request);
+        verify(request, times(1)).sendMessage("success");
+        verifyNoMoreInteractions(request);
 
         verify(injector, times(1)).getInstance(ValidCommandClass.class);
         verify(injector, never()).injectMembers(any(ValidCommandClass.class));
@@ -80,10 +80,10 @@ public class DefaultRouterTest
         assertThat(route.getCommandName()).isEqualTo("testcommand");
         assertThat(route.getProxy().getInstance()).isInstanceOf(ValidCommandClass.class);
 
-        CommandSender sender = mock(CommandSender.class);
-        route.getProxy().invoke(mock(Command.class), sender, mock(OptionSet.class));
-        verify(sender, times(1)).sendMessage("success");
-        verifyNoMoreInteractions(sender);
+        CommandRequest request = mock(CommandRequest.class);
+        route.getProxy().invoke(request);
+        verify(request, times(1)).sendMessage("success");
+        verifyNoMoreInteractions(request);
 
         verify(injector, never()).getInstance(ValidCommandClass.class);
         verify(injector, times(1)).injectMembers(any(ValidCommandClass.class));
@@ -183,9 +183,9 @@ public class DefaultRouterTest
         public OptionSet lastOptionSet;
 
         @CommandMethod(command = "testcommand", options = true)
-        public void testCommand(Command command, CommandSender sender, OptionSet set)
+        public void testCommand(CommandRequest request)
         {
-            lastOptionSet = set;
+            lastOptionSet = request.getOptions();
         }
 
         public String[] testCommand(OptionParser parser)
@@ -200,9 +200,9 @@ public class DefaultRouterTest
     public class ValidCommandClass
     {
         @CommandMethod(command = "testcommand")
-        public void testCommand(Command command, CommandSender sender, OptionSet set)
+        public void testCommand(CommandRequest request)
         {
-            sender.sendMessage("success");
+            request.sendMessage("success");
         }
     }
 
@@ -210,7 +210,7 @@ public class DefaultRouterTest
     {
         //invalid because missing options method
         @CommandMethod(command = "testcommand", options = true)
-        public void testCommand(Command command, CommandSender sender, OptionSet set)
+        public void testCommand(CommandRequest request)
         {}
     }
 }
