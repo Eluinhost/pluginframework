@@ -21,22 +21,18 @@
 
 package com.publicuhc.pluginframework.routing;
 
-import com.publicuhc.pluginframework.routing.CommandRequest;
-import com.publicuhc.pluginframework.routing.SenderType;
 import org.apache.commons.lang.math.NumberUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.craftbukkit.libs.joptsimple.OptionParser;
 import org.bukkit.entity.Player;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.times;
@@ -47,9 +43,29 @@ import static org.powermock.api.mockito.PowerMockito.*;
 @PrepareForTest(Bukkit.class)
 public class CommandRequestTest {
 
-    private CommandRequest request;
+    private String[] args;
     private CommandSender sender;
     private Command command;
+    private CommandRequest request;
+
+    @Before
+    public void onStartUp() {
+        args = new String[] {
+                "first",
+                "2",
+                "world",
+                "10.23",
+                "true",
+                "no",
+                "last"
+        };
+        sender = mock(Player.class);
+        command = mock(Command.class);
+
+        OptionParser parser = new OptionParser();
+        parser.accepts("a").withRequiredArg();
+        request = new CommandRequest(command, sender, parser.parse(args));
+    }
 
     @Test
     public void testRemoveFirstArg() {
@@ -64,10 +80,7 @@ public class CommandRequestTest {
 
     @Test
     public void testRemoveFirstArgNoArgs() {
-        List<String> args = new ArrayList<String>();
-        CommandRequest request = new CommandRequest();
-        request.setArgs(args);
-
+        request.setArgs();
         request.removeFirstArg();
     }
 
@@ -78,10 +91,7 @@ public class CommandRequestTest {
 
     @Test
     public void testGetFirstArgNoArgs() {
-        List<String> args = new ArrayList<String>();
-        CommandRequest request = new CommandRequest();
-        request.setArgs(args);
-
+        request.setArgs();
         assertThat(request.getFirstArg()).isNull();
     }
 
@@ -94,10 +104,7 @@ public class CommandRequestTest {
 
     @Test
     public void testGetLastArgNoArgs() {
-        List<String> args = new ArrayList<String>();
-        CommandRequest request = new CommandRequest();
-        request.setArgs(args);
-
+        request.setArgs();
         assertThat(request.getLastArg()).isNull();
     }
 
@@ -259,24 +266,5 @@ public class CommandRequestTest {
     @Test
     public void testGetSenderType() {
         assertThat(request.getSenderType()).isEqualTo(SenderType.PLAYER);
-    }
-
-    @Before
-    public void onStartUp() {
-        List<String> args = new ArrayList<String>();
-        args.add("first");
-        args.add("2");
-        args.add("world");
-        args.add("10.23");
-        args.add("true");
-        args.add("no");
-        args.add("last");
-        sender = mock(Player.class);
-        command = mock(Command.class);
-        request = new CommandRequest();
-        request.setCommandSender(sender)
-                .setCommand(command)
-                .setArgs(args)
-                .setCount(1);
     }
 }
