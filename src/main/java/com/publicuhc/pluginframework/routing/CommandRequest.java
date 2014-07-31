@@ -197,6 +197,7 @@ public class CommandRequest {
      * @param index the index to look for
      * @return player or null of not exists
      */
+    @SuppressWarnings("deprecation")
     public Player getPlayer(int index) {
         if (!isArgPresent(index)) {
             throw new IllegalArgumentException("Index must be within the size of the argument list");

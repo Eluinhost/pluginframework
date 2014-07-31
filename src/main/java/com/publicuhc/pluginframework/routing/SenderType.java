@@ -49,6 +49,7 @@ public enum SenderType {
      * @param sender the sender to parse
      * @return the SenderType or null if not known
      */
+    @SuppressWarnings("unchecked")
     public static SenderType getFromCommandSender(CommandSender sender) {
         for (SenderType type : SenderType.values()) {
             if (type.getClassType().isAssignableFrom(sender.getClass())) {

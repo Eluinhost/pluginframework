@@ -53,6 +53,7 @@ public abstract class FrameworkJavaPlugin extends JavaPlugin {
      *
      * @see org.bukkit.plugin.java.JavaPlugin
      */
+    @SuppressWarnings("deprecation")
     protected FrameworkJavaPlugin(PluginLoader loader, Server server, PluginDescriptionFile pdf, File file1, File file2) {
         super(loader, server, pdf, file1, file2);
     }

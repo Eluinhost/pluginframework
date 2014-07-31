@@ -31,6 +31,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.HashMap;
@@ -85,7 +86,7 @@ public class DefaultConfigurator implements Configurator {
         // Look for defaults in the jar
         InputStream defConfigStream = getResource(id + ".yml");
         if (defConfigStream != null) {
-            YamlConfiguration defConfig = YamlConfiguration.loadConfiguration(defConfigStream);
+            YamlConfiguration defConfig = YamlConfiguration.loadConfiguration(new InputStreamReader(defConfigStream));
             customConfig.options().copyDefaults(true);
             customConfig.setDefaults(defConfig);
         }
