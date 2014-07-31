@@ -25,10 +25,10 @@ import com.google.inject.AbstractModule;
 import com.google.inject.Guice;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
-import com.publicuhc.pluginframework.commands.CommandModule;
-import com.publicuhc.pluginframework.commands.routing.Router;
 import com.publicuhc.pluginframework.configuration.ConfigurationModule;
 import com.publicuhc.pluginframework.configuration.Configurator;
+import com.publicuhc.pluginframework.routing.Router;
+import com.publicuhc.pluginframework.routing.RoutingModule;
 import com.publicuhc.pluginframework.translate.Translate;
 import com.publicuhc.pluginframework.translate.TranslateModule;
 import org.bukkit.Server;
@@ -67,7 +67,7 @@ public abstract class FrameworkJavaPlugin extends JavaPlugin {
         }
         modules.add(new PluginModule(this));
         if (initUseDefaultBindings()) {
-            modules.add(new CommandModule());
+            modules.add(new RoutingModule());
             modules.add(new ConfigurationModule(this.getClassLoader()));
             modules.add(new TranslateModule());
         }
