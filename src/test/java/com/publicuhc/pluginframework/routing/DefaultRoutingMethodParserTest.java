@@ -39,10 +39,12 @@ public class DefaultRoutingMethodParserTest
         return "TEST_STRING";
     }
 
-    public void commandWithAnnotation(OptionParser optionParser)
+    public String[] commandWithAnnotation(OptionParser optionParser)
     {
         optionParser.accepts("a").withRequiredArg().ofType(Integer.class);
         optionParser.accepts("b").withOptionalArg().ofType(String.class);
+
+        return new String[]{"a"};
     }
 
     public void commandWithoutAnnotation(Command command, CommandSender sender, OptionSet set)
@@ -54,10 +56,12 @@ public class DefaultRoutingMethodParserTest
         return "TEST_STRING";
     }
 
-    public void commandWithAnnotationOptions(OptionParser optionParser)
+    public String[] commandWithAnnotationOptions(OptionParser optionParser)
     {
         optionParser.accepts("a").withRequiredArg();
         optionParser.accepts("b").withOptionalArg();
+
+        return new String[]{"a"};
     }
 
     @CommandMethod(command = "test", options = true)
@@ -84,8 +88,24 @@ public class DefaultRoutingMethodParserTest
     public void commandWithWrongArg3(Command command, CommandSender sender, OptionParser set)
     {}
 
+    @CommandMethod(command = "test", options = true)
+    public void commandWithInvalidOptionsReturn(Command command, CommandSender sender, OptionSet set)
+    {}
+
+    public void commandWithInvalidOptionsReturn(OptionParser optionParser)
+    {}
+
+    @CommandMethod(command = "test", options = true)
+    public void commandWithInvalidOptionsParam(Command command, CommandSender sender, OptionSet set)
+    {}
+
+    public String[] commandWithInvalidOptionsParam(OptionSet set)
+    {
+        return new String[]{};
+    }
+
     //helpful methods
-    private void assertOptionsValid(OptionParser optionParser)
+    private void assertOptionsValid(CommandOptionsParser optionParser)
     {
         OptionSet set = optionParser.parse("-a", "299");
         assertThat(set.hasArgument("a")).isTrue();
@@ -100,7 +120,7 @@ public class DefaultRoutingMethodParserTest
         assertThat(set.nonOptionArguments()).containsExactly("bleh", "random", "words");
     }
 
-    private void assertOptionsValidStrings(OptionParser optionParser)
+    private void assertOptionsValidStrings(CommandOptionsParser optionParser)
     {
         OptionSet set = optionParser.parse("-a", "299");
         assertThat(set.hasArgument("a")).isTrue();
@@ -135,7 +155,7 @@ public class DefaultRoutingMethodParserTest
     public void test_get_options_method() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException
     {
         Method method = DefaultRoutingMethodParserTest.class.getDeclaredMethod("commandWithAnnotation", Command.class, CommandSender.class, OptionSet.class);
-        OptionParser optionParser = parser.getOptionsForMethod(method, this);
+        CommandOptionsParser optionParser = parser.getOptionsForMethod(method, this);
         assertOptionsValid(optionParser);
     }
 
@@ -157,6 +177,34 @@ public class DefaultRoutingMethodParserTest
     public void test_parse_method_options_method_missing() throws NoSuchMethodException
     {
         Method method = DefaultRoutingMethodParserTest.class.getDeclaredMethod("commandWithAnnotationButNoOptions", Command.class, CommandSender.class, OptionSet.class);
+
+        try {
+            parser.parseCommandMethodAnnotation(method, this);
+            throw new AssertionFailedError("Expected CommandParseException");
+        } catch(CommandParseException ex) {
+            Throwable cause = ex.getCause();
+            assertThat(cause).isInstanceOf(NoSuchMethodException.class);
+        }
+    }
+
+    @Test
+    public void test_parse_method_options_method_invalid_return() throws NoSuchMethodException
+    {
+        Method method = DefaultRoutingMethodParserTest.class.getDeclaredMethod("commandWithInvalidOptionsReturn", Command.class, CommandSender.class, OptionSet.class);
+
+        try {
+            parser.parseCommandMethodAnnotation(method, this);
+            throw new AssertionFailedError("Expected CommandParseException");
+        } catch(CommandParseException ex) {
+            Throwable cause = ex.getCause();
+            assertThat(cause).isInstanceOf(NoSuchMethodException.class);
+        }
+    }
+
+    @Test
+    public void test_parse_method_options_method_invalid_parameters() throws NoSuchMethodException
+    {
+        Method method = DefaultRoutingMethodParserTest.class.getDeclaredMethod("commandWithInvalidOptionsParam", Command.class, CommandSender.class, OptionSet.class);
 
         try {
             parser.parseCommandMethodAnnotation(method, this);

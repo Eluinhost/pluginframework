@@ -6,7 +6,6 @@ import com.publicuhc.pluginframework.routing.proxy.ReflectionMethodProxy;
 import junit.framework.AssertionFailedError;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
-import org.bukkit.craftbukkit.libs.joptsimple.OptionParser;
 import org.bukkit.craftbukkit.libs.joptsimple.OptionSet;
 import org.junit.Before;
 import org.junit.Test;
@@ -26,14 +25,14 @@ import static org.powermock.api.mockito.PowerMockito.spy;
 @RunWith(PowerMockRunner.class)
 public class DefaultCommandRouteTest
 {
-    private OptionParser parser;
+    private CommandOptionsParser parser;
     private TestClass testObject;
 
     @Before
     public void onStartup() throws NoSuchMethodException
     {
         testObject = new TestClass();
-        parser = mock(OptionParser.class);
+        parser = mock(CommandOptionsParser.class);
     }
 
     @Test
@@ -41,7 +40,6 @@ public class DefaultCommandRouteTest
     {
         Method method = TestClass.class.getMethod("testMethod", Command.class, CommandSender.class, OptionSet.class);
         MethodProxy proxy = spy(new ReflectionMethodProxy<TestClass>(testObject, method));
-        parser = mock(OptionParser.class);
         DefaultCommandRoute route = new DefaultCommandRoute("test", proxy, parser);
 
         Command command = mock(Command.class);
@@ -64,7 +62,6 @@ public class DefaultCommandRouteTest
     {
         Method method = TestClass.class.getMethod("exceptionMethod", Command.class, CommandSender.class, OptionSet.class);
         MethodProxy proxy = spy(new ReflectionMethodProxy<TestClass>(testObject, method));
-        parser = mock(OptionParser.class);
         DefaultCommandRoute route = new DefaultCommandRoute("test", proxy, parser);
 
         Command command = mock(Command.class);

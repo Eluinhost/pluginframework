@@ -163,7 +163,7 @@ public class DefaultRouter implements Router
             //catch the option exceptions and print an error message out with the option syntax
             StringWriter writer = new StringWriter();
             try {
-                route.getOptionDetails().printHelpOn(writer);
+                route.getOptionDetails().getParser().printHelpOn(writer);
                 sender.sendMessage(writer.toString());
                 return true;
             } catch(IOException ioex) {

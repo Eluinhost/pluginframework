@@ -174,8 +174,7 @@ public class DefaultRouterTest
         //call without required option 'a'
         router.onCommand(sender, command, "", new String[]{"--b=somethingelse"});
 
-        System.out.println(sample.lastOptionSet);
-        verify(sender, times(1)).sendMessage("2jj");
+        verify(sender, times(1)).sendMessage(contains("Description"));
     }
 
     public class SampleCommandClass
@@ -188,10 +187,12 @@ public class DefaultRouterTest
             lastOptionSet = set;
         }
 
-        public void testCommand(OptionParser parser)
+        public String[] testCommand(OptionParser parser)
         {
             parser.accepts("a").withRequiredArg();
             parser.accepts("b").withOptionalArg();
+
+            return new String[]{"a"};
         }
     }
 

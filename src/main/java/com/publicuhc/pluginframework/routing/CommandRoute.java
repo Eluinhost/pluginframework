@@ -5,14 +5,13 @@ import com.publicuhc.pluginframework.routing.proxy.MethodProxy;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.craftbukkit.libs.joptsimple.OptionException;
-import org.bukkit.craftbukkit.libs.joptsimple.OptionParser;
 
 public interface CommandRoute {
 
     /**
      * @return the option details that define the allowed options
      */
-    public OptionParser getOptionDetails();
+    public CommandOptionsParser getOptionDetails();
 
     /**
      * @return the proxy to run on command trigger

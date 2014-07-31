@@ -5,16 +5,15 @@ import com.publicuhc.pluginframework.routing.proxy.MethodProxy;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.craftbukkit.libs.joptsimple.OptionException;
-import org.bukkit.craftbukkit.libs.joptsimple.OptionParser;
 import org.bukkit.craftbukkit.libs.joptsimple.OptionSet;
 
 public class DefaultCommandRoute implements CommandRoute {
 
     private final MethodProxy proxy;
-    private final OptionParser parser;
+    private final CommandOptionsParser parser;
     private final String commandName;
 
-    public DefaultCommandRoute(String commandName, MethodProxy proxy, OptionParser parser)
+    public DefaultCommandRoute(String commandName, MethodProxy proxy, CommandOptionsParser parser)
     {
         this.commandName = commandName;
         this.proxy = proxy;
@@ -22,7 +21,7 @@ public class DefaultCommandRoute implements CommandRoute {
     }
 
     @Override
-    public OptionParser getOptionDetails()
+    public CommandOptionsParser getOptionDetails()
     {
         return parser;
     }
