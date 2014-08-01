@@ -26,6 +26,7 @@ import com.publicuhc.pluginframework.routing.parser.CommandOptionsParser;
 import com.publicuhc.pluginframework.routing.proxy.MethodProxy;
 import com.publicuhc.pluginframework.routing.proxy.ReflectionMethodProxy;
 import junit.framework.AssertionFailedError;
+import net.minecraft.server.v1_7_R4.CommandMe;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.craftbukkit.libs.joptsimple.OptionSet;
@@ -62,6 +63,18 @@ public class DefaultCommandRouteTest
         nonOptions.add("a");
         nonOptions.add("abc");
         when(set.nonOptionArguments()).thenReturn(nonOptions);
+    }
+
+    @Test
+    public void test_permission_set_default() throws NoSuchMethodException {
+        Method method = TestClass.class.getMethod("testMethod", CommandRequest.class);
+        MethodProxy proxy = spy(new ReflectionMethodProxy(testObject, method));
+
+        DefaultCommandRoute route = new DefaultCommandRoute("test", CommandMethod.NO_PERMISSIONS, proxy, parser);
+        assertThat(route.getPermission()).isNull();
+
+        route = new DefaultCommandRoute("test", "TEST.PERMISSION", proxy, parser);
+        assertThat(route.getPermission()).isEqualTo("TEST.PERMISSION");
     }
 
     @Test
