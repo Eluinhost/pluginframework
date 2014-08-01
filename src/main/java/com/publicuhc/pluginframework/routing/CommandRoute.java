@@ -47,6 +47,11 @@ public interface CommandRoute
     public String getCommandName();
 
     /**
+     * @return permission required to run the command or null if no permission required
+     */
+    public String getPermission();
+
+    /**
      * Run this command route
      *
      * @param args the args for the method
