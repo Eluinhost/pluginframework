@@ -49,6 +49,11 @@ public class DefaultTranslate implements Translate {
     }
 
     @Override
+    public String translate(String key, CommandSender sender) {
+        return translate(key, getLocaleForSender(sender));
+    }
+
+    @Override
     public String translate(String key, String locale, Map<String, String> vars) {
         FileConfiguration configuration = m_configurator.getConfig("translations:" + locale);
 
@@ -68,10 +73,20 @@ public class DefaultTranslate implements Translate {
     }
 
     @Override
+    public String translate(String key, CommandSender sender, Map<String, String> vars) {
+        return translate(key, getLocaleForSender(sender), vars);
+    }
+
+    @Override
     public String translate(String key, String locale, String var, String value) {
         HashMap<String, String> map = new HashMap<String, String>();
         map.put(var, value);
         return translate(key, locale, map);
+    }
+
+    @Override
+    public String translate(String key, CommandSender sender, String var, String value) {
+        return translate(key, getLocaleForSender(sender), var, value);
     }
 
     @Override

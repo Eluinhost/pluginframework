@@ -38,6 +38,15 @@ public interface Translate {
     String translate(String key, String locale);
 
     /**
+     * Translate the string with the key given
+     *
+     * @param key    the key
+     * @param sender the sender to get locale for
+     * @return the translated string
+     */
+    String translate(String key, CommandSender sender);
+
+    /**
      * Translate the string and replace the vars with the values given
      *
      * @param key    the key
@@ -46,6 +55,16 @@ public interface Translate {
      * @return the translated string
      */
     String translate(String key, String locale, Map<String, String> vars);
+
+    /**
+     * Translate the string and replace the vars with the values given
+     *
+     * @param key    the key
+     * @param sender the sender to get locale for
+     * @param vars   the map of keys=>values to replace
+     * @return the translated string
+     */
+    String translate(String key, CommandSender sender, Map<String, String> vars);
 
     /**
      * Utility function for translating with 1 var
@@ -57,6 +76,17 @@ public interface Translate {
      * @return the translated string
      */
     String translate(String key, String locale, String var, String value);
+
+    /**
+     * Utility function for translating with 1 var
+     *
+     * @param key    the key
+     * @param var    the var name
+     * @param value  the value for the var
+     * @param sender the sender to get locale for
+     * @return the translated string
+     */
+    String translate(String key, CommandSender sender, String var, String value);
 
     /**
      * Get the locale for the sender or the default if not found
