@@ -69,7 +69,7 @@ public class DefaultCommandRouteTest
     {
         Method method = TestClass.class.getMethod("testMethod", CommandRequest.class);
         MethodProxy proxy = spy(new ReflectionMethodProxy(testObject, method));
-        DefaultCommandRoute route = new DefaultCommandRoute("test", proxy, parser);
+        DefaultCommandRoute route = new DefaultCommandRoute("test", CommandMethod.NO_PERMISSIONS, proxy, parser);
 
         Command command = mock(Command.class);
         CommandSender sender = mock(CommandSender.class);
@@ -91,7 +91,7 @@ public class DefaultCommandRouteTest
     {
         Method method = TestClass.class.getMethod("exceptionMethod", CommandRequest.class);
         MethodProxy proxy = spy(new ReflectionMethodProxy(testObject, method));
-        DefaultCommandRoute route = new DefaultCommandRoute("test", proxy, parser);
+        DefaultCommandRoute route = new DefaultCommandRoute("test", CommandMethod.NO_PERMISSIONS, proxy, parser);
 
         Command command = mock(Command.class);
         CommandSender sender = mock(CommandSender.class);
