@@ -35,12 +35,14 @@ public class DefaultCommandRoute implements CommandRoute
     private final MethodProxy proxy;
     private final CommandOptionsParser parser;
     private final String commandName;
+    private final String permission;
 
-    public DefaultCommandRoute(String commandName, MethodProxy proxy, CommandOptionsParser parser)
+    public DefaultCommandRoute(String commandName, String permission, MethodProxy proxy, CommandOptionsParser parser)
     {
         this.commandName = commandName;
         this.proxy = proxy;
         this.parser = parser;
+        this.permission = permission.equals(CommandMethod.NO_PERMISSIONS) ? null : permission;
     }
 
     @Override
@@ -72,5 +74,10 @@ public class DefaultCommandRoute implements CommandRoute
     public String getCommandName()
     {
         return commandName;
+    }
+
+    @Override
+    public String getPermission() {
+        return permission;
     }
 }

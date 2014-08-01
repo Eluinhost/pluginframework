@@ -28,7 +28,11 @@ import java.lang.annotation.*;
 @Documented
 public @interface CommandMethod
 {
+    public static final String NO_PERMISSIONS = "NO PERMISSIONS REQUIRED";
+
     public String command();
 
     public boolean options() default false;
+
+    public String permission() default NO_PERMISSIONS;
 }

@@ -55,7 +55,7 @@ public class DefaultRoutingMethodParserTest
     }
 
     //sample methods to use in tests
-    @CommandMethod(command = "test", options = true)
+    @CommandMethod(command = "test", options = true, permission = "TEST.PERMISSION")
     public String commandWithAnnotation(CommandRequest request)
     {
         return "TEST_STRING";
@@ -172,6 +172,19 @@ public class DefaultRoutingMethodParserTest
         Method method = DefaultRoutingMethodParserTest.class.getDeclaredMethod("commandWithAnnotation", CommandRequest.class);
         CommandOptionsParser optionParser = parser.getOptionsForMethod(method, this);
         assertOptionsValid(optionParser);
+    }
+
+    @Test
+    public void test_parse_permissions() throws NoSuchMethodException, CommandParseException {
+        Method method = DefaultRoutingMethodParserTest.class.getDeclaredMethod("commandWithAnnotation", CommandRequest.class);
+
+        CommandRoute route = parser.parseCommandMethodAnnotation(method, this);
+        assertThat(route.getPermission().equals("TEST.PERMISSION"));
+
+        method = DefaultRoutingMethodParserTest.class.getDeclaredMethod("commandWithAnnotationOptions", CommandRequest.class);
+
+        route = parser.parseCommandMethodAnnotation(method, this);
+        assertThat(route.getPermission()).isNull();
     }
 
     @Test

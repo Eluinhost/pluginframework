@@ -166,6 +166,23 @@ public class DefaultRouterTest
     }
 
     @Test
+    public void test_permissions_message() throws CommandParseException {
+        CommandSender sender = mock(CommandSender.class);
+        Command command = Bukkit.getPluginCommand("testcommand");
+        router.registerCommands(new PermCommandClass(), false);
+
+        when(sender.hasPermission("TEST.PERMISSION")).thenReturn(false);
+        boolean s = router.onCommand(sender, command, "", new String[]{});
+        assertThat(s).isTrue();
+        verify(sender).sendMessage(contains("TEST.PERMISSION"));
+
+        when(sender.hasPermission("TEST.PERMISSION")).thenReturn(true);
+        s = router.onCommand(sender, command, "", new String[]{});
+        assertThat(s).isTrue();
+        verify(sender).sendMessage(contains("success"));
+    }
+
+    @Test
     public void test_run_command_route() throws CommandParseException
     {
         SampleCommandClass sample = new SampleCommandClass();
@@ -215,6 +232,15 @@ public class DefaultRouterTest
             parser.accepts("b").withOptionalArg();
 
             return new String[]{"a"};
+        }
+    }
+
+    public class PermCommandClass
+    {
+        @CommandMethod(command = "testcommand", permission = "TEST.PERMISSION")
+        public void testCommand(CommandRequest request)
+        {
+            request.sendMessage("success");
         }
     }
 
