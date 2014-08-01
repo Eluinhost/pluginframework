@@ -27,6 +27,7 @@ import com.publicuhc.pluginframework.routing.exception.CommandInvocationExceptio
 import com.publicuhc.pluginframework.routing.exception.CommandParseException;
 import com.publicuhc.pluginframework.routing.parser.RoutingMethodParser;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.PluginCommand;
@@ -154,6 +155,13 @@ public class DefaultRouter implements Router
             for(String message : messages) {
                 sender.sendMessage(message);
             }
+            return true;
+        }
+
+        //check permissions
+        String permission = route.getPermission();
+        if(null != permission && !sender.hasPermission(permission)) {
+            sender.sendMessage(ChatColor.RED + "You do not have permission to run that command. (" + permission + ")");
             return true;
         }
 
