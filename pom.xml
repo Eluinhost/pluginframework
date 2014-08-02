@@ -232,7 +232,7 @@
                     <relocations>
                         <relocation>
                             <pattern>joptsimple</pattern>
-                            <shadedPattern>${project.groupId}.${project.artifactId}.shaded.jopt-simple</shadedPattern>
+                            <shadedPattern>${project.groupId}.${project.artifactId}.shaded.joptsimple</shadedPattern>
                         </relocation>
                         <relocation>
                             <pattern>com.google.inject</pattern>
