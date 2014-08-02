@@ -25,11 +25,10 @@ import com.publicuhc.pluginframework.routing.exception.CommandInvocationExceptio
 import com.publicuhc.pluginframework.routing.parser.CommandOptionsParser;
 import com.publicuhc.pluginframework.routing.proxy.MethodProxy;
 import com.publicuhc.pluginframework.routing.proxy.ReflectionMethodProxy;
+import joptsimple.OptionSet;
 import junit.framework.AssertionFailedError;
-import net.minecraft.server.v1_7_R4.CommandMe;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
-import org.bukkit.craftbukkit.libs.joptsimple.OptionSet;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -59,7 +58,7 @@ public class DefaultCommandRouteTest
         parser = mock(CommandOptionsParser.class);
         OptionSet set = mock(OptionSet.class);
         when(parser.parse(Matchers.<String[]>anyVararg())).thenReturn(set);
-        List<String> nonOptions = new ArrayList<String>();
+        List nonOptions = new ArrayList<String>();
         nonOptions.add("a");
         nonOptions.add("abc");
         when(set.nonOptionArguments()).thenReturn(nonOptions);

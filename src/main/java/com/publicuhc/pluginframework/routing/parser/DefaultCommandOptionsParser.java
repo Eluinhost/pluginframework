@@ -22,8 +22,8 @@
 package com.publicuhc.pluginframework.routing.parser;
 
 import com.publicuhc.pluginframework.routing.exception.OptionMissingException;
-import org.bukkit.craftbukkit.libs.joptsimple.OptionParser;
-import org.bukkit.craftbukkit.libs.joptsimple.OptionSet;
+import joptsimple.OptionParser;
+import joptsimple.OptionSet;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -21,8 +21,8 @@
 
 package com.publicuhc.pluginframework.routing.parser;
 
-import org.bukkit.craftbukkit.libs.joptsimple.OptionParser;
-import org.bukkit.craftbukkit.libs.joptsimple.OptionSet;
+import joptsimple.OptionParser;
+import joptsimple.OptionSet;
 
 public interface CommandOptionsParser
 {

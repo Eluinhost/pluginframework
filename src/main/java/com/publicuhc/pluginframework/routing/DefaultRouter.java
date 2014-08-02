@@ -26,12 +26,12 @@ import com.google.inject.Injector;
 import com.publicuhc.pluginframework.routing.exception.CommandInvocationException;
 import com.publicuhc.pluginframework.routing.exception.CommandParseException;
 import com.publicuhc.pluginframework.routing.parser.RoutingMethodParser;
+import joptsimple.OptionException;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.PluginCommand;
-import org.bukkit.craftbukkit.libs.joptsimple.OptionException;
 
 import java.io.IOException;
 import java.io.StringWriter;

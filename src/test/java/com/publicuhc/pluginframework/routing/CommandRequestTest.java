@@ -21,12 +21,12 @@
 
 package com.publicuhc.pluginframework.routing;
 
+import joptsimple.OptionParser;
 import org.apache.commons.lang.math.NumberUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
-import org.bukkit.craftbukkit.libs.joptsimple.OptionParser;
 import org.bukkit.entity.Player;
 import org.junit.Before;
 import org.junit.Test;

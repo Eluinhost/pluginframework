@@ -22,13 +22,13 @@
 package com.publicuhc.pluginframework.routing;
 
 import com.publicuhc.pluginframework.util.UUIDFetcher;
+import joptsimple.OptionSet;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.math.NumberUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
-import org.bukkit.craftbukkit.libs.joptsimple.OptionSet;
 import org.bukkit.entity.Player;
 
 import java.util.*;
@@ -46,7 +46,7 @@ public class CommandRequest {
     {
         m_command = command;
         m_sender = sender;
-        m_args = new ArrayList<String>(set.nonOptionArguments());
+        m_args = new ArrayList(set.nonOptionArguments());
         m_optionSet = set;
     }
 

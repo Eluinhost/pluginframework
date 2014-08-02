@@ -29,7 +29,7 @@ import com.publicuhc.pluginframework.routing.exception.AnnotationMissingExceptio
 import com.publicuhc.pluginframework.routing.exception.CommandParseException;
 import com.publicuhc.pluginframework.routing.proxy.MethodProxy;
 import com.publicuhc.pluginframework.routing.proxy.ReflectionMethodProxy;
-import org.bukkit.craftbukkit.libs.joptsimple.OptionParser;
+import joptsimple.OptionParser;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;

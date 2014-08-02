@@ -21,7 +21,7 @@
 
 package com.publicuhc.pluginframework.routing.proxy;
 
-import net.minecraft.util.com.google.common.collect.ObjectArrays;
+import com.google.common.collect.ObjectArrays;
 
 import java.lang.invoke.MethodHandle;
 

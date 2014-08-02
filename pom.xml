@@ -99,8 +99,20 @@
     <dependencies>
         <dependency>
             <groupId>org.bukkit</groupId>
-            <artifactId>craftbukkit</artifactId>
+            <artifactId>bukkit</artifactId>
             <version>${bukkit.version}</version>
+            <scope>compile</scope>
+            <exclusions>
+                <exclusion>
+                    <artifactId>net.sf.jopt-simple</artifactId>
+                    <groupId>jopt-simple</groupId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>net.sf.jopt-simple</groupId>
+            <artifactId>jopt-simple</artifactId>
+            <version>4.6</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
@@ -142,24 +154,6 @@
             <groupId>org.assertj</groupId>
             <artifactId>assertj-core</artifactId>
             <version>${assertj.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.openjdk.jmh</groupId>
-            <artifactId>jmh-core</artifactId>
-            <version>${jmh.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.openjdk.jmh</groupId>
-            <artifactId>jmh-java-benchmark-archetype</artifactId>
-            <version>${jmh.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.openjdk.jmh</groupId>
-            <artifactId>jmh-generator-annprocess</artifactId>
-            <version>${jmh.version}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
@@ -232,9 +226,14 @@
                             <include>javax.inject:javax.inject</include>
                             <include>aopalliance:aopalliance</include>
                             <include>org.mcstats.bukkit:metrics</include>
+                            <include>net.sf.jopt-simple:jopt-simple</include>
                         </includes>
                     </artifactSet>
                     <relocations>
+                        <relocation>
+                            <pattern>joptsimple</pattern>
+                            <shadedPattern>${project.groupId}.${project.artifactId}.shaded.jopt-simple</shadedPattern>
+                        </relocation>
                         <relocation>
                             <pattern>com.google.inject</pattern>
                             <shadedPattern>${project.groupId}.${project.artifactId}.shaded.inject</shadedPattern>
@@ -245,11 +244,11 @@
                         </relocation>
                         <relocation>
                             <pattern>org.aopalliance</pattern>
-                            <shadedPattern>${project.groupId}.${project.artifactId}.aopalliance</shadedPattern>
+                            <shadedPattern>${project.groupId}.${project.artifactId}.shaded.aopalliance</shadedPattern>
                         </relocation>
                         <relocation>
                             <pattern>org.mcstats</pattern>
-                            <shadedPattern>${project.groupId}.${project.artifactId}.metrics</shadedPattern>
+                            <shadedPattern>${project.groupId}.${project.artifactId}.shaded.metrics</shadedPattern>
                         </relocation>
                     </relocations>
                 </configuration>

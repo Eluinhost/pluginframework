@@ -21,7 +21,7 @@
 
 package com.publicuhc.pluginframework.routing.exception;
 
-import org.bukkit.craftbukkit.libs.joptsimple.OptionException;
+import joptsimple.OptionException;
 
 import java.util.Collection;
 

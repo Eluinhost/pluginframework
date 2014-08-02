@@ -24,10 +24,10 @@ package com.publicuhc.pluginframework.routing;
 import com.publicuhc.pluginframework.routing.exception.CommandInvocationException;
 import com.publicuhc.pluginframework.routing.parser.CommandOptionsParser;
 import com.publicuhc.pluginframework.routing.proxy.MethodProxy;
+import joptsimple.OptionException;
+import joptsimple.OptionSet;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
-import org.bukkit.craftbukkit.libs.joptsimple.OptionException;
-import org.bukkit.craftbukkit.libs.joptsimple.OptionSet;
 
 public class DefaultCommandRoute implements CommandRoute
 {
