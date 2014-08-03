@@ -226,12 +226,10 @@ public class DefaultRouterTest
             lastOptionSet = request.getOptions();
         }
 
-        public String[] testCommand(OptionParser parser)
+        public void testCommand(OptionParser parser)
         {
-            parser.accepts("a").withRequiredArg();
+            parser.accepts("a").withRequiredArg().required();
             parser.accepts("b").withOptionalArg();
-
-            return new String[]{"a"};
         }
     }
 

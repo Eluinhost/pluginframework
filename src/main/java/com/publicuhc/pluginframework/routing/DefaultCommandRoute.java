@@ -22,9 +22,9 @@
 package com.publicuhc.pluginframework.routing;
 
 import com.publicuhc.pluginframework.routing.exception.CommandInvocationException;
-import com.publicuhc.pluginframework.routing.parser.CommandOptionsParser;
 import com.publicuhc.pluginframework.routing.proxy.MethodProxy;
 import joptsimple.OptionException;
+import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -33,11 +33,11 @@ public class DefaultCommandRoute implements CommandRoute
 {
 
     private final MethodProxy proxy;
-    private final CommandOptionsParser parser;
+    private final OptionParser parser;
     private final String commandName;
     private final String permission;
 
-    public DefaultCommandRoute(String commandName, String permission, MethodProxy proxy, CommandOptionsParser parser)
+    public DefaultCommandRoute(String commandName, String permission, MethodProxy proxy, OptionParser parser)
     {
         this.commandName = commandName;
         this.proxy = proxy;
@@ -46,7 +46,7 @@ public class DefaultCommandRoute implements CommandRoute
     }
 
     @Override
-    public CommandOptionsParser getOptionDetails()
+    public OptionParser getOptionDetails()
     {
         return parser;
     }

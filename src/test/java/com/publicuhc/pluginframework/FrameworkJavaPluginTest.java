@@ -140,7 +140,6 @@ public class FrameworkJavaPluginTest {
         assertThat(plugin.getConfigurator()).isInstanceOf(TestPluginReplaceModules.TestConcreteConfigurator.class);
         assertThat(plugin.getTranslate()).isInstanceOf(TestPluginReplaceModules.TestConcreteTranslate.class);
         assertThat(plugin.getRouter()).isInstanceOf(TestPluginReplaceModules.TestConcreteRouter.class);
-        assertThat(plugin.parser).isInstanceOf(TestPluginReplaceModules.TestCommandOptionsParser.class);
     }
 
     @Test(expected = IllegalStateException.class)

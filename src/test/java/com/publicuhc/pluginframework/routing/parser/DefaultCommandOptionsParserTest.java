@@ -21,7 +21,7 @@
 
 package com.publicuhc.pluginframework.routing.parser;
 
-import com.publicuhc.pluginframework.routing.exception.OptionMissingException;
+import joptsimple.OptionException;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 import org.junit.Before;
@@ -34,23 +34,20 @@ import static org.assertj.core.api.Assertions.assertThat;
 @RunWith(PowerMockRunner.class)
 public class DefaultCommandOptionsParserTest
 {
-    private DefaultCommandOptionsParser optionsParser;
+    private OptionParser optionsParser;
 
     @Before
     public void onStartup()
     {
         OptionParser parser = new OptionParser();
-        parser.accepts("a").withRequiredArg(); // must have an arg if supplied
-        parser.accepts("b").withOptionalArg(); // optionally have an arg is supplied
-        parser.accepts("c");                   // no arg if supplied
+        parser.accepts("a").withRequiredArg().required(); // must have an arg if supplied
+        parser.accepts("b").withOptionalArg().required(); // optionally have an arg is supplied
+        parser.accepts("c").withOptionalArg().required();                   // no arg if supplied
         parser.accepts("d").withRequiredArg(); // must have an arg if supplied
         parser.accepts("e").withOptionalArg(); // optionally have an arg is supplied
         parser.accepts("f");                   // no arg if supplied
 
-        //a b and c are required args, d e and f are optional
-        String[] required = new String[]{"a", "b", "c"};
-
-        optionsParser = new DefaultCommandOptionsParser(parser, required);
+        optionsParser = parser;
     }
 
     @Test
@@ -79,19 +76,19 @@ public class DefaultCommandOptionsParserTest
         assertThat(set.nonOptionArguments()).containsExactly("extra", "args");
     }
 
-    @Test(expected = OptionMissingException.class)
+    @Test(expected = OptionException.class)
     public void test_parsing_with_missing_a_argument()
     {
         optionsParser.parse("-b=b", "-c", "-d", "d", "extra", "args");
     }
 
-    @Test(expected = OptionMissingException.class)
+    @Test(expected = OptionException.class)
     public void test_parsing_with_missing_b_argument()
     {
         optionsParser.parse("--a=a", "-c", "-d", "d", "extra", "args");
     }
 
-    @Test(expected = OptionMissingException.class)
+    @Test(expected = OptionException.class)
     public void test_parsing_with_missing_c_argument()
     {
         optionsParser.parse("--a=a", "-b=b", "-d", "d", "extra", "args");

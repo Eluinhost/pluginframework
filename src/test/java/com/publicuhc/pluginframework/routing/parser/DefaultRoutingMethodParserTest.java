@@ -61,12 +61,10 @@ public class DefaultRoutingMethodParserTest
         return "TEST_STRING";
     }
 
-    public String[] commandWithAnnotation(OptionParser optionParser)
+    public void commandWithAnnotation(OptionParser optionParser)
     {
-        optionParser.accepts("a").withRequiredArg().ofType(Integer.class);
+        optionParser.accepts("a").withRequiredArg().ofType(Integer.class).required();
         optionParser.accepts("b").withOptionalArg().ofType(String.class);
-
-        return new String[]{"a"};
     }
 
     public void commandWithoutAnnotation(CommandRequest request)
@@ -78,12 +76,10 @@ public class DefaultRoutingMethodParserTest
         return "TEST_STRING";
     }
 
-    public String[] commandWithAnnotationOptions(OptionParser optionParser)
+    public void commandWithAnnotationOptions(OptionParser optionParser)
     {
-        optionParser.accepts("a").withRequiredArg();
+        optionParser.accepts("a").withRequiredArg().required();
         optionParser.accepts("b").withOptionalArg();
-
-        return new String[]{"a"};
     }
 
     @CommandMethod(command = "test", options = true)
@@ -106,20 +102,18 @@ public class DefaultRoutingMethodParserTest
     public void commandWithInvalidOptionsReturn(CommandRequest request)
     {}
 
-    public void commandWithInvalidOptionsReturn(OptionParser optionParser)
-    {}
+    public String[] commandWithInvalidOptionsReturn(OptionParser optionParser)
+    {return null;}
 
     @CommandMethod(command = "test", options = true)
     public void commandWithInvalidOptionsParam(CommandRequest request)
     {}
 
-    public String[] commandWithInvalidOptionsParam(OptionSet set)
-    {
-        return new String[]{};
-    }
+    public void commandWithInvalidOptionsParam(OptionSet set)
+    {}
 
     //helpful methods
-    private void assertOptionsValid(CommandOptionsParser optionParser)
+    private void assertOptionsValid(OptionParser optionParser)
     {
         OptionSet set = optionParser.parse("-a", "299");
         assertThat(set.hasArgument("a")).isTrue();
@@ -134,7 +128,7 @@ public class DefaultRoutingMethodParserTest
         assertThat(set.nonOptionArguments()).containsExactly("bleh", "random", "words");
     }
 
-    private void assertOptionsValidStrings(CommandOptionsParser optionParser)
+    private void assertOptionsValidStrings(OptionParser optionParser)
     {
         OptionSet set = optionParser.parse("-a", "299");
         assertThat(set.hasArgument("a")).isTrue();
@@ -170,7 +164,7 @@ public class DefaultRoutingMethodParserTest
     public void test_get_options_method() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException
     {
         Method method = DefaultRoutingMethodParserTest.class.getDeclaredMethod("commandWithAnnotation", CommandRequest.class);
-        CommandOptionsParser optionParser = parser.getOptionsForMethod(method, this);
+        OptionParser optionParser = parser.getOptionsForMethod(method, this);
         assertOptionsValid(optionParser);
     }
 

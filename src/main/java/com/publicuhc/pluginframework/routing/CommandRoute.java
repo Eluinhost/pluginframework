@@ -22,9 +22,9 @@
 package com.publicuhc.pluginframework.routing;
 
 import com.publicuhc.pluginframework.routing.exception.CommandInvocationException;
-import com.publicuhc.pluginframework.routing.parser.CommandOptionsParser;
 import com.publicuhc.pluginframework.routing.proxy.MethodProxy;
 import joptsimple.OptionException;
+import joptsimple.OptionParser;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 
@@ -34,7 +34,7 @@ public interface CommandRoute
     /**
      * @return the option details that define the allowed options
      */
-    public CommandOptionsParser getOptionDetails();
+    public OptionParser getOptionDetails();
 
     /**
      * @return the proxy to run on command trigger
@@ -55,7 +55,7 @@ public interface CommandRoute
      * Run this command route
      *
      * @param args the args for the method
-     * @throws org.bukkit.craftbukkit.libs.joptsimple.OptionException                     when options do not match expected
+     * @throws joptsimple.OptionException   when options do not match expected
      * @throws com.publicuhc.pluginframework.routing.exception.CommandInvocationException if exception thrown in command
      */
     public void run(Command command, CommandSender sender, String[] args) throws OptionException, CommandInvocationException;

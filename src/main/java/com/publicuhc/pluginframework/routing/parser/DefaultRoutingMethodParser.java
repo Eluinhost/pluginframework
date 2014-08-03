@@ -46,18 +46,18 @@ public class DefaultRoutingMethodParser extends RoutingMethodParser
      * @return the optionparser after being run through the method
      * @throws NoSuchMethodException if the method cannot be found
      */
-    protected CommandOptionsParser getOptionsForMethod(Method method, Object instance) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException
+    protected OptionParser getOptionsForMethod(Method method, Object instance) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException
     {
         Method optionsMethod = instance.getClass().getMethod(method.getName(), OptionParser.class);
 
-        if(!(optionsMethod.getReturnType().isAssignableFrom(String[].class)))
+        if(!(optionsMethod.getReturnType().equals(Void.TYPE)))
             throw new NoSuchMethodException("Options method does not return a String[]");
 
         //make a new parser and invoke the method with it
         OptionParser parser = new OptionParser();
-        String[] required = (String[]) optionsMethod.invoke(instance, parser);
+        optionsMethod.invoke(instance, parser);
 
-        return new DefaultCommandOptionsParser(parser, required);
+        return parser;
     }
 
     protected boolean areCommandMethodParametersCorrect(Method method)
@@ -78,7 +78,7 @@ public class DefaultRoutingMethodParser extends RoutingMethodParser
         if(!areCommandMethodParametersCorrect(method))
             throw new CommandParseException("Invalid command method parameters at " + method.getName());
 
-        CommandOptionsParser optionParser;
+        OptionParser optionParser;
 
         //get our option parser for this command
         if(annotation.options()) {
@@ -88,7 +88,7 @@ public class DefaultRoutingMethodParser extends RoutingMethodParser
                 throw new CommandParseException("Exception occured when trying to run the options method for " + method.getName(), e);
             }
         } else {
-            optionParser = new DefaultCommandOptionsParser();
+            optionParser = new OptionParser();
         }
 
         MethodProxy proxy = new ReflectionMethodProxy(instance, method);

@@ -30,12 +30,11 @@ import com.publicuhc.pluginframework.configuration.Configurator;
 import com.publicuhc.pluginframework.configuration.DefaultConfigurator;
 import com.publicuhc.pluginframework.routing.DefaultRouter;
 import com.publicuhc.pluginframework.routing.Router;
-import com.publicuhc.pluginframework.routing.parser.CommandOptionsParser;
-import com.publicuhc.pluginframework.routing.parser.DefaultCommandOptionsParser;
 import com.publicuhc.pluginframework.routing.parser.DefaultRoutingMethodParser;
 import com.publicuhc.pluginframework.routing.parser.RoutingMethodParser;
 import com.publicuhc.pluginframework.translate.DefaultTranslate;
 import com.publicuhc.pluginframework.translate.Translate;
+import joptsimple.OptionParser;
 import org.bukkit.Server;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginLoader;
@@ -56,7 +55,7 @@ public class TestPluginReplaceModules extends FrameworkJavaPlugin {
     }
 
     @Inject
-    public CommandOptionsParser parser;
+    public OptionParser parser;
 
     @Override
     public boolean initUseDefaultBindings() {
@@ -73,7 +72,6 @@ public class TestPluginReplaceModules extends FrameworkJavaPlugin {
                 bind(Configurator.class).to(TestConcreteConfigurator.class);
                 bind(Translate.class).to(TestConcreteTranslate.class);
                 bind(RoutingMethodParser.class).to(TestRoutingMethodParser.class);
-                bind(CommandOptionsParser.class).to(TestCommandOptionsParser.class);
                 bind(ClassLoader.class).toInstance(getClass().getClassLoader());
             }
         };
@@ -105,6 +103,4 @@ public class TestPluginReplaceModules extends FrameworkJavaPlugin {
     }
 
     public static class TestRoutingMethodParser extends DefaultRoutingMethodParser {}
-
-    public static class TestCommandOptionsParser extends DefaultCommandOptionsParser {}
 }

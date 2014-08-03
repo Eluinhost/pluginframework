@@ -22,9 +22,9 @@
 package com.publicuhc.pluginframework.routing;
 
 import com.publicuhc.pluginframework.routing.exception.CommandInvocationException;
-import com.publicuhc.pluginframework.routing.parser.CommandOptionsParser;
 import com.publicuhc.pluginframework.routing.proxy.MethodProxy;
 import com.publicuhc.pluginframework.routing.proxy.ReflectionMethodProxy;
+import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 import junit.framework.AssertionFailedError;
 import org.bukkit.command.Command;
@@ -48,14 +48,14 @@ import static org.powermock.api.mockito.PowerMockito.*;
 @RunWith(PowerMockRunner.class)
 public class DefaultCommandRouteTest
 {
-    private CommandOptionsParser parser;
+    private OptionParser parser;
     private TestClass testObject;
 
     @Before
     public void onStartup() throws NoSuchMethodException
     {
         testObject = new TestClass();
-        parser = mock(CommandOptionsParser.class);
+        parser = mock(OptionParser.class);
         OptionSet set = mock(OptionSet.class);
         when(parser.parse(Matchers.<String[]>anyVararg())).thenReturn(set);
         List nonOptions = new ArrayList<String>();
