@@ -32,6 +32,6 @@ public class BukkitHelpFormatter implements HelpFormatter
     public String format(Map<String, ? extends OptionDescriptor> options)
     {
         //TODO format the things in bukkit format
-        return null;
+        return "Description";
     }
 }
