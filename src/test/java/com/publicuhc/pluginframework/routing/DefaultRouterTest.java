@@ -213,6 +213,7 @@ public class DefaultRouterTest
         //call without required option 'a'
         router.onCommand(sender, command, "", new String[]{"--b=somethingelse"});
 
+        verify(sender, never()).sendMessage(contains("\r"));
         verify(sender, times(1)).sendMessage(contains("Description"));
     }
 
