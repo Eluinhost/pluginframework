@@ -33,6 +33,8 @@ import org.bukkit.command.PluginCommand;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
@@ -191,18 +193,18 @@ public class DefaultRouterTest
         CommandSender sender = mock(CommandSender.class);
         Command command = Bukkit.getPluginCommand("testcommand");
 
-        router.onCommand(sender, command, "", new String[]{"-a", "something", "--b=somethingelse"});
+        router.onCommand(sender, command, "", new String[]{"-a", "something", "--b=6"});
 
         assertThat(sample.lastOptionSet).isNotNull();
         assertThat(sample.lastOptionSet.hasArgument("a")).isTrue();
         assertThat(sample.lastOptionSet.hasArgument("b")).isTrue();
         assertThat(sample.lastOptionSet.hasArgument("c")).isFalse();
         assertThat(sample.lastOptionSet.valueOf("a")).isEqualTo("something");
-        assertThat(sample.lastOptionSet.valueOf("b")).isEqualTo("somethingelse");
+        assertThat(sample.lastOptionSet.valueOf("b")).isEqualTo(6);
     }
 
     @Test
-    public void test_run_command_route_invalid_options() throws CommandParseException
+    public void test_run_command_route_invalid_options() throws Exception
     {
         SampleCommandClass sample = new SampleCommandClass();
         router.registerCommands(sample, false);
@@ -229,8 +231,15 @@ public class DefaultRouterTest
 
         public void testCommand(OptionParser parser)
         {
-            parser.accepts("a").withRequiredArg().required();
-            parser.accepts("b").withOptionalArg();
+            parser.accepts("a")
+                    .withRequiredArg()
+                    .describedAs("an argument")
+                    .defaultsTo("default")
+                    .ofType(String.class)
+                    .required();
+            parser.accepts("b")
+                    .withOptionalArg()
+                    .ofType(Integer.class);
         }
     }
 
