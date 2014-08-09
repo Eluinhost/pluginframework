@@ -218,6 +218,13 @@
                         <goals>
                             <goal>jar</goal>
                         </goals>
+                        <configuration>
+                            <includeDependencySources>true</includeDependencySources>
+                            <dependencySourceIncludes>
+                                <dependencySourceInclude>net.sf.jopt-simple:*</dependencySourceInclude>
+                                <dependencySourceInclude>mkremins:*</dependencySourceInclude>
+                            </dependencySourceIncludes>
+                        </configuration>
                     </execution>
                 </executions>
                 <configuration>
