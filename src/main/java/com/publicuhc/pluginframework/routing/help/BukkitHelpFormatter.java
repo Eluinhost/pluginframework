@@ -23,7 +23,6 @@ package com.publicuhc.pluginframework.routing.help;
 import joptsimple.HelpFormatter;
 import joptsimple.OptionDescriptor;
 import joptsimple.internal.Strings;
-import mkremins.fanciful.FancyMessage;
 
 import java.util.*;
 
