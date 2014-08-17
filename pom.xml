@@ -68,7 +68,6 @@
         </developer>
     </developers>
 
-
     <repositories>
         <repository>
             <id>bukkit-repo</id>
@@ -77,6 +76,10 @@
         <repository>
             <id>Plugin Metrics</id>
             <url>http://repo.mcstats.org/content/repositories/public</url>
+        </repository>
+        <repository>
+            <id>fanciful-mvn-repo</id>
+            <url>https://raw.github.com/mkremins/fanciful/mvn-repo/</url>
         </repository>
     </repositories>
 
@@ -108,6 +111,11 @@
                     <groupId>jopt-simple</groupId>
                 </exclusion>
             </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>mkremins</groupId>
+            <artifactId>fanciful</artifactId>
+            <version>0.1.5</version>
         </dependency>
         <dependency>
             <groupId>net.sf.jopt-simple</groupId>
@@ -193,33 +201,20 @@
                 <executions>
                     <execution>
                         <id>attach-sources</id>
+                        <phase>package</phase>
                         <goals>
-                            <goal>jar</goal>
+                            <goal>jar-no-fork</goal>
                         </goals>
                     </execution>
                 </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-javadoc-plugin</artifactId>
-                <version>2.9.1</version>
-                <executions>
-                    <execution>
-                        <id>attach-javadocs</id>
-                        <goals>
-                            <goal>jar</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <show>private</show>
-                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
                 <version>2.3</version>
                 <configuration>
+                    <createSourcesJar>true</createSourcesJar>
+                    <shadeSourcesContent>true</shadeSourcesContent>
                     <artifactSet>
                         <includes>
                             <include>org.sonatype.sisu:sisu-guice</include>
@@ -227,6 +222,7 @@
                             <include>aopalliance:aopalliance</include>
                             <include>org.mcstats.bukkit:metrics</include>
                             <include>net.sf.jopt-simple:jopt-simple</include>
+                            <include>mkremins:fanciful</include>
                         </includes>
                     </artifactSet>
                     <relocations>
@@ -249,6 +245,14 @@
                         <relocation>
                             <pattern>org.mcstats</pattern>
                             <shadedPattern>${project.groupId}.${project.artifactId}.shaded.metrics</shadedPattern>
+                        </relocation>
+                        <relocation>
+                            <pattern>mkremins</pattern>
+                            <shadedPattern>${project.groupId}.${project.artifactId}.shaded.mkremins</shadedPattern>
+                        </relocation>
+                        <relocation>
+                            <pattern>net.amoebaman</pattern>
+                            <shadedPattern>${project.groupId}.${project.artifactId}.shaded.amoebaman</shadedPattern>
                         </relocation>
                     </relocations>
                 </configuration>
@@ -274,18 +278,4 @@
             </extension>
         </extensions>
     </build>
-
-    <reporting>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-javadoc-plugin</artifactId>
-                <version>2.9.1</version>
-                <configuration>
-                    <show>public</show>
-                </configuration>
-            </plugin>
-        </plugins>
-    </reporting>
-
 </project>
