@@ -26,15 +26,12 @@ import com.google.inject.Injector;
 import com.publicuhc.pluginframework.routing.exception.CommandInvocationException;
 import com.publicuhc.pluginframework.routing.exception.CommandParseException;
 import com.publicuhc.pluginframework.routing.parser.RoutingMethodParser;
-import joptsimple.OptionException;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.PluginCommand;
 
-import java.io.IOException;
-import java.io.StringWriter;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -168,17 +165,6 @@ public class DefaultRouter implements Router
         //run the actual command
         try {
             route.run(command, sender, args);
-        } catch(OptionException ex) {
-            //catch the option exceptions and print an error message out with the option syntax
-            StringWriter writer = new StringWriter();
-            try {
-                route.getOptionDetails().printHelpOn(writer);
-                sender.sendMessage(writer.toString());
-                return true;
-            } catch(IOException ioex) {
-                ex.printStackTrace();
-                return false;
-            }
         } catch(CommandInvocationException e) {
             e.printStackTrace();
         }
