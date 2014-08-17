@@ -21,13 +21,17 @@
 
 package com.publicuhc.pluginframework.routing.parser;
 
-import com.publicuhc.pluginframework.routing.*;
+import com.publicuhc.pluginframework.routing.CommandMethod;
+import com.publicuhc.pluginframework.routing.CommandRequest;
+import com.publicuhc.pluginframework.routing.CommandRoute;
+import com.publicuhc.pluginframework.routing.DefaultCommandRoute;
 import com.publicuhc.pluginframework.routing.exception.AnnotationMissingException;
 import com.publicuhc.pluginframework.routing.exception.CommandParseException;
 import com.publicuhc.pluginframework.routing.help.BukkitHelpFormatter;
 import com.publicuhc.pluginframework.routing.proxy.MethodProxy;
 import com.publicuhc.pluginframework.routing.proxy.ReflectionMethodProxy;
 import joptsimple.OptionParser;
+import joptsimple.OptionSpec;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -90,10 +94,11 @@ public class DefaultRoutingMethodParser extends RoutingMethodParser
         }
 
         optionParser.formatHelpWith(new BukkitHelpFormatter());
+        OptionSpec helpSpec = optionParser.accepts(annotation.helpOption(), "Help").forHelp();
 
         MethodProxy proxy = new ReflectionMethodProxy(instance, method);
 
-        return new DefaultCommandRoute(annotation.command(), annotation.permission(), proxy, optionParser);
+        return new DefaultCommandRoute(annotation.command(), annotation.permission(), proxy, optionParser, helpSpec);
     }
 
     @Override
