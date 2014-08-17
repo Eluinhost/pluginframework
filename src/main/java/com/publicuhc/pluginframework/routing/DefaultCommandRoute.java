@@ -83,8 +83,9 @@ public class DefaultCommandRoute implements CommandRoute
             OptionSet optionSet = parser.parse(args);
             if(optionSet.has(helpSpec)) {
                 printHelpFor(sender);
+            } else {
+                proxy.invoke(new CommandRequest(command, sender, optionSet));
             }
-            proxy.invoke(new CommandRequest(command, sender, optionSet));
         } catch(OptionException e) {
             printHelpFor(sender);
         } catch(Throwable e) {
