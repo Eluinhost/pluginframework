@@ -19,31 +19,47 @@ import static org.powermock.api.mockito.PowerMockito.when;
 @PrepareForTest(Bukkit.class)
 public class OnlinePlayerValueConverterTest {
 
-    OnlinePlayerValueConverter converter;
     Player player;
 
     @Before
     public void onStartup()
     {
-        converter = new OnlinePlayerValueConverter();
         mockStatic(Bukkit.class);
 
         //make ghowden not online, make eluinhost online
         when(Bukkit.getPlayer("ghowden")).thenReturn(null);
         player = mock(Player.class);
         when(Bukkit.getPlayer("eluinhost")).thenReturn(player);
+        when(Bukkit.getOnlinePlayers()).thenReturn(new Player[]{player});
     }
 
     @Test
     public void testValidPlayer()
     {
-        Player player = converter.convert("eluinhost");
-        assertThat(player).isSameAs(this.player);
+        OnlinePlayerValueConverter converter = new OnlinePlayerValueConverter(false);
+        Player[] players = converter.convert("eluinhost");
+        assertThat(players).containsExactly(player);
     }
 
     @Test(expected = ValueConversionException.class)
     public void testNotFound()
     {
+        OnlinePlayerValueConverter converter = new OnlinePlayerValueConverter(false);
         converter.convert("ghowden");
+    }
+
+    @Test
+    public void testAllOnline()
+    {
+        OnlinePlayerValueConverter converter = new OnlinePlayerValueConverter(true);
+        Player[] players = converter.convert("*");
+        assertThat(players).containsExactly(player);
+    }
+
+    @Test(expected = ValueConversionException.class)
+    public void testStar()
+    {
+        OnlinePlayerValueConverter converter = new OnlinePlayerValueConverter(false);
+        converter.convert("*");
     }
 }
