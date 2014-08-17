@@ -30,7 +30,7 @@
     <version>0.2-SNAPSHOT</version>
 
     <properties>
-        <bukkit.version>LATEST</bukkit.version>
+        <bukkit.version>1.7.9-R0.2</bukkit.version>
         <mcstats.version>R8-SNAPSHOT</mcstats.version>
         <junit.version>4.11</junit.version>
         <mockito.version>1.9.5</mockito.version>
