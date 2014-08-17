@@ -112,6 +112,13 @@ public class DefaultRoutingMethodParserTest
     public void commandWithInvalidOptionsParam(OptionSet set)
     {}
 
+    @CommandMethod(command = "test", helpOption = "t", options = true)
+    public void commandWithNonStandardHelp(CommandRequest request)
+    {}
+
+    public void commandWithNonStandardHelp(OptionParser optionParser)
+    {}
+
     //helpful methods
     private void assertOptionsValid(OptionParser optionParser)
     {
@@ -174,11 +181,15 @@ public class DefaultRoutingMethodParserTest
 
         CommandRoute route = parser.parseCommandMethodAnnotation(method, this);
         assertThat(route.getPermission().equals("TEST.PERMISSION"));
+        assertThat(route.getOptionDetails().recognizedOptions()).containsKey("?");
+        assertThat(route.getOptionDetails().recognizedOptions()).doesNotContainKey("t");
 
         method = DefaultRoutingMethodParserTest.class.getDeclaredMethod("commandWithAnnotationOptions", CommandRequest.class);
 
         route = parser.parseCommandMethodAnnotation(method, this);
         assertThat(route.getPermission()).isNull();
+        assertThat(route.getOptionDetails().recognizedOptions()).containsKey("?");
+        assertThat(route.getOptionDetails().recognizedOptions()).doesNotContainKey("t");
     }
 
     @Test
@@ -193,6 +204,8 @@ public class DefaultRoutingMethodParserTest
         MethodProxy proxy = route.getProxy();
         assertThat(proxy.getInstance()).isSameAs(this);
         assertThat(proxy.invoke(mock(CommandRequest.class))).isEqualTo("TEST_STRING");
+        assertThat(route.getOptionDetails().recognizedOptions()).containsKey("?");
+        assertThat(route.getOptionDetails().recognizedOptions()).doesNotContainKey("t");
     }
 
     @Test
@@ -260,6 +273,8 @@ public class DefaultRoutingMethodParserTest
         assertThat(route.getCommandName()).isEqualTo("test");
         assertOptionsValidStrings(route.getOptionDetails());
         assertThat(route.getProxy().invoke(mock(CommandRequest.class))).isEqualTo("TEST_STRING");
+        assertThat(route.getOptionDetails().recognizedOptions()).containsKey("?");
+        assertThat(route.getOptionDetails().recognizedOptions()).doesNotContainKey("t");
     }
 
     @Test
@@ -289,5 +304,14 @@ public class DefaultRoutingMethodParserTest
         } catch(CommandParseException ex) {
             assertThat(ex.getMessage()).contains("Invalid command method parameters");
         }
+    }
+
+    @Test
+    public void test_parse_command_method_non_standard_help() throws NoSuchMethodException, CommandParseException {
+        Method method = DefaultRoutingMethodParserTest.class.getDeclaredMethod("commandWithNonStandardHelp", CommandRequest.class);
+        CommandRoute route = parser.parseCommandMethodAnnotation(method, this);
+
+        assertThat(route.getOptionDetails().recognizedOptions()).containsKey("t");
+        assertThat(route.getOptionDetails().recognizedOptions()).doesNotContainKey("?");
     }
 }

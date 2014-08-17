@@ -26,8 +26,12 @@ import com.publicuhc.pluginframework.routing.proxy.MethodProxy;
 import joptsimple.OptionException;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
+import joptsimple.OptionSpec;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+
+import java.io.IOException;
+import java.io.StringWriter;
 
 public class DefaultCommandRoute implements CommandRoute
 {
@@ -36,9 +40,11 @@ public class DefaultCommandRoute implements CommandRoute
     private final OptionParser parser;
     private final String commandName;
     private final String permission;
+    private final OptionSpec helpSpec;
 
-    public DefaultCommandRoute(String commandName, String permission, MethodProxy proxy, OptionParser parser)
+    public DefaultCommandRoute(String commandName, String permission, MethodProxy proxy, OptionParser parser, OptionSpec helpSpec)
     {
+        this.helpSpec = helpSpec;
         this.commandName = commandName;
         this.proxy = proxy;
         this.parser = parser;
@@ -57,14 +63,31 @@ public class DefaultCommandRoute implements CommandRoute
         return proxy;
     }
 
+    private void printHelpFor(CommandSender sender)
+    {
+        //catch the option exceptions and print an error message out with the option syntax
+        StringWriter writer = new StringWriter();
+        try {
+            parser.printHelpOn(writer);
+            sender.sendMessage(writer.toString());
+        } catch(IOException ioex) {
+            //shouldn't run, if it does the world probably exploded
+            ioex.printStackTrace();
+        }
+    }
+
     @Override
-    public void run(Command command, CommandSender sender, String[] args) throws OptionException, CommandInvocationException
+    public void run(Command command, CommandSender sender, String[] args) throws CommandInvocationException
     {
         try {
             OptionSet optionSet = parser.parse(args);
-            proxy.invoke(new CommandRequest(command, sender, optionSet));
+            if(optionSet.has(helpSpec)) {
+                printHelpFor(sender);
+            } else {
+                proxy.invoke(new CommandRequest(command, sender, optionSet));
+            }
         } catch(OptionException e) {
-            throw e;
+            printHelpFor(sender);
         } catch(Throwable e) {
             throw new CommandInvocationException("Exception thrown when running the command " + command.getName(), e);
         }
