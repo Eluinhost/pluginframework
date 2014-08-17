@@ -1,5 +1,8 @@
 package com.publicuhc.pluginframework.util;
 
+import org.bukkit.Location;
+import org.bukkit.World;
+
 public class Coordinates {
 
     private double x,y,z;
@@ -11,6 +14,10 @@ public class Coordinates {
         this.z = z;
     }
 
+    public Location asLocationForWorld(World world)
+    {
+        return new Location(world, x, y, z);
+    }
 
     public double getX()
     {
