@@ -26,6 +26,7 @@ import com.publicuhc.pluginframework.routing.proxy.MethodProxy;
 import com.publicuhc.pluginframework.routing.proxy.ReflectionMethodProxy;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
+import joptsimple.OptionSpec;
 import junit.framework.AssertionFailedError;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -49,6 +50,7 @@ import static org.powermock.api.mockito.PowerMockito.*;
 public class DefaultCommandRouteTest
 {
     private OptionParser parser;
+    private OptionSpec helpSpec;
     private TestClass testObject;
 
     @Before
@@ -56,6 +58,7 @@ public class DefaultCommandRouteTest
     {
         testObject = new TestClass();
         parser = mock(OptionParser.class);
+        helpSpec = mock(OptionSpec.class);
         OptionSet set = mock(OptionSet.class);
         when(parser.parse(Matchers.<String[]>anyVararg())).thenReturn(set);
         List nonOptions = new ArrayList<String>();
@@ -69,10 +72,10 @@ public class DefaultCommandRouteTest
         Method method = TestClass.class.getMethod("testMethod", CommandRequest.class);
         MethodProxy proxy = spy(new ReflectionMethodProxy(testObject, method));
 
-        DefaultCommandRoute route = new DefaultCommandRoute("test", CommandMethod.NO_PERMISSIONS, proxy, parser);
+        DefaultCommandRoute route = new DefaultCommandRoute("test", CommandMethod.NO_PERMISSIONS, proxy, parser, helpSpec);
         assertThat(route.getPermission()).isNull();
 
-        route = new DefaultCommandRoute("test", "TEST.PERMISSION", proxy, parser);
+        route = new DefaultCommandRoute("test", "TEST.PERMISSION", proxy, parser, helpSpec);
         assertThat(route.getPermission()).isEqualTo("TEST.PERMISSION");
     }
 
@@ -81,7 +84,7 @@ public class DefaultCommandRouteTest
     {
         Method method = TestClass.class.getMethod("testMethod", CommandRequest.class);
         MethodProxy proxy = spy(new ReflectionMethodProxy(testObject, method));
-        DefaultCommandRoute route = new DefaultCommandRoute("test", CommandMethod.NO_PERMISSIONS, proxy, parser);
+        DefaultCommandRoute route = new DefaultCommandRoute("test", CommandMethod.NO_PERMISSIONS, proxy, parser, helpSpec);
 
         Command command = mock(Command.class);
         CommandSender sender = mock(CommandSender.class);
@@ -103,7 +106,7 @@ public class DefaultCommandRouteTest
     {
         Method method = TestClass.class.getMethod("exceptionMethod", CommandRequest.class);
         MethodProxy proxy = spy(new ReflectionMethodProxy(testObject, method));
-        DefaultCommandRoute route = new DefaultCommandRoute("test", CommandMethod.NO_PERMISSIONS, proxy, parser);
+        DefaultCommandRoute route = new DefaultCommandRoute("test", CommandMethod.NO_PERMISSIONS, proxy, parser, helpSpec);
 
         Command command = mock(Command.class);
         CommandSender sender = mock(CommandSender.class);
