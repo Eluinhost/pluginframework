@@ -94,7 +94,7 @@ public class DefaultRoutingMethodParser extends RoutingMethodParser
         }
 
         optionParser.formatHelpWith(new BukkitHelpFormatter());
-        OptionSpec helpSpec = optionParser.accepts(annotation.helpOption(), "Help").forHelp();
+        OptionSpec helpSpec = optionParser.accepts(annotation.helpOption(), "Shows help").forHelp();
 
         MethodProxy proxy = new ReflectionMethodProxy(instance, method);
 
