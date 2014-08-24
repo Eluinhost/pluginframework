@@ -21,6 +21,7 @@
 
 package com.publicuhc.pluginframework.routing;
 
+import com.google.inject.AbstractModule;
 import com.publicuhc.pluginframework.routing.exception.CommandParseException;
 import org.bukkit.command.TabExecutor;
 
@@ -30,7 +31,7 @@ public interface Router extends TabExecutor
 {
 
     /**
-     * Register a class for commands, creates a new instance using the DI injector
+     * Register a class for commands. Creates a new instance of said class and injects it using the default DI injector.
      *
      * @param klass the class to register commands for
      * @return the created object after injection
@@ -39,10 +40,21 @@ public interface Router extends TabExecutor
     Object registerCommands(Class klass) throws CommandParseException;
 
     /**
-     * Register an already created class for commands and (optionally) inject dependencies
+     * Register a class for commands. Creates a new instance of said class and injects it using the default DI injector
+     * with the provided modules added
+     *
+     * @param klass the class to register commands for
+     * @param modules the extra modules to add to the injector
+     * @return the created object after injection
+     * @throws com.publicuhc.pluginframework.routing.exception.CommandParseException when failing to parse any commands in the class
+     */
+    Object registerCommands(Class klass, List<AbstractModule> modules) throws CommandParseException;
+
+    /**
+     * Register an instance for commands, optionally injecting using the DI injector
      * <b>
-     * If injecting dependencies construction injection doesn't happen,
-     * use {@link #registerCommands(Class)} to do constructor injection</b>
+     * If injecting dependencies construction/property injection doesn't happen,
+     * use {@link #registerCommands(Class)} to do constructor/property injection</b>
      * </b>
      *
      * @param object the object to register commands for
@@ -50,6 +62,19 @@ public interface Router extends TabExecutor
      * @throws com.publicuhc.pluginframework.routing.exception.CommandParseException when failing to parse any commands in the class
      */
     void registerCommands(Object object, boolean inject) throws CommandParseException;
+
+    /**
+     * Register an instance for commands, optionally injecting using the DI injector with the extra provided modules
+     * <b>
+     * If injecting dependencies construction/property injection doesn't happen,
+     * use {@link #registerCommands(Class, List)} to do constructor/property injection</b>
+     * </b>
+     *
+     * @param object the object to register commands for
+     * @param inject whether to inject dependencies or not (no constructor injection)
+     * @throws com.publicuhc.pluginframework.routing.exception.CommandParseException when failing to parse any commands in the class
+     */
+    void registerCommands(Object object, boolean inject, List<AbstractModule> modules) throws CommandParseException;
 
     /**
      * Set the messages to be displayed if a command is triggered but has no method to call
