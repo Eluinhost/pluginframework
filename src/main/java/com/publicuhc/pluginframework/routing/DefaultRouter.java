@@ -21,6 +21,7 @@
 
 package com.publicuhc.pluginframework.routing;
 
+import com.google.inject.AbstractModule;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
 import com.publicuhc.pluginframework.routing.exception.CommandInvocationException;
@@ -68,10 +69,17 @@ public class DefaultRouter implements Router
     }
 
     @Override
-    public Object registerCommands(Class klass) throws CommandParseException
+    public Object registerCommands(Class klass) throws CommandParseException {
+        return registerCommands(klass, new ArrayList<AbstractModule>());
+    }
+
+    @Override
+    public Object registerCommands(Class klass, List<AbstractModule> modules) throws CommandParseException
     {
+        Injector childInjector = injector.createChildInjector(modules);
+
         //grab an instance of the class after injection
-        Object o = injector.getInstance(klass);
+        Object o = childInjector.getInstance(klass);
 
         //register it using the instanced version without injection
         registerCommands(o, false);
@@ -81,11 +89,17 @@ public class DefaultRouter implements Router
     }
 
     @Override
-    public void registerCommands(Object object, boolean inject) throws CommandParseException
+    public void registerCommands(Object object, boolean inject) throws CommandParseException {
+        registerCommands(object, inject, new ArrayList<AbstractModule>());
+    }
+
+    @Override
+    public void registerCommands(Object object, boolean inject, List<AbstractModule> modules) throws CommandParseException
     {
         //inject if we need to
         if(inject) {
-            injector.injectMembers(object);
+            Injector childInjector = injector.createChildInjector(modules);
+            childInjector.injectMembers(object);
         }
 
         //the class of our object

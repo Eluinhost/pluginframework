@@ -21,6 +21,7 @@
 
 package com.publicuhc.pluginframework.routing;
 
+import com.google.inject.AbstractModule;
 import com.google.inject.Injector;
 import com.publicuhc.pluginframework.routing.exception.CommandParseException;
 import com.publicuhc.pluginframework.routing.parser.DefaultRoutingMethodParser;
@@ -33,8 +34,6 @@ import org.bukkit.command.PluginCommand;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
@@ -42,6 +41,7 @@ import org.powermock.modules.junit4.PowerMockRunner;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.publicuhc.pluginframework.matchers.UHCMatchers.listOfSize;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
@@ -56,12 +56,15 @@ public class DefaultRouterTest
 {
     private DefaultRouter router;
     private Injector injector;
+    private Injector childInjector;
 
     @Before
     public void onStartup()
     {
         injector = mock(Injector.class);
-        when(injector.getInstance(ValidCommandClass.class)).thenReturn(new ValidCommandClass());
+        childInjector = mock(Injector.class);
+        when(injector.createChildInjector(anyListOf(AbstractModule.class))).thenReturn(childInjector);
+        when(childInjector.getInstance(ValidCommandClass.class)).thenReturn(new ValidCommandClass());
         router = new DefaultRouter(new DefaultRoutingMethodParser(), injector);
 
         PluginCommand command = mock(PluginCommand.class);
@@ -71,46 +74,130 @@ public class DefaultRouterTest
         when(Bukkit.getPluginCommand("testcommand")).thenReturn(command);
     }
 
-    @Test
-    public void test_register_command_by_class() throws Throwable
-    {
-        router.registerCommands(ValidCommandClass.class);
-
-        assertThat(router.commands).hasSize(1);
-        CommandRoute route = router.commands.get("testcommand");
+    private void verifyRouteCorrect(CommandRoute route) throws Throwable {
         assertThat(route).isNotNull();
         assertThat(route.getCommandName()).isEqualTo("testcommand");
         assertThat(route.getProxy().getInstance()).isInstanceOf(ValidCommandClass.class);
 
         CommandRequest request = mock(CommandRequest.class);
+
+        //invoke the route to make sure it works
         route.getProxy().invoke(request);
+
         verify(request, times(1)).sendMessage("success");
         verifyNoMoreInteractions(request);
+    }
 
-        verify(injector, times(1)).getInstance(ValidCommandClass.class);
-        verify(injector, never()).injectMembers(any(ValidCommandClass.class));
-        PowerMockito.verifyNoMoreInteractions(injector);
+    /**
+     * @return list of 3 abstract module mocks
+     */
+    private List<AbstractModule> listOfModuleMocks()
+    {
+        List<AbstractModule> modules = new ArrayList<AbstractModule>();
+        modules.add(mock(AbstractModule.class));
+        modules.add(mock(AbstractModule.class));
+        modules.add(mock(AbstractModule.class));
+        return modules;
     }
 
     @Test
-    public void test_register_command_by_instance() throws Throwable
+    public void test_register_command_by_class_no_modules() throws Throwable
+    {
+        router.registerCommands(ValidCommandClass.class);
+        assertThat(router.commands).hasSize(1);
+
+        CommandRoute route = router.commands.get("testcommand");
+        verifyRouteCorrect(route);
+
+        //it should create a child injector and use that to create the class
+        verify(injector, times(1)).createChildInjector(listOfSize(0));
+        verifyNoMoreInteractions(injector);
+        verify(childInjector, times(1)).getInstance(ValidCommandClass.class);
+        verify(childInjector, never()).injectMembers(any(ValidCommandClass.class));
+        verifyNoMoreInteractions(childInjector);
+    }
+
+    @Test
+    public void test_register_command_by_class_extra_modules() throws Throwable
+    {
+
+        List<AbstractModule> modules = listOfModuleMocks();
+        router.registerCommands(ValidCommandClass.class, modules);
+        assertThat(router.commands).hasSize(1);
+
+        CommandRoute route = router.commands.get("testcommand");
+        verifyRouteCorrect(route);
+
+        //it should create a child injector with given modules and use that to create the class
+        verify(injector, times(1)).createChildInjector(modules);
+        verifyNoMoreInteractions(injector);
+        verify(childInjector, times(1)).getInstance(ValidCommandClass.class);
+        verify(childInjector, never()).injectMembers(any(ValidCommandClass.class));
+        verifyNoMoreInteractions(childInjector);
+    }
+
+    @Test
+    public void test_register_command_by_instance_inject_no_modules() throws Throwable
     {
         router.registerCommands(new ValidCommandClass(), true);
-
         assertThat(router.commands).hasSize(1);
+
         CommandRoute route = router.commands.get("testcommand");
-        assertThat(route).isNotNull();
-        assertThat(route.getCommandName()).isEqualTo("testcommand");
-        assertThat(route.getProxy().getInstance()).isInstanceOf(ValidCommandClass.class);
+        verifyRouteCorrect(route);
 
-        CommandRequest request = mock(CommandRequest.class);
-        route.getProxy().invoke(request);
-        verify(request, times(1)).sendMessage("success");
-        verifyNoMoreInteractions(request);
+        //it should create a child injector and use that to inject, not creating a class
+        verify(injector, times(1)).createChildInjector(listOfSize(0));
+        verifyNoMoreInteractions(injector);
+        verify(childInjector, never()).getInstance(ValidCommandClass.class);
+        verify(childInjector, times(1)).injectMembers(any(ValidCommandClass.class));
+        verifyNoMoreInteractions(childInjector);
+    }
 
-        verify(injector, never()).getInstance(ValidCommandClass.class);
-        verify(injector, times(1)).injectMembers(any(ValidCommandClass.class));
-        PowerMockito.verifyNoMoreInteractions(injector);
+    @Test
+    public void test_register_command_by_instance_inject_extra_modules() throws Throwable
+    {
+        List<AbstractModule> modules = listOfModuleMocks();
+        router.registerCommands(new ValidCommandClass(), true, modules);
+        assertThat(router.commands).hasSize(1);
+
+        CommandRoute route = router.commands.get("testcommand");
+        verifyRouteCorrect(route);
+
+        //it should create a child injector and use that to inject, not creating a class
+        verify(injector, times(1)).createChildInjector(modules);
+        verifyNoMoreInteractions(injector);
+        verify(childInjector, never()).getInstance(ValidCommandClass.class);
+        verify(childInjector, times(1)).injectMembers(any(ValidCommandClass.class));
+        verifyNoMoreInteractions(childInjector);
+    }
+
+
+    @Test
+    public void test_register_command_by_instance_no_inject_no_modules() throws Throwable
+    {
+        router.registerCommands(new ValidCommandClass(), false);
+        assertThat(router.commands).hasSize(1);
+
+        CommandRoute route = router.commands.get("testcommand");
+        verifyRouteCorrect(route);
+
+        //it shouldn't do anything with the injector at all
+        verifyNoMoreInteractions(injector);
+        verifyNoMoreInteractions(childInjector);
+    }
+
+    @Test
+    public void test_register_command_by_instance_no_inject_extra_modules() throws Throwable
+    {
+        router.registerCommands(new ValidCommandClass(), false, listOfModuleMocks());
+        assertThat(router.commands).hasSize(1);
+
+        CommandRoute route = router.commands.get("testcommand");
+        verifyRouteCorrect(route);
+
+        //it shouldn't do anything with the injector at all even though we gave it extra modules
+        verifyNoMoreInteractions(injector);
+        verifyNoMoreInteractions(childInjector);
     }
 
     @Test(expected = CommandParseException.class)
