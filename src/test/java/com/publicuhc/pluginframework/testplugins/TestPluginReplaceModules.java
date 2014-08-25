@@ -38,6 +38,7 @@ import joptsimple.OptionParser;
 import org.bukkit.Server;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginLoader;
+import org.bukkit.plugin.PluginLogger;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -82,9 +83,9 @@ public class TestPluginReplaceModules extends FrameworkJavaPlugin {
     public static class TestConcreteRouter extends DefaultRouter
     {
         @Inject
-        protected TestConcreteRouter(RoutingMethodParser parser, Injector injector)
+        protected TestConcreteRouter(RoutingMethodParser parser, Injector injector, PluginLogger logger)
         {
-            super(parser, injector);
+            super(parser, injector, logger);
         }
     }
 

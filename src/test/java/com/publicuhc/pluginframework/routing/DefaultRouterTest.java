@@ -31,6 +31,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.PluginCommand;
+import org.bukkit.plugin.PluginLogger;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -65,7 +66,7 @@ public class DefaultRouterTest
         childInjector = mock(Injector.class);
         when(injector.createChildInjector(anyListOf(AbstractModule.class))).thenReturn(childInjector);
         when(childInjector.getInstance(ValidCommandClass.class)).thenReturn(new ValidCommandClass());
-        router = new DefaultRouter(new DefaultRoutingMethodParser(), injector);
+        router = new DefaultRouter(new DefaultRoutingMethodParser(), injector, mock(PluginLogger.class));
 
         PluginCommand command = mock(PluginCommand.class);
         when(command.getName()).thenReturn("testcommand");

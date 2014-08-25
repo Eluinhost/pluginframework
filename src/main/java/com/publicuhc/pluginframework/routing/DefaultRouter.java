@@ -32,11 +32,13 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.PluginCommand;
+import org.bukkit.plugin.PluginLogger;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.logging.Level;
 
 public class DefaultRouter implements Router
 {
@@ -61,11 +63,14 @@ public class DefaultRouter implements Router
      */
     protected final HashMap<String, CommandRoute> commands = new HashMap<String, CommandRoute>();
 
+    private final PluginLogger logger;
+
     @Inject
-    protected DefaultRouter(RoutingMethodParser parser, Injector injector)
+    protected DefaultRouter(RoutingMethodParser parser, Injector injector, PluginLogger logger)
     {
         this.injector = injector;
         this.parser = parser;
+        this.logger = logger;
     }
 
     @Override
@@ -96,6 +101,8 @@ public class DefaultRouter implements Router
     @Override
     public void registerCommands(Object object, boolean inject, List<AbstractModule> modules) throws CommandParseException
     {
+        logger.log(Level.INFO, "Loading commands from class: " + object.getClass().getName());
+
         //inject if we need to
         if(inject) {
             Injector childInjector = injector.createChildInjector(modules);
@@ -110,7 +117,6 @@ public class DefaultRouter implements Router
         for(Method method : methods) {
             //if it's a command method
             if(parser.hasCommandMethodAnnotation(method)) {
-
                 //attempt to parse the route
                 CommandRoute route = parser.parseCommandMethodAnnotation(method, object);
 
@@ -125,9 +131,12 @@ public class DefaultRouter implements Router
 
                 //add to command map
                 commands.put(route.getCommandName(), route);
+                logger.log(Level.INFO, "Loading command '" + route.getCommandName() + "' from: " + method.getName());
             }
             //TODO tab complete
         }
+
+        logger.log(Level.INFO, "Loaded all commands from class: " + object.getClass().getName());
     }
 
     @Override
