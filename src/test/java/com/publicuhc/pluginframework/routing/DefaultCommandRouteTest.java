@@ -29,6 +29,7 @@ import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 import joptsimple.OptionSpec;
 import junit.framework.AssertionFailedError;
+import org.bukkit.command.BlockCommandSender;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
@@ -76,6 +77,40 @@ public class DefaultCommandRouteTest
         nonOptions.add("a");
         nonOptions.add("abc");
         when(set.nonOptionArguments()).thenReturn(nonOptions);
+    }
+
+    @Test
+    public void test_sender_restricted() throws Throwable
+    {
+        Method method = TestClass.class.getMethod("testMethod", CommandRequest.class);
+        MethodProxy proxy = spy(new ReflectionMethodProxy(testObject, method));
+
+        DefaultCommandRoute route = new DefaultCommandRoute("test", CommandMethod.NO_PERMISSIONS, playerOrConsoleSender, proxy, parser, helpSpec);
+
+        Command command = mock(Command.class);
+        CommandSender sender = mock(BlockCommandSender.class);
+        String[] args = new String[]{};
+
+        try {
+            route.run(command, sender, args);
+        } catch(CommandInvocationException ex) {
+            throw ex.getCause();
+        }
+        verify(parser, never()).parse(args);
+        verify(proxy, never()).invoke(any(CommandRequest.class));
+        verify(sender).sendMessage(contains("run that command"));
+        assertThat(testObject.wasRan()).isFalse();
+
+        sender = mock(Player.class);
+        try {
+            route.run(command, sender, args);
+        } catch(CommandInvocationException ex) {
+            throw ex.getCause();
+        }
+        verify(parser, times(1)).parse(args);
+        verify(proxy, times(1)).invoke(any(CommandRequest.class));
+        verify(sender, never()).sendMessage(anyString());
+        assertThat(testObject.wasRan()).isTrue();
     }
 
     @Test
