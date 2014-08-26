@@ -5,6 +5,11 @@ import joptsimple.ValueConverter;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 /**
  * Converts a online player name -> player object
  */
@@ -43,5 +48,21 @@ public class OnlinePlayerValueConverter implements ValueConverter<Player[]> {
     public String valuePattern()
     {
         return null;
+    }
+
+    /**
+     * Useful for when using player converter in nonOptions(), recombines list of arrays into a single set removing duplicates
+     *
+     * @param playerLists the list of player arrays
+     * @return combined set
+     */
+    public static Set<Player> recombinePlayerLists(List<Player[]> playerLists)
+    {
+        //make a new hashset to put players in
+        Set<Player> players = new HashSet<Player>();
+        for(Player[] comboPlayers : playerLists) {
+            Collections.addAll(players, comboPlayers);
+        }
+        return players;
     }
 }
