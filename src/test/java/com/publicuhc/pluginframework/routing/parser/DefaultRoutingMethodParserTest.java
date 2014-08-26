@@ -388,19 +388,19 @@ public class DefaultRoutingMethodParserTest
         assertThat(params.get("e")).isEqualTo(String.class);
         assertThat(params.get("f")).isEqualTo(Integer.class);
         assertThat(params.get("g")).isEqualTo(Player[].class);
-        assertThat(params.get("arguments")).isEqualTo(String.class);
+        assertThat(params.get("arguments")).isEqualTo(String[].class);
 
         options.nonOptions().withValuesConvertedBy(new OnlinePlayerValueConverter(true));
         params = parser.getParameters(options);
 
         assertThat(params.size()).isEqualTo(7);
-        assertThat(params.get("arguments")).isEqualTo(Player[].class);
+        assertThat(params.get("arguments")).isEqualTo(Player[][].class);
 
         options.nonOptions().ofType(Double.class);
         params = parser.getParameters(options);
 
         assertThat(params.size()).isEqualTo(7);
-        assertThat(params.get("arguments")).isEqualTo(Double.class);
+        assertThat(params.get("arguments")).isEqualTo(Double[].class);
     }
 
     public void testArgumentCheckMethod(OptionSet set, CommandSender sender, Integer integer, Player[] player, Location[] arguments)
