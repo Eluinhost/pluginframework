@@ -308,6 +308,57 @@ public class DefaultRouterTest
         verify(sender, times(1)).sendMessage(contains("Description"));
     }
 
+    @Test
+    public void test_run_subcommand_main_command() throws CommandParseException
+    {
+        SampleSubCommandClass sample = new SampleSubCommandClass();
+        router.registerCommands(sample, false);
+
+        assertThat(router.commands).hasSize(1);
+        assertThat(router.commands.get("testcommand")).hasSize(2);
+
+        CommandSender sender = mock(CommandSender.class);
+        Command command = Bukkit.getPluginCommand("testcommand");
+
+        router.onCommand(sender, command, "", new String[]{""});
+
+        assertThat(sample.testCommandRan).isTrue();
+        assertThat(sample.testSubCommandRan).isFalse();
+    }
+
+    @Test
+    public void test_run_subcommand_sub_command() throws CommandParseException
+    {
+        SampleSubCommandClass sample = new SampleSubCommandClass();
+        router.registerCommands(sample, false);
+
+        assertThat(router.commands).hasSize(1);
+        assertThat(router.commands.get("testcommand")).hasSize(2);
+
+        CommandSender sender = mock(CommandSender.class);
+        Command command = Bukkit.getPluginCommand("testcommand");
+
+        router.onCommand(sender, command, "", new String[]{"subcommand"});
+
+        assertThat(sample.testCommandRan).isFalse();
+        assertThat(sample.testSubCommandRan).isTrue();
+    }
+
+    @Test
+    public void test_run_root_command_with_no_route() throws CommandParseException
+    {
+        SampleMissingRootCommandClass sample = new SampleMissingRootCommandClass();
+        router.registerCommands(sample, false);
+
+        assertThat(router.commands).hasSize(1);
+        assertThat(router.commands.get("testcommand")).hasSize(1);
+
+        CommandSender sender = mock(CommandSender.class);
+        Command command = Bukkit.getPluginCommand("testcommand");
+
+        assertThat(router.onCommand(sender, command, "", new String[]{""})).isFalse();
+    }
+
     public class SampleCommandClass
     {
         public OptionSet lastOptionSet;
@@ -330,6 +381,31 @@ public class DefaultRouterTest
                     .withOptionalArg()
                     .ofType(Integer.class);
         }
+    }
+
+    public class SampleSubCommandClass
+    {
+        public boolean testCommandRan = false;
+        public boolean testSubCommandRan = false;
+
+        @CommandMethod(command = "testcommand")
+        public void testCommand(CommandRequest request)
+        {
+            testCommandRan = true;
+        }
+
+        @CommandMethod(command = "testcommand subcommand")
+        public void testSubCommand(CommandRequest request)
+        {
+            testSubCommandRan = true;
+        }
+    }
+
+    public class SampleMissingRootCommandClass
+    {
+        @CommandMethod(command = "testcommand subcommand")
+        public void testSubCommand(CommandRequest request)
+        {}
     }
 
     public class PermCommandClass
