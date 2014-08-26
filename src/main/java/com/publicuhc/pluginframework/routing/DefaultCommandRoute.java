@@ -27,6 +27,7 @@ import joptsimple.OptionException;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 import joptsimple.OptionSpec;
+import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 
@@ -41,11 +42,13 @@ public class DefaultCommandRoute implements CommandRoute
     private final String commandName;
     private final String permission;
     private final OptionSpec helpSpec;
+    private final Class<? extends CommandSender> allowedSender;
 
-    public DefaultCommandRoute(String commandName, String permission, MethodProxy proxy, OptionParser parser, OptionSpec helpSpec)
+    public DefaultCommandRoute(String commandName, String permission, Class<? extends CommandSender> allowedSender, MethodProxy proxy, OptionParser parser, OptionSpec helpSpec)
     {
         this.helpSpec = helpSpec;
         this.commandName = commandName;
+        this.allowedSender = allowedSender;
         this.proxy = proxy;
         this.parser = parser;
         this.permission = permission.equals(CommandMethod.NO_PERMISSIONS) ? null : permission;
@@ -79,6 +82,10 @@ public class DefaultCommandRoute implements CommandRoute
     @Override
     public void run(Command command, CommandSender sender, String[] args) throws CommandInvocationException
     {
+        if(!allowedSender.isAssignableFrom(sender.getClass())) {
+            sender.sendMessage(ChatColor.RED + "You cannot run that command from here!");
+            return;
+        }
         try {
             OptionSet optionSet = parser.parse(args);
             if(optionSet.has(helpSpec)) {
