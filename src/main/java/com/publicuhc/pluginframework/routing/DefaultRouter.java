@@ -35,9 +35,7 @@ import org.bukkit.command.PluginCommand;
 import org.bukkit.plugin.PluginLogger;
 
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 import java.util.logging.Level;
 
 public class DefaultRouter implements Router
@@ -59,9 +57,9 @@ public class DefaultRouter implements Router
     private final RoutingMethodParser parser;
 
     /**
-     * Stores map of command name -> route for invocation later on
+     * Stores map of command name -> routes for invocation later on
      */
-    protected final HashMap<String, CommandRoute> commands = new HashMap<String, CommandRoute>();
+    protected final HashMap<String, List<CommandRoute>> commands = new HashMap<String, List<CommandRoute>>();
 
     private final PluginLogger logger;
 
@@ -130,7 +128,12 @@ public class DefaultRouter implements Router
                 command.setTabCompleter(this);
 
                 //add to command map
-                commands.put(route.getCommandName(), route);
+                List<CommandRoute> routes = commands.get(route.getCommandName());
+                if(null == routes) {
+                    routes = new ArrayList<CommandRoute>();
+                    commands.put(route.getCommandName(), routes);
+                }
+                routes.add(route);
                 logger.log(Level.INFO, "Loading command '" + route.getCommandName() + "' from: " + method.getName());
             }
             //TODO tab complete
@@ -159,37 +162,68 @@ public class DefaultRouter implements Router
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args)
     {
-        CommandRoute route = commands.get(command.getName());
+        String commandName = command.getName();
+        List<CommandRoute> routes = commands.get(commandName);
+        if(routes == null) {
+            routes = new ArrayList<CommandRoute>();
+            commands.put(commandName, routes);
+        }
 
-        //if we don't know how to handle this command
-        if(null == route) {
-            //get the list of messages set as the defaults for the command
-            List<String> messages = noRouteMessages.get(command.getName());
+        List<String> argsList = Arrays.asList(args);
+        PriorityQueue<CommandRoute> applicable = new PriorityQueue<CommandRoute>(Math.max(routes.size(), 1), new SubcommandLengthComparator());
 
-            //if none are set use the one set in the plugin.yml via bukkit
-            if(null == messages) {
-                return false;
+        for(CommandRoute route : routes) {
+            String[] routeStarts = route.getStartsWith();
+
+            //if no starts with it always applies
+            if(routeStarts.length == 0) {
+                applicable.add(route);
+                continue;
             }
 
-            //send all of the messages and return true to bukkit
-            for(String message : messages) {
-                sender.sendMessage(message);
+            // skip invalid subcommands
+            if(routeStarts.length <= argsList.size()) {
+                List<String> routeStartsList = Arrays.asList(routeStarts);
+                List<String> argsSubList = argsList.subList(0, routeStarts.length);
+                if(routeStartsList.equals(argsSubList)) {
+                    applicable.add(route);
+                }
+            }
+        }
+
+        if(applicable.size() > 0) {
+            //grab the one with the longest argument list (deepest subcommand)
+            CommandRoute route = applicable.peek();
+
+            //check permissions
+            String permission = route.getPermission();
+            if(null != permission && !sender.hasPermission(permission)) {
+                sender.sendMessage(ChatColor.RED + "You do not have permission to run that command. (" + permission + ")");
+                return true;
+            }
+
+            //run the actual command
+            try {
+                route.run(command, sender, args);
+            } catch(CommandInvocationException e) {
+                e.printStackTrace();
             }
             return true;
         }
 
-        //check permissions
-        String permission = route.getPermission();
-        if(null != permission && !sender.hasPermission(permission)) {
-            sender.sendMessage(ChatColor.RED + "You do not have permission to run that command. (" + permission + ")");
-            return true;
+        //we did't know how to handle this command
+
+        //get the list of messages set as the defaults for the command
+        List<String> messages = noRouteMessages.get(command.getName());
+
+        //if none are set use the one set in the plugin.yml via bukkit
+        if(null == messages) {
+            return false;
         }
 
-        //run the actual command
-        try {
-            route.run(command, sender, args);
-        } catch(CommandInvocationException e) {
-            e.printStackTrace();
+        //send all of the messages and return true to bukkit
+        for(String message : messages) {
+            sender.sendMessage(message);
         }
         return true;
     }

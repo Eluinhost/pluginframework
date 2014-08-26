@@ -33,6 +33,7 @@ import org.bukkit.command.CommandSender;
 
 import java.io.IOException;
 import java.io.StringWriter;
+import java.util.Arrays;
 
 public class DefaultCommandRoute implements CommandRoute
 {
@@ -40,6 +41,7 @@ public class DefaultCommandRoute implements CommandRoute
     private final MethodProxy proxy;
     private final OptionParser parser;
     private final String commandName;
+    private final String[] startsWith;
     private final String permission;
     private final OptionSpec helpSpec;
     private final Class<? extends CommandSender>[] allowedSenders;
@@ -47,11 +49,14 @@ public class DefaultCommandRoute implements CommandRoute
     public DefaultCommandRoute(String commandName, String permission, Class<? extends CommandSender>[] allowedSenders, MethodProxy proxy, OptionParser parser, OptionSpec helpSpec)
     {
         this.helpSpec = helpSpec;
-        this.commandName = commandName;
         this.allowedSenders = allowedSenders;
         this.proxy = proxy;
         this.parser = parser;
         this.permission = permission.equals(CommandMethod.NO_PERMISSIONS) ? null : permission;
+
+        String[] commandParts = commandName.split(" ");
+        this.commandName = commandParts[0];
+        this.startsWith = Arrays.copyOfRange(commandParts, 1, commandParts.length);
     }
 
     @Override
@@ -120,6 +125,12 @@ public class DefaultCommandRoute implements CommandRoute
     @Override
     public String getPermission() {
         return permission;
+    }
+
+    @Override
+    public String[] getStartsWith()
+    {
+        return startsWith;
     }
 
     @Override

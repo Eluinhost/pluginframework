@@ -75,7 +75,8 @@ public class DefaultRouterTest
         when(Bukkit.getPluginCommand("testcommand")).thenReturn(command);
     }
 
-    private void verifyRouteCorrect(CommandRoute route) throws Throwable {
+    private void verifyRoutesCorrect(List<CommandRoute> routes) throws Throwable {
+        CommandRoute route = routes.get(0);
         assertThat(route).isNotNull();
         assertThat(route.getCommandName()).isEqualTo("testcommand");
         assertThat(route.getProxy().getInstance()).isInstanceOf(ValidCommandClass.class);
@@ -107,8 +108,8 @@ public class DefaultRouterTest
         router.registerCommands(ValidCommandClass.class);
         assertThat(router.commands).hasSize(1);
 
-        CommandRoute route = router.commands.get("testcommand");
-        verifyRouteCorrect(route);
+        List<CommandRoute> route = router.commands.get("testcommand");
+        verifyRoutesCorrect(route);
 
         //it should create a child injector and use that to create the class
         verify(injector, times(1)).createChildInjector(listOfSize(0));
@@ -126,8 +127,8 @@ public class DefaultRouterTest
         router.registerCommands(ValidCommandClass.class, modules);
         assertThat(router.commands).hasSize(1);
 
-        CommandRoute route = router.commands.get("testcommand");
-        verifyRouteCorrect(route);
+        List<CommandRoute> route = router.commands.get("testcommand");
+        verifyRoutesCorrect(route);
 
         //it should create a child injector with given modules and use that to create the class
         verify(injector, times(1)).createChildInjector(modules);
@@ -143,8 +144,8 @@ public class DefaultRouterTest
         router.registerCommands(new ValidCommandClass(), true);
         assertThat(router.commands).hasSize(1);
 
-        CommandRoute route = router.commands.get("testcommand");
-        verifyRouteCorrect(route);
+        List<CommandRoute> route = router.commands.get("testcommand");
+        verifyRoutesCorrect(route);
 
         //it should create a child injector and use that to inject, not creating a class
         verify(injector, times(1)).createChildInjector(listOfSize(0));
@@ -161,8 +162,8 @@ public class DefaultRouterTest
         router.registerCommands(new ValidCommandClass(), true, modules);
         assertThat(router.commands).hasSize(1);
 
-        CommandRoute route = router.commands.get("testcommand");
-        verifyRouteCorrect(route);
+        List<CommandRoute> route = router.commands.get("testcommand");
+        verifyRoutesCorrect(route);
 
         //it should create a child injector and use that to inject, not creating a class
         verify(injector, times(1)).createChildInjector(modules);
@@ -179,8 +180,8 @@ public class DefaultRouterTest
         router.registerCommands(new ValidCommandClass(), false);
         assertThat(router.commands).hasSize(1);
 
-        CommandRoute route = router.commands.get("testcommand");
-        verifyRouteCorrect(route);
+        List<CommandRoute> route = router.commands.get("testcommand");
+        verifyRoutesCorrect(route);
 
         //it shouldn't do anything with the injector at all
         verifyNoMoreInteractions(injector);
@@ -193,8 +194,8 @@ public class DefaultRouterTest
         router.registerCommands(new ValidCommandClass(), false, listOfModuleMocks());
         assertThat(router.commands).hasSize(1);
 
-        CommandRoute route = router.commands.get("testcommand");
-        verifyRouteCorrect(route);
+        List<CommandRoute> route = router.commands.get("testcommand");
+        verifyRoutesCorrect(route);
 
         //it shouldn't do anything with the injector at all even though we gave it extra modules
         verifyNoMoreInteractions(injector);
@@ -307,6 +308,57 @@ public class DefaultRouterTest
         verify(sender, times(1)).sendMessage(contains("Description"));
     }
 
+    @Test
+    public void test_run_subcommand_main_command() throws CommandParseException
+    {
+        SampleSubCommandClass sample = new SampleSubCommandClass();
+        router.registerCommands(sample, false);
+
+        assertThat(router.commands).hasSize(1);
+        assertThat(router.commands.get("testcommand")).hasSize(2);
+
+        CommandSender sender = mock(CommandSender.class);
+        Command command = Bukkit.getPluginCommand("testcommand");
+
+        router.onCommand(sender, command, "", new String[]{""});
+
+        assertThat(sample.testCommandRan).isTrue();
+        assertThat(sample.testSubCommandRan).isFalse();
+    }
+
+    @Test
+    public void test_run_subcommand_sub_command() throws CommandParseException
+    {
+        SampleSubCommandClass sample = new SampleSubCommandClass();
+        router.registerCommands(sample, false);
+
+        assertThat(router.commands).hasSize(1);
+        assertThat(router.commands.get("testcommand")).hasSize(2);
+
+        CommandSender sender = mock(CommandSender.class);
+        Command command = Bukkit.getPluginCommand("testcommand");
+
+        router.onCommand(sender, command, "", new String[]{"subcommand"});
+
+        assertThat(sample.testCommandRan).isFalse();
+        assertThat(sample.testSubCommandRan).isTrue();
+    }
+
+    @Test
+    public void test_run_root_command_with_no_route() throws CommandParseException
+    {
+        SampleMissingRootCommandClass sample = new SampleMissingRootCommandClass();
+        router.registerCommands(sample, false);
+
+        assertThat(router.commands).hasSize(1);
+        assertThat(router.commands.get("testcommand")).hasSize(1);
+
+        CommandSender sender = mock(CommandSender.class);
+        Command command = Bukkit.getPluginCommand("testcommand");
+
+        assertThat(router.onCommand(sender, command, "", new String[]{""})).isFalse();
+    }
+
     public class SampleCommandClass
     {
         public OptionSet lastOptionSet;
@@ -329,6 +381,31 @@ public class DefaultRouterTest
                     .withOptionalArg()
                     .ofType(Integer.class);
         }
+    }
+
+    public class SampleSubCommandClass
+    {
+        public boolean testCommandRan = false;
+        public boolean testSubCommandRan = false;
+
+        @CommandMethod(command = "testcommand")
+        public void testCommand(CommandRequest request)
+        {
+            testCommandRan = true;
+        }
+
+        @CommandMethod(command = "testcommand subcommand")
+        public void testSubCommand(CommandRequest request)
+        {
+            testSubCommandRan = true;
+        }
+    }
+
+    public class SampleMissingRootCommandClass
+    {
+        @CommandMethod(command = "testcommand subcommand")
+        public void testSubCommand(CommandRequest request)
+        {}
     }
 
     public class PermCommandClass

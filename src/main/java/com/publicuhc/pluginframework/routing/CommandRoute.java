@@ -51,6 +51,11 @@ public interface CommandRoute
     public String getPermission();
 
     /**
+     * @return the arguments to start with
+     */
+    public String[] getStartsWith();
+
+    /**
      * @return a array of classes (or subclasses of) which are allowed to be command senders to trigger the command
      */
     public Class<? extends CommandSender>[] getAllowedSenders();

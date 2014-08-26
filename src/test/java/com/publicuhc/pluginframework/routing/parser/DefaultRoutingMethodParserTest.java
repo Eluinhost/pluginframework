@@ -76,6 +76,12 @@ public class DefaultRoutingMethodParserTest
         return "TEST_STRING";
     }
 
+    @CommandMethod(command = "test subcommand system")
+    public String commandWithStartsWithRestriction(CommandRequest request)
+    {
+        return "TEST_STRING";
+    }
+
     public void commandWithoutAnnotation(CommandRequest request)
     {}
 
@@ -185,7 +191,8 @@ public class DefaultRoutingMethodParserTest
     }
 
     @Test
-    public void test_parse_permissions() throws NoSuchMethodException, CommandParseException {
+    public void test_parse_permissions() throws NoSuchMethodException, CommandParseException
+    {
         Method method = DefaultRoutingMethodParserTest.class.getDeclaredMethod("commandWithAnnotation", CommandRequest.class);
 
         CommandRoute route = parser.parseCommandMethodAnnotation(method, this);
@@ -215,8 +222,18 @@ public class DefaultRoutingMethodParserTest
         assertThat(proxy.invoke(mock(CommandRequest.class))).isEqualTo("TEST_STRING");
         assertThat(route.getOptionDetails().recognizedOptions()).containsKey("?");
         assertThat(route.getOptionDetails().recognizedOptions()).doesNotContainKey("t");
+        assertThat(route.getStartsWith()).isEmpty();
         //noinspection unchecked
         assertThat(route.getAllowedSenders()).containsExactly(CommandSender.class);
+    }
+
+    @Test
+    public void test_starts_with() throws Throwable
+    {
+        Method method = DefaultRoutingMethodParserTest.class.getDeclaredMethod("commandWithStartsWithRestriction", CommandRequest.class);
+        CommandRoute route = parser.parseCommandMethodAnnotation(method, this);
+
+        assertThat(route.getStartsWith()).containsExactly("subcommand", "system");
     }
 
     @Test
