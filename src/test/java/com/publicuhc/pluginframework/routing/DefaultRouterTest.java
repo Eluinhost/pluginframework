@@ -75,7 +75,8 @@ public class DefaultRouterTest
         when(Bukkit.getPluginCommand("testcommand")).thenReturn(command);
     }
 
-    private void verifyRouteCorrect(CommandRoute route) throws Throwable {
+    private void verifyRoutesCorrect(List<CommandRoute> routes) throws Throwable {
+        CommandRoute route = routes.get(0);
         assertThat(route).isNotNull();
         assertThat(route.getCommandName()).isEqualTo("testcommand");
         assertThat(route.getProxy().getInstance()).isInstanceOf(ValidCommandClass.class);
@@ -107,8 +108,8 @@ public class DefaultRouterTest
         router.registerCommands(ValidCommandClass.class);
         assertThat(router.commands).hasSize(1);
 
-        CommandRoute route = router.commands.get("testcommand");
-        verifyRouteCorrect(route);
+        List<CommandRoute> route = router.commands.get("testcommand");
+        verifyRoutesCorrect(route);
 
         //it should create a child injector and use that to create the class
         verify(injector, times(1)).createChildInjector(listOfSize(0));
@@ -126,8 +127,8 @@ public class DefaultRouterTest
         router.registerCommands(ValidCommandClass.class, modules);
         assertThat(router.commands).hasSize(1);
 
-        CommandRoute route = router.commands.get("testcommand");
-        verifyRouteCorrect(route);
+        List<CommandRoute> route = router.commands.get("testcommand");
+        verifyRoutesCorrect(route);
 
         //it should create a child injector with given modules and use that to create the class
         verify(injector, times(1)).createChildInjector(modules);
@@ -143,8 +144,8 @@ public class DefaultRouterTest
         router.registerCommands(new ValidCommandClass(), true);
         assertThat(router.commands).hasSize(1);
 
-        CommandRoute route = router.commands.get("testcommand");
-        verifyRouteCorrect(route);
+        List<CommandRoute> route = router.commands.get("testcommand");
+        verifyRoutesCorrect(route);
 
         //it should create a child injector and use that to inject, not creating a class
         verify(injector, times(1)).createChildInjector(listOfSize(0));
@@ -161,8 +162,8 @@ public class DefaultRouterTest
         router.registerCommands(new ValidCommandClass(), true, modules);
         assertThat(router.commands).hasSize(1);
 
-        CommandRoute route = router.commands.get("testcommand");
-        verifyRouteCorrect(route);
+        List<CommandRoute> route = router.commands.get("testcommand");
+        verifyRoutesCorrect(route);
 
         //it should create a child injector and use that to inject, not creating a class
         verify(injector, times(1)).createChildInjector(modules);
@@ -179,8 +180,8 @@ public class DefaultRouterTest
         router.registerCommands(new ValidCommandClass(), false);
         assertThat(router.commands).hasSize(1);
 
-        CommandRoute route = router.commands.get("testcommand");
-        verifyRouteCorrect(route);
+        List<CommandRoute> route = router.commands.get("testcommand");
+        verifyRoutesCorrect(route);
 
         //it shouldn't do anything with the injector at all
         verifyNoMoreInteractions(injector);
@@ -193,8 +194,8 @@ public class DefaultRouterTest
         router.registerCommands(new ValidCommandClass(), false, listOfModuleMocks());
         assertThat(router.commands).hasSize(1);
 
-        CommandRoute route = router.commands.get("testcommand");
-        verifyRouteCorrect(route);
+        List<CommandRoute> route = router.commands.get("testcommand");
+        verifyRoutesCorrect(route);
 
         //it shouldn't do anything with the injector at all even though we gave it extra modules
         verifyNoMoreInteractions(injector);
