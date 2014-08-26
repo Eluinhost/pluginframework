@@ -172,6 +172,48 @@ public class DefaultCommandRouteTest
     }
 
     @Test
+    public void test_invalid_permission() throws Throwable
+    {
+        Method method = TestClass.class.getMethod("testMethod", CommandRequest.class);
+        MethodProxy proxy = spy(new ReflectionMethodProxy(testObject, method));
+        DefaultCommandRoute route = new DefaultCommandRoute("test", "test.permission", allSenders, proxy, parser, helpSpec);
+
+        Command command = mock(Command.class);
+        CommandSender sender = mock(CommandSender.class);
+        when(sender.hasPermission("test.permission")).thenReturn(false);
+        String[] args = new String[]{};
+
+        try {
+            route.run(command, sender, args);
+        } catch(CommandInvocationException ex) {
+            throw ex.getCause();
+        }
+        verify(proxy, never()).invoke(any(CommandRequest.class));
+        verify(sender).sendMessage(anyString());
+    }
+
+    @Test
+    public void test_valid_permission() throws Throwable
+    {
+        Method method = TestClass.class.getMethod("testMethod", CommandRequest.class);
+        MethodProxy proxy = spy(new ReflectionMethodProxy(testObject, method));
+        DefaultCommandRoute route = new DefaultCommandRoute("test", "test.permission", allSenders, proxy, parser, helpSpec);
+
+        Command command = mock(Command.class);
+        CommandSender sender = mock(CommandSender.class);
+        when(sender.hasPermission("test.permission")).thenReturn(true);
+        String[] args = new String[]{};
+
+        try {
+            route.run(command, sender, args);
+        } catch(CommandInvocationException ex) {
+            throw ex.getCause();
+        }
+        verify(proxy, times(1)).invoke(any(CommandRequest.class));
+        verify(sender, never()).sendMessage(anyString());
+    }
+
+    @Test
     public void test_help_print_invalid_options() throws Throwable
     {
         when(parser.parse(Matchers.<String[]>anyVararg())).thenThrow(mock(OptionException.class));

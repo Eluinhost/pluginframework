@@ -102,6 +102,14 @@ public class DefaultCommandRoute implements CommandRoute
             sender.sendMessage(ChatColor.RED + "You cannot run that command from here!");
             return;
         }
+
+        //check permissions
+        String permission = getPermission();
+        if(null != permission && !sender.hasPermission(permission)) {
+            sender.sendMessage(ChatColor.RED + "You do not have permission to run this command. (" + permission + ")");
+            return;
+        }
+
         try {
             OptionSet optionSet = parser.parse(args);
             if(optionSet.has(helpSpec)) {
