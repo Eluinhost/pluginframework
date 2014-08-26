@@ -25,7 +25,7 @@ import com.google.inject.AbstractModule;
 import com.google.inject.Injector;
 import com.publicuhc.pluginframework.routing.exception.CommandParseException;
 import com.publicuhc.pluginframework.routing.parser.DefaultRoutingMethodParser;
-import joptsimple.OptionParser;
+import joptsimple.OptionDeclarer;
 import joptsimple.OptionSet;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
@@ -317,7 +317,7 @@ public class DefaultRouterTest
             lastOptionSet = request.getOptions();
         }
 
-        public void testCommand(OptionParser parser)
+        public void testCommand(OptionDeclarer parser)
         {
             parser.accepts("a")
                     .withRequiredArg()

@@ -27,6 +27,7 @@ import com.publicuhc.pluginframework.routing.CommandRoute;
 import com.publicuhc.pluginframework.routing.exception.AnnotationMissingException;
 import com.publicuhc.pluginframework.routing.exception.CommandParseException;
 import com.publicuhc.pluginframework.routing.proxy.MethodProxy;
+import joptsimple.OptionDeclarer;
 import joptsimple.OptionException;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
@@ -61,7 +62,7 @@ public class DefaultRoutingMethodParserTest
         return "TEST_STRING";
     }
 
-    public void commandWithAnnotation(OptionParser optionParser)
+    public void commandWithAnnotation(OptionDeclarer optionParser)
     {
         optionParser.accepts("a").withRequiredArg().ofType(Integer.class).required();
         optionParser.accepts("b").withOptionalArg().ofType(String.class);
@@ -76,7 +77,7 @@ public class DefaultRoutingMethodParserTest
         return "TEST_STRING";
     }
 
-    public void commandWithAnnotationOptions(OptionParser optionParser)
+    public void commandWithAnnotationOptions(OptionDeclarer optionParser)
     {
         optionParser.accepts("a").withRequiredArg().required();
         optionParser.accepts("b").withOptionalArg();
@@ -102,7 +103,7 @@ public class DefaultRoutingMethodParserTest
     public void commandWithInvalidOptionsReturn(CommandRequest request)
     {}
 
-    public String[] commandWithInvalidOptionsReturn(OptionParser optionParser)
+    public String[] commandWithInvalidOptionsReturn(OptionDeclarer optionParser)
     {return null;}
 
     @CommandMethod(command = "test", options = true)
@@ -116,7 +117,7 @@ public class DefaultRoutingMethodParserTest
     public void commandWithNonStandardHelp(CommandRequest request)
     {}
 
-    public void commandWithNonStandardHelp(OptionParser optionParser)
+    public void commandWithNonStandardHelp(OptionDeclarer optionParser)
     {}
 
     //helpful methods
