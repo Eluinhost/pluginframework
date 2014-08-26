@@ -53,7 +53,7 @@ public class DefaultRoutingMethodParser extends RoutingMethodParser
         Method optionsMethod = instance.getClass().getMethod(method.getName(), OptionParser.class);
 
         if(!(optionsMethod.getReturnType().equals(Void.TYPE)))
-            throw new NoSuchMethodException("Options method does not return a String[]");
+            throw new NoSuchMethodException("Options method shouldn't return anything");
 
         //make a new parser and invoke the method with it
         OptionParser parser = new OptionParser();
