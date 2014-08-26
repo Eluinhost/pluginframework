@@ -30,6 +30,7 @@ import com.publicuhc.pluginframework.routing.exception.CommandParseException;
 import com.publicuhc.pluginframework.routing.help.BukkitHelpFormatter;
 import com.publicuhc.pluginframework.routing.proxy.MethodProxy;
 import com.publicuhc.pluginframework.routing.proxy.ReflectionMethodProxy;
+import joptsimple.OptionDeclarer;
 import joptsimple.OptionParser;
 import joptsimple.OptionSpec;
 
@@ -50,7 +51,7 @@ public class DefaultRoutingMethodParser extends RoutingMethodParser
      */
     protected OptionParser getOptionsForMethod(Method method, Object instance) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException
     {
-        Method optionsMethod = instance.getClass().getMethod(method.getName(), OptionParser.class);
+        Method optionsMethod = instance.getClass().getMethod(method.getName(), OptionDeclarer.class);
 
         if(!(optionsMethod.getReturnType().equals(Void.TYPE)))
             throw new NoSuchMethodException("Options method shouldn't return anything");
