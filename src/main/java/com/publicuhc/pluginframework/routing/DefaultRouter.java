@@ -162,65 +162,70 @@ public class DefaultRouter implements Router
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args)
     {
-        List<CommandRoute> routes = commands.get(command.getName());
+        String commandName = command.getName();
+        List<CommandRoute> routes = commands.get(commandName);
+        if(routes == null) {
+            routes = new ArrayList<CommandRoute>();
+            commands.put(commandName, routes);
+        }
 
-        int appliedRoutes = 0;
+        List<String> argsList = Arrays.asList(args);
+        PriorityQueue<CommandRoute> applicable = new PriorityQueue<CommandRoute>(Math.max(routes.size(), 1), new SubcommandLengthComparator());
 
-        if(routes != null) {
-            List<String> argsList = Arrays.asList(args);
-            for(CommandRoute route : routes) {
-                //skip invalid subcommands
-                String[] routeStarts = route.getStartsWith();
-                if(routeStarts.length != 0 && routeStarts.length <= argsList.size()) {
-                    if(routeStarts.length > argsList.size()) {
-                        continue;
-                    }
-                    List<String> routeStartsList = Arrays.asList(routeStarts);
-                    List<String> argsSubList = argsList.subList(0, routeStarts.length);
-                    if(!routeStartsList.equals(argsSubList)) {
-                        continue;
-                    }
+        for(CommandRoute route : routes) {
+            String[] routeStarts = route.getStartsWith();
+
+            //if no starts with it always applies
+            if(routeStarts.length == 0) {
+                applicable.add(route);
+                continue;
+            }
+
+            // skip invalid subcommands
+            if(routeStarts.length <= argsList.size()) {
+                List<String> routeStartsList = Arrays.asList(routeStarts);
+                List<String> argsSubList = argsList.subList(0, routeStarts.length);
+                if(routeStartsList.equals(argsSubList)) {
+                    applicable.add(route);
                 }
-
-                //valid route to apply
-                appliedRoutes++;
-
-                //check permissions
-                String permission = route.getPermission();
-                if(null != permission && !sender.hasPermission(permission)) {
-                    sender.sendMessage(ChatColor.RED + "You do not have permission to run that command. (" + permission + ")");
-                    return true;
-                }
-
-                //run the actual command
-                try {
-                    route.run(command, sender, args);
-                } catch(CommandInvocationException e) {
-                    e.printStackTrace();
-                }
-                return true;
             }
         }
 
-        //if we did't know how to handle this command
-        if(appliedRoutes == 0) {
-            //get the list of messages set as the defaults for the command
-            List<String> messages = noRouteMessages.get(command.getName());
+        if(applicable.size() > 0) {
+            //grab the one with the longest argument list (deepest subcommand)
+            CommandRoute route = applicable.peek();
 
-            //if none are set use the one set in the plugin.yml via bukkit
-            if(null == messages) {
-                return false;
+            //check permissions
+            String permission = route.getPermission();
+            if(null != permission && !sender.hasPermission(permission)) {
+                sender.sendMessage(ChatColor.RED + "You do not have permission to run that command. (" + permission + ")");
+                return true;
             }
 
-            //send all of the messages and return true to bukkit
-            for(String message : messages) {
-                sender.sendMessage(message);
+            //run the actual command
+            try {
+                route.run(command, sender, args);
+            } catch(CommandInvocationException e) {
+                e.printStackTrace();
             }
             return true;
         }
 
-        //return false for default message
-        return false;
+        //we did't know how to handle this command
+
+        //get the list of messages set as the defaults for the command
+        List<String> messages = noRouteMessages.get(command.getName());
+
+        //if none are set use the one set in the plugin.yml via bukkit
+        if(null == messages) {
+            return false;
+        }
+
+        //send all of the messages and return true to bukkit
+        for(String message : messages) {
+            sender.sendMessage(message);
+        }
+        return true;
     }
 
     @Override
