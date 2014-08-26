@@ -121,4 +121,10 @@ public class DefaultCommandRoute implements CommandRoute
     public String getPermission() {
         return permission;
     }
+
+    @Override
+    public Class<? extends CommandSender>[] getAllowedSenders()
+    {
+        return allowedSenders;
+    }
 }
