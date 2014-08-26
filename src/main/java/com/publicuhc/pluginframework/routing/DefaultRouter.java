@@ -35,9 +35,7 @@ import org.bukkit.command.PluginCommand;
 import org.bukkit.plugin.PluginLogger;
 
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 import java.util.logging.Level;
 
 public class DefaultRouter implements Router
@@ -59,9 +57,9 @@ public class DefaultRouter implements Router
     private final RoutingMethodParser parser;
 
     /**
-     * Stores map of command name -> route for invocation later on
+     * Stores map of command name -> routes for invocation later on
      */
-    protected final HashMap<String, CommandRoute> commands = new HashMap<String, CommandRoute>();
+    protected final HashMap<String, List<CommandRoute>> commands = new HashMap<String, List<CommandRoute>>();
 
     private final PluginLogger logger;
 
@@ -130,7 +128,12 @@ public class DefaultRouter implements Router
                 command.setTabCompleter(this);
 
                 //add to command map
-                commands.put(route.getCommandName(), route);
+                List<CommandRoute> routes = commands.get(route.getCommandName());
+                if(null == routes) {
+                    routes = new ArrayList<CommandRoute>();
+                    commands.put(route.getCommandName(), routes);
+                }
+                routes.add(route);
                 logger.log(Level.INFO, "Loading command '" + route.getCommandName() + "' from: " + method.getName());
             }
             //TODO tab complete
@@ -159,10 +162,46 @@ public class DefaultRouter implements Router
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args)
     {
-        CommandRoute route = commands.get(command.getName());
+        List<CommandRoute> routes = commands.get(command.getName());
 
-        //if we don't know how to handle this command
-        if(null == route) {
+        int appliedRoutes = 0;
+
+        List<String> argsList = Arrays.asList(args);
+        for(CommandRoute route : routes) {
+            //skip invalid subcommands
+            String[] routeStarts = route.getStartsWith();
+            if(routeStarts.length != 0 && routeStarts.length <= argsList.size()) {
+                if(routeStarts.length > argsList.size()) {
+                    continue;
+                }
+                List<String> routeStartsList = Arrays.asList(routeStarts);
+                List<String> argsSubList = argsList.subList(0, routeStarts.length);
+                if(!routeStartsList.equals(argsSubList)) {
+                    continue;
+                }
+            }
+
+            //valid route to apply
+            appliedRoutes++;
+
+            //check permissions
+            String permission = route.getPermission();
+            if(null != permission && !sender.hasPermission(permission)) {
+                sender.sendMessage(ChatColor.RED + "You do not have permission to run that command. (" + permission + ")");
+                return true;
+            }
+
+            //run the actual command
+            try {
+                route.run(command, sender, args);
+            } catch(CommandInvocationException e) {
+                e.printStackTrace();
+            }
+            return true;
+        }
+
+        //if we did't know how to handle this command
+        if(appliedRoutes == 0) {
             //get the list of messages set as the defaults for the command
             List<String> messages = noRouteMessages.get(command.getName());
 
@@ -178,20 +217,8 @@ public class DefaultRouter implements Router
             return true;
         }
 
-        //check permissions
-        String permission = route.getPermission();
-        if(null != permission && !sender.hasPermission(permission)) {
-            sender.sendMessage(ChatColor.RED + "You do not have permission to run that command. (" + permission + ")");
-            return true;
-        }
-
-        //run the actual command
-        try {
-            route.run(command, sender, args);
-        } catch(CommandInvocationException e) {
-            e.printStackTrace();
-        }
-        return true;
+        //return false for default message
+        return false;
     }
 
     @Override
