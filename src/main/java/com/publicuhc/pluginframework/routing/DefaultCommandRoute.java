@@ -27,6 +27,7 @@ import joptsimple.OptionException;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 import joptsimple.OptionSpec;
+import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 
@@ -41,11 +42,13 @@ public class DefaultCommandRoute implements CommandRoute
     private final String commandName;
     private final String permission;
     private final OptionSpec helpSpec;
+    private final Class<? extends CommandSender>[] allowedSenders;
 
-    public DefaultCommandRoute(String commandName, String permission, MethodProxy proxy, OptionParser parser, OptionSpec helpSpec)
+    public DefaultCommandRoute(String commandName, String permission, Class<? extends CommandSender>[] allowedSenders, MethodProxy proxy, OptionParser parser, OptionSpec helpSpec)
     {
         this.helpSpec = helpSpec;
         this.commandName = commandName;
+        this.allowedSenders = allowedSenders;
         this.proxy = proxy;
         this.parser = parser;
         this.permission = permission.equals(CommandMethod.NO_PERMISSIONS) ? null : permission;
@@ -76,9 +79,24 @@ public class DefaultCommandRoute implements CommandRoute
         }
     }
 
+    private boolean isSenderTypeAllowed(CommandSender sender)
+    {
+        Class<? extends CommandSender> senderClass = sender.getClass();
+        for(Class<? extends CommandSender> senderType : allowedSenders) {
+            if(senderType.isAssignableFrom(senderClass)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     @Override
     public void run(Command command, CommandSender sender, String[] args) throws CommandInvocationException
     {
+        if(!isSenderTypeAllowed(sender)) {
+            sender.sendMessage(ChatColor.RED + "You cannot run that command from here!");
+            return;
+        }
         try {
             OptionSet optionSet = parser.parse(args);
             if(optionSet.has(helpSpec)) {
@@ -102,5 +120,11 @@ public class DefaultCommandRoute implements CommandRoute
     @Override
     public String getPermission() {
         return permission;
+    }
+
+    @Override
+    public Class<? extends CommandSender>[] getAllowedSenders()
+    {
+        return allowedSenders;
     }
 }

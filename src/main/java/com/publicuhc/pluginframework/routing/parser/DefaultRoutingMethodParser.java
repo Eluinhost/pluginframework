@@ -99,7 +99,7 @@ public class DefaultRoutingMethodParser extends RoutingMethodParser
 
         MethodProxy proxy = new ReflectionMethodProxy(instance, method);
 
-        return new DefaultCommandRoute(annotation.command(), annotation.permission(), proxy, optionParser, helpSpec);
+        return new DefaultCommandRoute(annotation.command(), annotation.permission(), annotation.allowedSenders(), proxy, optionParser, helpSpec);
     }
 
     @Override

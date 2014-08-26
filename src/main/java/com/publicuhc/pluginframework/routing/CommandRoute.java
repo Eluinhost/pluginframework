@@ -51,6 +51,11 @@ public interface CommandRoute
     public String getPermission();
 
     /**
+     * @return a array of classes (or subclasses of) which are allowed to be command senders to trigger the command
+     */
+    public Class<? extends CommandSender>[] getAllowedSenders();
+
+    /**
      * Run this command route
      *
      * @param args the args for the method

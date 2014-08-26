@@ -21,6 +21,8 @@
 
 package com.publicuhc.pluginframework.routing;
 
+import org.bukkit.command.CommandSender;
+
 import java.lang.annotation.*;
 
 @Retention(RetentionPolicy.RUNTIME)
@@ -38,4 +40,6 @@ public @interface CommandMethod
     public String permission() default NO_PERMISSIONS;
 
     public String helpOption() default DEFAULT_HELP;
+
+    public Class<? extends CommandSender>[] allowedSenders() default CommandSender.class;
 }
