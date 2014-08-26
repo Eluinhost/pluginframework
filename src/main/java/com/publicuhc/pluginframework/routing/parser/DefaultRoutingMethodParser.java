@@ -34,6 +34,7 @@ import com.publicuhc.pluginframework.routing.proxy.ReflectionMethodProxy;
 import joptsimple.*;
 import org.bukkit.command.CommandSender;
 
+import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -91,7 +92,8 @@ public class DefaultRoutingMethodParser extends RoutingMethodParser
                 try {
                     ValueConverter converter = (ValueConverter) converterFieldNonOptions.get(nonOptionsSpec);
                     Class convertClass = converter == null ? String.class : converter.valueType();
-                    parameterTypes.put("arguments", convertClass);
+                    Class arrayedClass = Array.newInstance(convertClass, 0).getClass();
+                    parameterTypes.put("arguments", arrayedClass);
                 } catch(IllegalAccessException e) {
                     e.printStackTrace();
                 }
