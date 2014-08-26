@@ -42,13 +42,13 @@ public class DefaultCommandRoute implements CommandRoute
     private final String commandName;
     private final String permission;
     private final OptionSpec helpSpec;
-    private final Class<? extends CommandSender> allowedSender;
+    private final Class<? extends CommandSender>[] allowedSenders;
 
-    public DefaultCommandRoute(String commandName, String permission, Class<? extends CommandSender> allowedSender, MethodProxy proxy, OptionParser parser, OptionSpec helpSpec)
+    public DefaultCommandRoute(String commandName, String permission, Class<? extends CommandSender>[] allowedSenders, MethodProxy proxy, OptionParser parser, OptionSpec helpSpec)
     {
         this.helpSpec = helpSpec;
         this.commandName = commandName;
-        this.allowedSender = allowedSender;
+        this.allowedSenders = allowedSenders;
         this.proxy = proxy;
         this.parser = parser;
         this.permission = permission.equals(CommandMethod.NO_PERMISSIONS) ? null : permission;
@@ -79,10 +79,21 @@ public class DefaultCommandRoute implements CommandRoute
         }
     }
 
+    private boolean isSenderTypeAllowed(CommandSender sender)
+    {
+        Class<? extends CommandSender> senderClass = sender.getClass();
+        for(Class<? extends CommandSender> senderType : allowedSenders) {
+            if(senderType.isAssignableFrom(senderClass)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     @Override
     public void run(Command command, CommandSender sender, String[] args) throws CommandInvocationException
     {
-        if(!allowedSender.isAssignableFrom(sender.getClass())) {
+        if(!isSenderTypeAllowed(sender)) {
             sender.sendMessage(ChatColor.RED + "You cannot run that command from here!");
             return;
         }
