@@ -166,38 +166,40 @@ public class DefaultRouter implements Router
 
         int appliedRoutes = 0;
 
-        List<String> argsList = Arrays.asList(args);
-        for(CommandRoute route : routes) {
-            //skip invalid subcommands
-            String[] routeStarts = route.getStartsWith();
-            if(routeStarts.length != 0 && routeStarts.length <= argsList.size()) {
-                if(routeStarts.length > argsList.size()) {
-                    continue;
+        if(routes != null) {
+            List<String> argsList = Arrays.asList(args);
+            for(CommandRoute route : routes) {
+                //skip invalid subcommands
+                String[] routeStarts = route.getStartsWith();
+                if(routeStarts.length != 0 && routeStarts.length <= argsList.size()) {
+                    if(routeStarts.length > argsList.size()) {
+                        continue;
+                    }
+                    List<String> routeStartsList = Arrays.asList(routeStarts);
+                    List<String> argsSubList = argsList.subList(0, routeStarts.length);
+                    if(!routeStartsList.equals(argsSubList)) {
+                        continue;
+                    }
                 }
-                List<String> routeStartsList = Arrays.asList(routeStarts);
-                List<String> argsSubList = argsList.subList(0, routeStarts.length);
-                if(!routeStartsList.equals(argsSubList)) {
-                    continue;
+
+                //valid route to apply
+                appliedRoutes++;
+
+                //check permissions
+                String permission = route.getPermission();
+                if(null != permission && !sender.hasPermission(permission)) {
+                    sender.sendMessage(ChatColor.RED + "You do not have permission to run that command. (" + permission + ")");
+                    return true;
                 }
-            }
 
-            //valid route to apply
-            appliedRoutes++;
-
-            //check permissions
-            String permission = route.getPermission();
-            if(null != permission && !sender.hasPermission(permission)) {
-                sender.sendMessage(ChatColor.RED + "You do not have permission to run that command. (" + permission + ")");
+                //run the actual command
+                try {
+                    route.run(command, sender, args);
+                } catch(CommandInvocationException e) {
+                    e.printStackTrace();
+                }
                 return true;
             }
-
-            //run the actual command
-            try {
-                route.run(command, sender, args);
-            } catch(CommandInvocationException e) {
-                e.printStackTrace();
-            }
-            return true;
         }
 
         //if we did't know how to handle this command
