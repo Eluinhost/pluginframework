@@ -30,15 +30,71 @@ import com.publicuhc.pluginframework.routing.exception.CommandParseException;
 import com.publicuhc.pluginframework.routing.help.BukkitHelpFormatter;
 import com.publicuhc.pluginframework.routing.proxy.MethodProxy;
 import com.publicuhc.pluginframework.routing.proxy.ReflectionMethodProxy;
-import joptsimple.OptionDeclarer;
-import joptsimple.OptionParser;
-import joptsimple.OptionSpec;
+import joptsimple.*;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.HashMap;
+import java.util.Map;
 
 public class DefaultRoutingMethodParser extends RoutingMethodParser
 {
+
+    private final Field converterFieldArguments;
+    private final Field converterFieldNonOptions;
+
+    public DefaultRoutingMethodParser()
+    {
+        Field argConverterField = null;
+        Field optionsConverterField = null;
+        try {
+            //get the converter field and allow it to be accessed via reflection
+            argConverterField = ArgumentAcceptingOptionSpec.class.getDeclaredField("converter");
+            argConverterField.setAccessible(true);
+
+            optionsConverterField = NonOptionArgumentSpec.class.getDeclaredField("converter");
+            optionsConverterField.setAccessible(true);
+        } catch(NoSuchFieldException e) {
+            e.printStackTrace();
+        }
+
+        this.converterFieldArguments = argConverterField;
+        this.converterFieldNonOptions = optionsConverterField;
+    }
+
+    protected Map<String, Class> getParameters(OptionParser parser)
+    {
+        Map<String, Class> parameterTypes = new HashMap<String, Class>();
+
+        for(Map.Entry<String, OptionSpec<?>> option : parser.recognizedOptions().entrySet()) {
+            OptionSpec optionSpec = option.getValue();
+            if(optionSpec instanceof NonOptionArgumentSpec) {
+                NonOptionArgumentSpec nonOptionsSpec = (NonOptionArgumentSpec) optionSpec;
+                try {
+                    ValueConverter converter = (ValueConverter) converterFieldNonOptions.get(nonOptionsSpec);
+                    Class convertClass = converter == null ? String.class : converter.valueType();
+                    parameterTypes.put("arguments", convertClass);
+                } catch(IllegalAccessException e) {
+                    e.printStackTrace();
+                }
+            }
+            if(optionSpec instanceof ArgumentAcceptingOptionSpec) {
+                ArgumentAcceptingOptionSpec argspec = (ArgumentAcceptingOptionSpec) optionSpec;
+                if(argspec.acceptsArguments()) {
+                    try {
+                        ValueConverter converter = (ValueConverter) converterFieldArguments.get(argspec);
+                        Class convertClass = converter == null ? String.class : converter.valueType();
+                        parameterTypes.put(option.getKey(), convertClass);
+                    } catch(IllegalAccessException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }
+
+        return parameterTypes;
+    }
 
     /**
      * Returns an OptionParser after it has been pased through a method
@@ -78,9 +134,6 @@ public class DefaultRoutingMethodParser extends RoutingMethodParser
         if(null == annotation)
             throw new AnnotationMissingException(method, CommandMethod.class);
 
-        if(!areCommandMethodParametersCorrect(method))
-            throw new CommandParseException("Invalid command method parameters at " + method.getName());
-
         OptionParser optionParser;
 
         //get our option parser for this command
@@ -93,6 +146,9 @@ public class DefaultRoutingMethodParser extends RoutingMethodParser
         } else {
             optionParser = new OptionParser();
         }
+
+        if(!areCommandMethodParametersCorrect(method))
+            throw new CommandParseException("Invalid command method parameters at " + method.getName());
 
         optionParser.formatHelpWith(new BukkitHelpFormatter());
         OptionSpec helpSpec = optionParser.accepts(annotation.helpOption(), "Shows help").forHelp();

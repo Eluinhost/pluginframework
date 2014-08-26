@@ -24,6 +24,7 @@ package com.publicuhc.pluginframework.routing.parser;
 import com.publicuhc.pluginframework.routing.CommandMethod;
 import com.publicuhc.pluginframework.routing.CommandRequest;
 import com.publicuhc.pluginframework.routing.CommandRoute;
+import com.publicuhc.pluginframework.routing.converters.OnlinePlayerValueConverter;
 import com.publicuhc.pluginframework.routing.exception.AnnotationMissingException;
 import com.publicuhc.pluginframework.routing.exception.CommandParseException;
 import com.publicuhc.pluginframework.routing.proxy.MethodProxy;
@@ -42,6 +43,7 @@ import org.powermock.modules.junit4.PowerMockRunner;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -95,6 +97,7 @@ public class DefaultRoutingMethodParserTest
     {
         optionParser.accepts("a").withRequiredArg().required();
         optionParser.accepts("b").withOptionalArg();
+        optionParser.nonOptions().withValuesConvertedBy(new OnlinePlayerValueConverter(true));
     }
 
     @CommandMethod(command = "test", options = true)
@@ -358,5 +361,44 @@ public class DefaultRoutingMethodParserTest
 
         assertThat(route.getOptionDetails().recognizedOptions()).containsKey("t");
         assertThat(route.getOptionDetails().recognizedOptions()).doesNotContainKey("?");
+    }
+
+    @Test
+    public void test_fetch_parameters_from_parser()
+    {
+        OptionParser options = new OptionParser();
+        options.accepts("a", "description"); //no arg shouldn't show up
+        options.accepts("b").withOptionalArg(); //should show up as string
+        options.accepts("c").withOptionalArg().ofType(Integer.class); //should show up as Integer
+        options.accepts("d").withOptionalArg().withValuesConvertedBy(new OnlinePlayerValueConverter(true)); //should show up as Player
+        options.accepts("e").withRequiredArg(); //should show up as string
+        options.accepts("f").withRequiredArg().ofType(Integer.class); //should show up as Integer
+        options.accepts("g").withRequiredArg().withValuesConvertedBy(new OnlinePlayerValueConverter(true)); //should show up as Player
+
+        Map<String, Class> params = parser.getParameters(options);
+
+        assertThat(params.size()).isEqualTo(7);
+        assertThat(params.get("a")).isNull();
+        assertThat(params.get("b")).isEqualTo(String.class);
+        assertThat(params.get("c")).isEqualTo(Integer.class);
+        assertThat(params.get("d")).isEqualTo(Player[].class);
+        assertThat(params.get("e")).isEqualTo(String.class);
+        assertThat(params.get("f")).isEqualTo(Integer.class);
+        assertThat(params.get("g")).isEqualTo(Player[].class);
+        assertThat(params.get("arguments")).isEqualTo(String.class);
+
+        options.nonOptions().withValuesConvertedBy(new OnlinePlayerValueConverter(true));
+        params = parser.getParameters(options);
+
+        assertThat(params.size()).isEqualTo(7);
+        assertThat(params.get("arguments")).isEqualTo(Player[].class);
+
+        options.nonOptions().ofType(Double.class);
+        params = parser.getParameters(options);
+
+        assertThat(params.size()).isEqualTo(7);
+        assertThat(params.get("arguments")).isEqualTo(Double.class);
+
+
     }
 }
