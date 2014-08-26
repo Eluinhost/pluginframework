@@ -406,6 +406,26 @@ public class DefaultRoutingMethodParserTest
     public void testArgumentCheckMethod(OptionSet set, CommandSender sender, Integer integer, Player[] player, Location[] arguments)
     {}
 
+    public void testArgumentCheckMethodMissingDefault(Integer integer, Player[] player, Location[] arguments)
+    {}
+
+    @Test(expected = CommandParseException.class)
+    public void test_argument_missing_defaults() throws NoSuchMethodException, CommandParseException
+    {
+        Method method = getClass().getDeclaredMethod("testArgumentCheckMethodMissingDefault", Integer.class, Player[].class, Location[].class);
+        OptionParser p = new OptionParser();
+        p.accepts("p")
+                .withRequiredArg()
+                .withValuesConvertedBy(new OnlinePlayerValueConverter(true));
+        p.accepts("radius")
+                .withOptionalArg()
+                .ofType(Integer.class);
+        p.accepts("t");
+        p.nonOptions().withValuesConvertedBy(new LocationValueConverter());
+
+        parser.getParameterPositions(method, p);
+    }
+
     @Test
     public void test_argument_posistions() throws NoSuchMethodException, CommandParseException
     {
