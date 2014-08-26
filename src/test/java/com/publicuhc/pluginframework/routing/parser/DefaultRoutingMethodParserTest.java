@@ -99,7 +99,6 @@ public class DefaultRoutingMethodParserTest
     {
         optionParser.accepts("a").withRequiredArg().required();
         optionParser.accepts("b").withOptionalArg();
-        optionParser.nonOptions().withValuesConvertedBy(new OnlinePlayerValueConverter(true));
     }
 
     @CommandMethod(command = "test", options = true)
