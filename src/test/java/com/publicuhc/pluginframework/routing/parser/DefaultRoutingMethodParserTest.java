@@ -32,6 +32,8 @@ import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 import junit.framework.AssertionFailedError;
 import org.bukkit.block.CommandBlock;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -65,6 +67,12 @@ public class DefaultRoutingMethodParserTest
     {
         optionParser.accepts("a").withRequiredArg().ofType(Integer.class).required();
         optionParser.accepts("b").withOptionalArg().ofType(String.class);
+    }
+
+    @CommandMethod(command = "test", allowedSenders = Player.class)
+    public String commandWithSenderRestriction(CommandRequest request)
+    {
+        return "TEST_STRING";
     }
 
     public void commandWithoutAnnotation(CommandRequest request)
@@ -206,6 +214,25 @@ public class DefaultRoutingMethodParserTest
         assertThat(proxy.invoke(mock(CommandRequest.class))).isEqualTo("TEST_STRING");
         assertThat(route.getOptionDetails().recognizedOptions()).containsKey("?");
         assertThat(route.getOptionDetails().recognizedOptions()).doesNotContainKey("t");
+        //noinspection unchecked
+        assertThat(route.getAllowedSenders()).containsExactly(CommandSender.class);
+    }
+
+    @Test
+    public void test_parse_method_chosen_senders() throws Throwable
+    {
+        Method method = DefaultRoutingMethodParserTest.class.getDeclaredMethod("commandWithSenderRestriction", CommandRequest.class);
+        CommandRoute route = parser.parseCommandMethodAnnotation(method, this);
+
+        assertThat(route.getCommandName()).isEqualTo("test");
+
+        MethodProxy proxy = route.getProxy();
+        assertThat(proxy.getInstance()).isSameAs(this);
+        assertThat(proxy.invoke(mock(CommandRequest.class))).isEqualTo("TEST_STRING");
+        assertThat(route.getOptionDetails().recognizedOptions()).containsKey("?");
+        assertThat(route.getOptionDetails().recognizedOptions()).doesNotContainKey("t");
+        //noinspection unchecked
+        assertThat(route.getAllowedSenders()).containsExactly(Player.class);
     }
 
     @Test
