@@ -24,6 +24,7 @@ package com.publicuhc.pluginframework.routing.parser;
 import com.publicuhc.pluginframework.routing.CommandMethod;
 import com.publicuhc.pluginframework.routing.CommandRequest;
 import com.publicuhc.pluginframework.routing.CommandRoute;
+import com.publicuhc.pluginframework.routing.converters.LocationValueConverter;
 import com.publicuhc.pluginframework.routing.converters.OnlinePlayerValueConverter;
 import com.publicuhc.pluginframework.routing.exception.AnnotationMissingException;
 import com.publicuhc.pluginframework.routing.exception.CommandParseException;
@@ -33,6 +34,7 @@ import joptsimple.OptionException;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 import junit.framework.AssertionFailedError;
+import org.bukkit.Location;
 import org.bukkit.block.CommandBlock;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -355,7 +357,8 @@ public class DefaultRoutingMethodParserTest
     }
 
     @Test
-    public void test_parse_command_method_non_standard_help() throws NoSuchMethodException, CommandParseException {
+    public void test_parse_command_method_non_standard_help() throws NoSuchMethodException, CommandParseException
+    {
         Method method = DefaultRoutingMethodParserTest.class.getDeclaredMethod("commandWithNonStandardHelp", CommandRequest.class);
         CommandRoute route = parser.parseCommandMethodAnnotation(method, this);
 
@@ -398,7 +401,60 @@ public class DefaultRoutingMethodParserTest
 
         assertThat(params.size()).isEqualTo(7);
         assertThat(params.get("arguments")).isEqualTo(Double.class);
+    }
 
+    public void testArgumentCheckMethod(OptionSet set, CommandSender sender, Integer integer, Player[] player, Location[] arguments)
+    {}
 
+    @Test
+    public void test_argument_posistions() throws NoSuchMethodException, CommandParseException
+    {
+        Method method = getClass().getDeclaredMethod("testArgumentCheckMethod", OptionSet.class, CommandSender.class, Integer.class, Player[].class, Location[].class);
+        OptionParser p = new OptionParser();
+        p.accepts("p")
+                .withRequiredArg()
+                .withValuesConvertedBy(new OnlinePlayerValueConverter(true));
+        p.accepts("radius")
+                .withOptionalArg()
+                .ofType(Integer.class);
+        p.accepts("t");
+        p.nonOptions().withValuesConvertedBy(new LocationValueConverter());
+
+        parser.getParameterPositions(method, p);
+    }
+
+    @Test(expected = CommandParseException.class)
+    public void test_argument_posistions_too_many() throws NoSuchMethodException, CommandParseException
+    {
+        Method method = getClass().getDeclaredMethod("testArgumentCheckMethod", OptionSet.class, CommandSender.class, Integer.class, Player[].class, Location[].class);
+        OptionParser p = new OptionParser();
+        p.accepts("p")
+                .withRequiredArg()
+                .withValuesConvertedBy(new OnlinePlayerValueConverter(true));
+        //don't add the radius here, the signature should fail because it has an extra Integer
+        p.accepts("t");
+        p.nonOptions().withValuesConvertedBy(new LocationValueConverter());
+
+        parser.getParameterPositions(method, p);
+    }
+
+    @Test(expected = CommandParseException.class)
+    public void test_argument_posistions_not_enough() throws NoSuchMethodException, CommandParseException
+    {
+        Method method = getClass().getDeclaredMethod("testArgumentCheckMethod", OptionSet.class, CommandSender.class, Integer.class, Player[].class, Location[].class);
+        OptionParser p = new OptionParser();
+        p.accepts("p")
+                .withRequiredArg()
+                .withValuesConvertedBy(new OnlinePlayerValueConverter(true));
+        p.accepts("radius")
+                .withOptionalArg()
+                .ofType(Integer.class);
+        p.accepts("minradius")
+                .withOptionalArg()
+                .ofType(Integer.class); //adding this means the signature doesn't have enough integers in it now
+        p.accepts("t");
+        p.nonOptions().withValuesConvertedBy(new LocationValueConverter());
+
+        parser.getParameterPositions(method, p);
     }
 }
