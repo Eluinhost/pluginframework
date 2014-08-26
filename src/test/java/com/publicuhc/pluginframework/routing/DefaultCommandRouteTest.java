@@ -31,6 +31,8 @@ import joptsimple.OptionSpec;
 import junit.framework.AssertionFailedError;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.ConsoleCommandSender;
+import org.bukkit.entity.Player;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -57,6 +59,11 @@ public class DefaultCommandRouteTest
     private OptionSet set;
     private TestClass testObject;
 
+    @SuppressWarnings("unchecked")
+    private Class<? extends CommandSender>[] allSenders = (Class<? extends CommandSender>[]) new Class<?>[]{CommandSender.class};
+    @SuppressWarnings("unchecked")
+    private Class<? extends CommandSender>[] playerOrConsoleSender = (Class<? extends CommandSender>[]) new Class<?>[]{Player.class, ConsoleCommandSender.class};
+
     @Before
     public void onStartup() throws NoSuchMethodException
     {
@@ -76,10 +83,10 @@ public class DefaultCommandRouteTest
         Method method = TestClass.class.getMethod("testMethod", CommandRequest.class);
         MethodProxy proxy = spy(new ReflectionMethodProxy(testObject, method));
 
-        DefaultCommandRoute route = new DefaultCommandRoute("test", CommandMethod.NO_PERMISSIONS, proxy, parser, helpSpec);
+        DefaultCommandRoute route = new DefaultCommandRoute("test", CommandMethod.NO_PERMISSIONS, allSenders, proxy, parser, helpSpec);
         assertThat(route.getPermission()).isNull();
 
-        route = new DefaultCommandRoute("test", "TEST.PERMISSION", proxy, parser, helpSpec);
+        route = new DefaultCommandRoute("test", "TEST.PERMISSION", allSenders, proxy, parser, helpSpec);
         assertThat(route.getPermission()).isEqualTo("TEST.PERMISSION");
     }
 
@@ -88,7 +95,7 @@ public class DefaultCommandRouteTest
     {
         Method method = TestClass.class.getMethod("testMethod", CommandRequest.class);
         MethodProxy proxy = spy(new ReflectionMethodProxy(testObject, method));
-        DefaultCommandRoute route = new DefaultCommandRoute("test", CommandMethod.NO_PERMISSIONS, proxy, parser, helpSpec);
+        DefaultCommandRoute route = new DefaultCommandRoute("test", CommandMethod.NO_PERMISSIONS, allSenders, proxy, parser, helpSpec);
 
         Command command = mock(Command.class);
         CommandSender sender = mock(CommandSender.class);
@@ -112,7 +119,7 @@ public class DefaultCommandRouteTest
 
         Method method = TestClass.class.getMethod("testMethod", CommandRequest.class);
         MethodProxy proxy = spy(new ReflectionMethodProxy(testObject, method));
-        DefaultCommandRoute route = new DefaultCommandRoute("test", CommandMethod.NO_PERMISSIONS, proxy, parser, helpSpec);
+        DefaultCommandRoute route = new DefaultCommandRoute("test", CommandMethod.NO_PERMISSIONS, allSenders, proxy, parser, helpSpec);
 
         Command command = mock(Command.class);
         CommandSender sender = mock(CommandSender.class);
@@ -136,7 +143,7 @@ public class DefaultCommandRouteTest
 
         Method method = TestClass.class.getMethod("testMethod", CommandRequest.class);
         MethodProxy proxy = spy(new ReflectionMethodProxy(testObject, method));
-        DefaultCommandRoute route = new DefaultCommandRoute("test", CommandMethod.NO_PERMISSIONS, proxy, parser, helpSpec);
+        DefaultCommandRoute route = new DefaultCommandRoute("test", CommandMethod.NO_PERMISSIONS, allSenders, proxy, parser, helpSpec);
 
         Command command = mock(Command.class);
         CommandSender sender = mock(CommandSender.class);
@@ -158,7 +165,7 @@ public class DefaultCommandRouteTest
     {
         Method method = TestClass.class.getMethod("exceptionMethod", CommandRequest.class);
         MethodProxy proxy = spy(new ReflectionMethodProxy(testObject, method));
-        DefaultCommandRoute route = new DefaultCommandRoute("test", CommandMethod.NO_PERMISSIONS, proxy, parser, helpSpec);
+        DefaultCommandRoute route = new DefaultCommandRoute("test", CommandMethod.NO_PERMISSIONS, allSenders, proxy, parser, helpSpec);
 
         Command command = mock(Command.class);
         CommandSender sender = mock(CommandSender.class);
