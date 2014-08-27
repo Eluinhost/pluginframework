@@ -260,6 +260,9 @@ public class DefaultRoutingMethodParser extends RoutingMethodParser
 
         String[] optionPositions = annotation.optionOrder();
 
+        //offset 2 because 1 = OptionSet and 2 = CommandSender
+        arePositionsCorrect(method, optionPositions, optionParser, 2);
+
         //check the @commandmethod parameters are all present and correct
         if(!areCommandMethodParametersCorrect(method))
             throw new CommandParseException("Invalid command method parameters at " + method.getName());
