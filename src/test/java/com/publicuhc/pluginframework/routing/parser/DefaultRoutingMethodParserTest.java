@@ -508,7 +508,7 @@ public class DefaultRoutingMethodParserTest
 
 
         String[] posistion = new String[]{"l", "string", "radius", "[arguments]"};
-        parser.arePositionsCorrect(method, posistion, p, 1);
+        parser.checkPositionsCorrect(method, posistion, p, 1);
     }
 
     @Test(expected = CommandParseException.class)
@@ -519,7 +519,7 @@ public class DefaultRoutingMethodParserTest
 
 
         String[] posistion = new String[]{"l", "string", "radius", "[arguments]"};
-        parser.arePositionsCorrect(method, posistion, p, 2); //wrong offset so now the arg list is all wrong
+        parser.checkPositionsCorrect(method, posistion, p, 2); //wrong offset so now the arg list is all wrong
     }
 
     @Test(expected = CommandParseException.class)
@@ -529,7 +529,7 @@ public class DefaultRoutingMethodParserTest
         OptionParser p = getParserForOptionPosistionMethod();
 
         String[] posistion = new String[]{"l", "string", "radius", "[arguments]", "l"}; //added extra 'l', method doesn't have correct param count now
-        parser.arePositionsCorrect(method, posistion, p, 1);
+        parser.checkPositionsCorrect(method, posistion, p, 1);
     }
 
     @Test(expected = CommandParseException.class)
@@ -539,7 +539,7 @@ public class DefaultRoutingMethodParserTest
         OptionParser p = getParserForOptionPosistionMethod();
 
         String[] posistion = new String[]{"l", "string", "radius"}; //removed the [arguments], method doesn't have correct param count now
-        parser.arePositionsCorrect(method, posistion, p, 1);
+        parser.checkPositionsCorrect(method, posistion, p, 1);
     }
 
     @Test(expected = CommandParseException.class)
@@ -549,7 +549,7 @@ public class DefaultRoutingMethodParserTest
         OptionParser p = getParserForOptionPosistionMethod();
 
         String[] posistion = new String[]{"l", "radius", "string", "[arguments]"}; //switch string and radius so class don't match now
-        parser.arePositionsCorrect(method, posistion, p, 1);
+        parser.checkPositionsCorrect(method, posistion, p, 1);
     }
 
     @Test(expected = CommandParseException.class)
@@ -559,6 +559,6 @@ public class DefaultRoutingMethodParserTest
         OptionParser p = getParserForOptionPosistionMethod();
 
         String[] posistion = new String[]{"l", "strings", "radius", "[arguments]"}; //switch string with strings which is an invalid option
-        parser.arePositionsCorrect(method, posistion, p, 1);
+        parser.checkPositionsCorrect(method, posistion, p, 1);
     }
 }

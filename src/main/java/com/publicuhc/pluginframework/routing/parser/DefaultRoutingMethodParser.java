@@ -197,9 +197,9 @@ public class DefaultRoutingMethodParser extends RoutingMethodParser
      * @param posistions array of option names and their posistions
      * @param parser the parser with the options set
      * @param offset the offset in the methods parameters to start checking from (inclusive), 0 = all parameters
-     * @return true if matches, false otherwise
+     * @throws com.publicuhc.pluginframework.routing.exception.CommandParseException when something isn't right
      */
-    protected boolean arePositionsCorrect(Method method, String[] posistions, OptionParser parser, int offset) throws CommandParseException
+    protected void checkPositionsCorrect(Method method, String[] posistions, OptionParser parser, int offset) throws CommandParseException
     {
         Map<String, Class> parameterClassMap = getParameters(parser);
 
@@ -233,8 +233,6 @@ public class DefaultRoutingMethodParser extends RoutingMethodParser
             if(!parameterClass.isAssignableFrom(parameterClassMap.get(optionName)))
                 throw new CommandParseException("Method " + method + " has wrong class type " + parameterClass.getName() + " for option: " + optionName);
         }
-
-        return true;
     }
 
     @Override
@@ -277,7 +275,7 @@ public class DefaultRoutingMethodParser extends RoutingMethodParser
         }
 
         //offset 2 because 1 = OptionSet and 2 = CommandSender (or subclasses)
-        arePositionsCorrect(method, optionPositions, optionParser, 2);
+        checkPositionsCorrect(method, optionPositions, optionParser, 2);
 
         //add the help formatter and add the default help option
         optionParser.formatHelpWith(new BukkitHelpFormatter());
