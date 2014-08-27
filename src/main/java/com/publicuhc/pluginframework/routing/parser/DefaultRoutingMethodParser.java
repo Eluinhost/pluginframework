@@ -21,9 +21,7 @@
 
 package com.publicuhc.pluginframework.routing.parser;
 
-import com.google.common.collect.HashMultiset;
 import com.publicuhc.pluginframework.routing.CommandMethod;
-import com.publicuhc.pluginframework.routing.CommandRequest;
 import com.publicuhc.pluginframework.routing.CommandRoute;
 import com.publicuhc.pluginframework.routing.DefaultCommandRoute;
 import com.publicuhc.pluginframework.routing.exception.AnnotationMissingException;
@@ -32,7 +30,6 @@ import com.publicuhc.pluginframework.routing.help.BukkitHelpFormatter;
 import com.publicuhc.pluginframework.routing.proxy.MethodProxy;
 import com.publicuhc.pluginframework.routing.proxy.ReflectionMethodProxy;
 import joptsimple.*;
-import org.bukkit.command.CommandSender;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
@@ -140,54 +137,6 @@ public class DefaultRoutingMethodParser extends RoutingMethodParser
         optionsMethod.invoke(instance, parser);
 
         return parser;
-    }
-
-    protected boolean areCommandMethodParametersCorrect(Method method)
-    {
-        Class[] types = method.getParameterTypes();
-
-        return types.length == 1 && types[0].equals(CommandRequest.class);
-    }
-
-    /**
-     * Returns the posistions in the method parameters of each of the given argument accepting options
-     *
-     * @param method the command method
-     * @param parser the parser with options set
-     * @return map of option name->position in parameters
-     */
-    protected Map<String, Integer> getParameterPositions(Method method, OptionParser parser) throws CommandParseException
-    {
-        //NOTE: we can't get method parameter names due to the compiler not carrying them over
-        //for arguments of the same type we will allocate them in alphabetical option name order
-
-        Map<String, Integer> mapping = new HashMap<String, Integer>();
-
-        Class[] types = method.getParameterTypes();
-
-        //remove the first 2 parameters (must be OptionSet and ? extends CommandSender)
-        if(types.length < 2 || !types[0].equals(OptionSet.class) || !CommandSender.class.isAssignableFrom(types[1])) {
-            throw new CommandParseException("Invalid method signature for method: " + method.getName() + ", requires argument 1 to be an OptionSet and argument 2 to be CommandSender or a subclass");
-        }
-
-        //cut out the default parameters
-        types = Arrays.copyOfRange(types, 2, types.length);
-
-        //get the options defined in the parser
-        Map<String, Class> options = getParameters(parser);
-
-        //get the counts of each class for each
-        HashMultiset<Class> originalCounts = HashMultiset.create(Arrays.asList(types));
-        HashMultiset<Class> optionsCounts = HashMultiset.create(options.values());
-
-        //if they don't match it won't work
-        if(!originalCounts.equals(optionsCounts)) {
-            throw new CommandParseException("Invalid method signature for method: " + method.getName() + ", not all defined options have a method argument");
-        }
-
-        //todo assign option name to parameter posistion
-
-        return mapping;
     }
 
     /**

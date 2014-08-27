@@ -327,22 +327,6 @@ public class DefaultRoutingMethodParserTest
     }
 
     @Test
-    public void test_command_method_parameters_correct() throws NoSuchMethodException
-    {
-        Method method = DefaultRoutingMethodParserTest.class.getDeclaredMethod("commandWithExtraArgs", CommandRequest.class, String[].class);
-        assertThat(parser.areCommandMethodParametersCorrect(method)).isFalse();
-
-        method = DefaultRoutingMethodParserTest.class.getDeclaredMethod("commandWithNotEnoughArgs");
-        assertThat(parser.areCommandMethodParametersCorrect(method)).isFalse();
-
-        method = DefaultRoutingMethodParserTest.class.getDeclaredMethod("commandWithWrongArg1", CommandBlock.class);
-        assertThat(parser.areCommandMethodParametersCorrect(method)).isFalse();
-
-        method = DefaultRoutingMethodParserTest.class.getDeclaredMethod("commandWithAnnotation", CommandRequest.class);
-        assertThat(parser.areCommandMethodParametersCorrect(method)).isTrue();
-    }
-
-    @Test
     public void test_parse_command_method_invalid_args() throws NoSuchMethodException
     {
         Method method = DefaultRoutingMethodParserTest.class.getDeclaredMethod("commandWithExtraArgs", CommandRequest.class, String[].class);
@@ -400,81 +384,6 @@ public class DefaultRoutingMethodParserTest
 
         assertThat(params.size()).isEqualTo(7);
         assertThat(params.get("[arguments]")).isEqualTo(Double[].class);
-    }
-
-    public void testArgumentCheckMethod(OptionSet set, CommandSender sender, Integer integer, Player[] player, Location[] arguments)
-    {}
-
-    public void testArgumentCheckMethodMissingDefault(Integer integer, Player[] player, Location[] arguments)
-    {}
-
-    @Test(expected = CommandParseException.class)
-    public void test_argument_missing_defaults() throws NoSuchMethodException, CommandParseException
-    {
-        Method method = getClass().getDeclaredMethod("testArgumentCheckMethodMissingDefault", Integer.class, Player[].class, Location[].class);
-        OptionParser p = new OptionParser();
-        p.accepts("p")
-                .withRequiredArg()
-                .withValuesConvertedBy(new OnlinePlayerValueConverter(true));
-        p.accepts("radius")
-                .withOptionalArg()
-                .ofType(Integer.class);
-        p.accepts("t");
-        p.nonOptions().withValuesConvertedBy(new LocationValueConverter());
-
-        parser.getParameterPositions(method, p);
-    }
-
-    @Test
-    public void test_argument_posistions() throws NoSuchMethodException, CommandParseException
-    {
-        Method method = getClass().getDeclaredMethod("testArgumentCheckMethod", OptionSet.class, CommandSender.class, Integer.class, Player[].class, Location[].class);
-        OptionParser p = new OptionParser();
-        p.accepts("p")
-                .withRequiredArg()
-                .withValuesConvertedBy(new OnlinePlayerValueConverter(true));
-        p.accepts("radius")
-                .withOptionalArg()
-                .ofType(Integer.class);
-        p.accepts("t");
-        p.nonOptions().withValuesConvertedBy(new LocationValueConverter());
-
-        parser.getParameterPositions(method, p);
-    }
-
-    @Test(expected = CommandParseException.class)
-    public void test_argument_posistions_too_many() throws NoSuchMethodException, CommandParseException
-    {
-        Method method = getClass().getDeclaredMethod("testArgumentCheckMethod", OptionSet.class, CommandSender.class, Integer.class, Player[].class, Location[].class);
-        OptionParser p = new OptionParser();
-        p.accepts("p")
-                .withRequiredArg()
-                .withValuesConvertedBy(new OnlinePlayerValueConverter(true));
-        //don't add the radius here, the signature should fail because it has an extra Integer
-        p.accepts("t");
-        p.nonOptions().withValuesConvertedBy(new LocationValueConverter());
-
-        parser.getParameterPositions(method, p);
-    }
-
-    @Test(expected = CommandParseException.class)
-    public void test_argument_posistions_not_enough() throws NoSuchMethodException, CommandParseException
-    {
-        Method method = getClass().getDeclaredMethod("testArgumentCheckMethod", OptionSet.class, CommandSender.class, Integer.class, Player[].class, Location[].class);
-        OptionParser p = new OptionParser();
-        p.accepts("p")
-                .withRequiredArg()
-                .withValuesConvertedBy(new OnlinePlayerValueConverter(true));
-        p.accepts("radius")
-                .withOptionalArg()
-                .ofType(Integer.class);
-        p.accepts("minradius")
-                .withOptionalArg()
-                .ofType(Integer.class); //adding this means the signature doesn't have enough integers in it now
-        p.accepts("t");
-        p.nonOptions().withValuesConvertedBy(new LocationValueConverter());
-
-        parser.getParameterPositions(method, p);
     }
 
     public void testOptionPosistion(OptionSet set, Location ex, String param, Double r, Player[][] players)
