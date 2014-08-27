@@ -37,6 +37,8 @@ public @interface CommandMethod
 
     public boolean options() default false;
 
+    public String[] optionOrder() default {};
+
     public String permission() default NO_PERMISSIONS;
 
     public String helpOption() default DEFAULT_HELP;
