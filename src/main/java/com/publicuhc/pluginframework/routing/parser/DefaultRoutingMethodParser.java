@@ -93,7 +93,7 @@ public class DefaultRoutingMethodParser extends RoutingMethodParser
                     ValueConverter converter = (ValueConverter) converterFieldNonOptions.get(nonOptionsSpec);
                     Class convertClass = converter == null ? String.class : converter.valueType();
                     Class arrayedClass = Array.newInstance(convertClass, 0).getClass();
-                    parameterTypes.put("arguments", arrayedClass);
+                    parameterTypes.put("[arguments]", arrayedClass);
                 } catch(IllegalAccessException e) {
                     e.printStackTrace();
                 }
@@ -190,6 +190,53 @@ public class DefaultRoutingMethodParser extends RoutingMethodParser
         return mapping;
     }
 
+    /**
+     * Checks if the given option posistions are valid for the method given
+     *
+     * @param method the method to check
+     * @param posistions array of option names and their posistions
+     * @param parser the parser with the options set
+     * @param offset the offset in the methods parameters to start checking from (inclusive), 0 = all parameters
+     * @return true if matches, false otherwise
+     */
+    protected boolean arePositionsCorrect(Method method, String[] posistions, OptionParser parser, int offset) throws CommandParseException
+    {
+        Map<String, Class> parameterClassMap = getParameters(parser);
+
+        Class<?>[] parameters = method.getParameterTypes();
+
+        //check if the offset exists
+        if(parameters.length < offset)
+            throw new CommandParseException("Method " + method + " does not have enough parameters");
+
+        //remove all of the parameters we don't care about
+        parameters = Arrays.copyOfRange(parameters, offset, parameters.length);
+
+        //don't allow extra arguments not defined in the posistions array
+        if(posistions.length != parameters.length)
+            throw new CommandParseException("Method " + method + " option posistions length does not match method parameters");
+
+        int numberOfOptions = posistions.length;
+
+        if(numberOfOptions > parameterClassMap.size()) {
+            throw new CommandParseException("Method " + method + " has more arguments than are defined in it's parser");
+        }
+
+        for(int i = 0; i < numberOfOptions; i++) {
+            String optionName = posistions[i];
+
+            if(!parameterClassMap.containsKey(optionName))
+                throw new CommandParseException("Method " + method + " contains invalid option in posistions: " + optionName);
+
+            Class<?> parameterClass = parameters[i];
+
+            if(!parameterClass.isAssignableFrom(parameterClassMap.get(optionName)))
+                throw new CommandParseException("Method " + method + " has wrong class type " + parameterClass.getName() + " for option: " + optionName);
+        }
+
+        return true;
+    }
+
     @Override
     public CommandRoute parseCommandMethodAnnotation(Method method, Object instance) throws CommandParseException
     {
@@ -210,6 +257,8 @@ public class DefaultRoutingMethodParser extends RoutingMethodParser
         } else {
             optionParser = new OptionParser();
         }
+
+        String[] optionPositions = annotation.optionOrder();
 
         //check the @commandmethod parameters are all present and correct
         if(!areCommandMethodParametersCorrect(method))
