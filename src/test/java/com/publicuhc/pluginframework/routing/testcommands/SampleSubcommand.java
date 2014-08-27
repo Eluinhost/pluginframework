@@ -26,14 +26,16 @@ import joptsimple.OptionDeclarer;
 import joptsimple.OptionSet;
 import org.bukkit.command.CommandSender;
 
+import java.util.List;
+
 public class SampleSubcommand
 {
     public boolean commandRan;
     public boolean subCommandRan;
-    public String[] args;
+    public List<String> args;
 
     @CommandMethod(command = "test", options = true, optionOrder = {"r", "[arguments]"})
-    public void testMethod(OptionSet set, CommandSender sender, Double radius, String[] arguments)
+    public void testMethod(OptionSet set, CommandSender sender, Double radius, List<String> arguments)
     {
         commandRan = true;
         args = arguments;
@@ -53,7 +55,7 @@ public class SampleSubcommand
     }
 
     @CommandMethod(command = "test subcommand", options = true, optionOrder = {"r", "[arguments]"})
-    public void testMethodSubcommand(OptionSet set, CommandSender sender, Double radius, String[] arguments)
+    public void testMethodSubcommand(OptionSet set, CommandSender sender, Double radius, List<String> arguments)
     {
         subCommandRan = true;
         args = arguments;

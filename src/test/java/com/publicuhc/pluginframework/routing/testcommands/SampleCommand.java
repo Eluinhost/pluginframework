@@ -27,14 +27,16 @@ import joptsimple.OptionDeclarer;
 import joptsimple.OptionSet;
 import org.bukkit.command.CommandSender;
 
+import java.util.List;
+
 public class SampleCommand
 {
     public Double radius;
-    public String[] arguments;
+    public List<String> arguments;
     public OptionSet set;
 
     @CommandMethod(command = "test", options = true, optionOrder = {"r", "[arguments]"})
-    public void testMethod(OptionSet set, CommandSender sender, Double radius, String[] arguments)
+    public void testMethod(OptionSet set, CommandSender sender, Double radius, List<String> arguments)
     {
         this.set = set;
         this.radius = radius;
@@ -51,7 +53,6 @@ public class SampleCommand
                 .ofType(Double.class)
                 .required();
         parser.accepts("b")
-                .withOptionalArg()
-                .ofType(Integer.class);
+                .withOptionalArg();
     }
 }

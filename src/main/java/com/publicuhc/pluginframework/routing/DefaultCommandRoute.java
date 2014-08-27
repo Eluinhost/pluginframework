@@ -43,12 +43,14 @@ public class DefaultCommandRoute implements CommandRoute
     private final String commandName;
     private final String[] startsWith;
     private final String permission;
+    private final String[] optionPosistions;
     private final OptionSpec helpSpec;
     private final Class<? extends CommandSender>[] allowedSenders;
 
-    public DefaultCommandRoute(String commandName, String permission, Class<? extends CommandSender>[] allowedSenders, MethodProxy proxy, OptionParser parser, OptionSpec helpSpec)
+    public DefaultCommandRoute(String commandName, String permission, Class<? extends CommandSender>[] allowedSenders, MethodProxy proxy, OptionParser parser, String[] optionPosistions, OptionSpec helpSpec)
     {
         this.helpSpec = helpSpec;
+        this.optionPosistions = optionPosistions;
         this.allowedSenders = allowedSenders;
         this.proxy = proxy;
         this.parser = parser;
@@ -115,7 +117,19 @@ public class DefaultCommandRoute implements CommandRoute
             if(optionSet.has(helpSpec)) {
                 printHelpFor(sender);
             } else {
-                proxy.invoke(new CommandRequest(command, sender, optionSet));
+                Object[] parameters = new Object[2 + optionPosistions.length];
+                parameters[0] = optionSet;
+                parameters[1] = sender;
+                for(int i = 0; i < optionPosistions.length; i++) {
+                    String option = optionPosistions[i];
+                    if(option.equals("[arguments]")) {
+                        parameters[i + 2] = optionSet.nonOptionArguments();
+                    } else {
+                        parameters[i + 2] = optionSet.valueOf(option);
+                    }
+                }
+
+                proxy.invoke(parameters);
             }
         } catch(OptionException e) {
             printHelpFor(sender);

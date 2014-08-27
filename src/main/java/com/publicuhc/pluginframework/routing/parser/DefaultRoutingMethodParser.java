@@ -31,12 +31,12 @@ import com.publicuhc.pluginframework.routing.proxy.MethodProxy;
 import com.publicuhc.pluginframework.routing.proxy.ReflectionMethodProxy;
 import joptsimple.*;
 
-import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class DefaultRoutingMethodParser extends RoutingMethodParser
@@ -86,14 +86,7 @@ public class DefaultRoutingMethodParser extends RoutingMethodParser
             //if its the non options we add it to 'arguments'
             if(optionSpec instanceof NonOptionArgumentSpec) {
                 NonOptionArgumentSpec nonOptionsSpec = (NonOptionArgumentSpec) optionSpec;
-                try {
-                    ValueConverter converter = (ValueConverter) converterFieldNonOptions.get(nonOptionsSpec);
-                    Class convertClass = converter == null ? String.class : converter.valueType();
-                    Class arrayedClass = Array.newInstance(convertClass, 0).getClass();
-                    parameterTypes.put("[arguments]", arrayedClass);
-                } catch(IllegalAccessException e) {
-                    e.printStackTrace();
-                }
+                parameterTypes.put("[arguments]", List.class);
             }
 
             //if its an an option with an argument we add it as it's option name
@@ -232,7 +225,7 @@ public class DefaultRoutingMethodParser extends RoutingMethodParser
 
         //setup the proxy and create the route
         MethodProxy proxy = new ReflectionMethodProxy(instance, method);
-        return new DefaultCommandRoute(annotation.command(), annotation.permission(), annotation.allowedSenders(), proxy, optionParser, helpSpec);
+        return new DefaultCommandRoute(annotation.command(), annotation.permission(), annotation.allowedSenders(), proxy, optionParser, optionPositions, helpSpec);
     }
 
     @Override

@@ -280,7 +280,7 @@ public class DefaultRouterTest
 
         assertThat(sample.commandRan).isTrue();
         assertThat(sample.subCommandRan).isFalse();
-        assertThat(sample.args.length).isEqualTo(0);
+        assertThat(sample.args).hasSize(0);
     }
 
     @Test
@@ -299,7 +299,7 @@ public class DefaultRouterTest
 
         assertThat(sample.commandRan).isFalse();
         assertThat(sample.subCommandRan).isTrue();
-        assertThat(sample.args.length).isEqualTo(0);
+        assertThat(sample.args).hasSize(0);
     }
 
     @Test
