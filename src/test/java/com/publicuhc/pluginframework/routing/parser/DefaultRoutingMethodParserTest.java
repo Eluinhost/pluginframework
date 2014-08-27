@@ -387,19 +387,19 @@ public class DefaultRoutingMethodParserTest
         assertThat(params.get("e")).isEqualTo(String.class);
         assertThat(params.get("f")).isEqualTo(Integer.class);
         assertThat(params.get("g")).isEqualTo(Player[].class);
-        assertThat(params.get("arguments")).isEqualTo(String[].class);
+        assertThat(params.get("[arguments]")).isEqualTo(String[].class);
 
         options.nonOptions().withValuesConvertedBy(new OnlinePlayerValueConverter(true));
         params = parser.getParameters(options);
 
         assertThat(params.size()).isEqualTo(7);
-        assertThat(params.get("arguments")).isEqualTo(Player[][].class);
+        assertThat(params.get("[arguments]")).isEqualTo(Player[][].class);
 
         options.nonOptions().ofType(Double.class);
         params = parser.getParameters(options);
 
         assertThat(params.size()).isEqualTo(7);
-        assertThat(params.get("arguments")).isEqualTo(Double[].class);
+        assertThat(params.get("[arguments]")).isEqualTo(Double[].class);
     }
 
     public void testArgumentCheckMethod(OptionSet set, CommandSender sender, Integer integer, Player[] player, Location[] arguments)
@@ -475,5 +475,90 @@ public class DefaultRoutingMethodParserTest
         p.nonOptions().withValuesConvertedBy(new LocationValueConverter());
 
         parser.getParameterPositions(method, p);
+    }
+
+    public void testOptionPosistion(OptionSet set, Location ex, String param, Double r, Player[][] players)
+    {}
+
+    private Method getTestOptionPosistionMethod() throws NoSuchMethodException
+    {
+        return getClass().getDeclaredMethod("testOptionPosistion", OptionSet.class, Location.class, String.class, Double.class, Player[][].class);
+    }
+
+    private OptionParser getParserForOptionPosistionMethod()
+    {
+        OptionParser p = new OptionParser();
+        p.accepts("l")
+                .withOptionalArg()
+                .withValuesConvertedBy(new LocationValueConverter());
+        p.accepts("string")
+                .withRequiredArg();
+        p.accepts("radius")
+                .withRequiredArg()
+                .ofType(Double.class);
+        p.nonOptions().withValuesConvertedBy(new OnlinePlayerValueConverter(true));
+        return p;
+    }
+
+    @Test
+    public void test_option_posistion_correct() throws NoSuchMethodException, CommandParseException
+    {
+        Method method = getTestOptionPosistionMethod();
+        OptionParser p = getParserForOptionPosistionMethod();
+
+
+        String[] posistion = new String[]{"l", "string", "radius", "[arguments]"};
+        parser.arePositionsCorrect(method, posistion, p, 1);
+    }
+
+    @Test(expected = CommandParseException.class)
+    public void test_option_posistion_wrong_offset() throws NoSuchMethodException, CommandParseException
+    {
+        Method method = getTestOptionPosistionMethod();
+        OptionParser p = getParserForOptionPosistionMethod();
+
+
+        String[] posistion = new String[]{"l", "string", "radius", "[arguments]"};
+        parser.arePositionsCorrect(method, posistion, p, 2); //wrong offset so now the arg list is all wrong
+    }
+
+    @Test(expected = CommandParseException.class)
+    public void test_option_posistions_too_many() throws NoSuchMethodException, CommandParseException
+    {
+        Method method = getTestOptionPosistionMethod();
+        OptionParser p = getParserForOptionPosistionMethod();
+
+        String[] posistion = new String[]{"l", "string", "radius", "[arguments]", "l"}; //added extra 'l', method doesn't have correct param count now
+        parser.arePositionsCorrect(method, posistion, p, 1);
+    }
+
+    @Test(expected = CommandParseException.class)
+    public void test_option_posistions_not_enough() throws NoSuchMethodException, CommandParseException
+    {
+        Method method = getTestOptionPosistionMethod();
+        OptionParser p = getParserForOptionPosistionMethod();
+
+        String[] posistion = new String[]{"l", "string", "radius"}; //removed the [arguments], method doesn't have correct param count now
+        parser.arePositionsCorrect(method, posistion, p, 1);
+    }
+
+    @Test(expected = CommandParseException.class)
+    public void test_option_posistions_wrong_class() throws NoSuchMethodException, CommandParseException
+    {
+        Method method = getTestOptionPosistionMethod();
+        OptionParser p = getParserForOptionPosistionMethod();
+
+        String[] posistion = new String[]{"l", "radius", "string", "[arguments]"}; //switch string and radius so class don't match now
+        parser.arePositionsCorrect(method, posistion, p, 1);
+    }
+
+    @Test(expected = CommandParseException.class)
+    public void test_option_posistions_invalid_option() throws NoSuchMethodException, CommandParseException
+    {
+        Method method = getTestOptionPosistionMethod();
+        OptionParser p = getParserForOptionPosistionMethod();
+
+        String[] posistion = new String[]{"l", "strings", "radius", "[arguments]"}; //switch string with strings which is an invalid option
+        parser.arePositionsCorrect(method, posistion, p, 1);
     }
 }
