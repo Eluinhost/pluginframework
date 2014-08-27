@@ -194,9 +194,11 @@ public class DefaultRouter implements Router
             //grab the one with the longest argument list (deepest subcommand)
             CommandRoute route = applicable.peek();
 
+            String[] subcommandArgs = Arrays.copyOfRange(args, route.getStartsWith().length, args.length);
+
             //run the actual command
             try {
-                route.run(command, sender, args);
+                route.run(command, sender, subcommandArgs);
             } catch(CommandInvocationException e) {
                 e.printStackTrace();
             }
