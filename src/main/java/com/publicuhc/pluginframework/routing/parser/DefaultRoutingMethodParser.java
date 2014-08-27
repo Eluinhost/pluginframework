@@ -260,12 +260,24 @@ public class DefaultRoutingMethodParser extends RoutingMethodParser
 
         String[] optionPositions = annotation.optionOrder();
 
-        //offset 2 because 1 = OptionSet and 2 = CommandSender
-        arePositionsCorrect(method, optionPositions, optionParser, 2);
+        Class[] parameters = method.getParameterTypes();
 
-        //check the @commandmethod parameters are all present and correct
-        if(!areCommandMethodParametersCorrect(method))
-            throw new CommandParseException("Invalid command method parameters at " + method.getName());
+        if(parameters.length < 2)
+            throw new CommandParseException("Method " + method.getName() + " needs at least 2 parameters, an OptionSet and a CommandSender");
+
+        if(!parameters[0].equals(OptionSet.class))
+            throw new CommandParseException("Method " + method.getName() + " does not have an OptionSet as parameter 1");
+
+        Class[] allowedSenders = annotation.allowedSenders();
+        Class<?> senderType = parameters[1];
+
+        for(Class<?> senderClass : allowedSenders) {
+            if(!senderType.isAssignableFrom(senderClass))
+                throw new CommandParseException("Method " + method.getName() + " argument #2 is " + senderType.getName() + " but is not applicable to one of the restricted sender types: " + senderClass.getName());
+        }
+
+        //offset 2 because 1 = OptionSet and 2 = CommandSender (or subclasses)
+        arePositionsCorrect(method, optionPositions, optionParser, 2);
 
         //add the help formatter and add the default help option
         optionParser.formatHelpWith(new BukkitHelpFormatter());
