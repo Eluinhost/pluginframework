@@ -34,6 +34,7 @@ import org.junit.runner.RunWith;
 import org.powermock.modules.junit4.PowerMockRunner;
 
 import java.lang.reflect.Method;
+import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -183,19 +184,19 @@ public class DefaultRoutingMethodParserTest
         assertThat(params.get("e")).isEqualTo(String.class);
         assertThat(params.get("f")).isEqualTo(Integer.class);
         assertThat(params.get("g")).isEqualTo(Player[].class);
-        assertThat(params.get("[arguments]")).isEqualTo(String[].class);
+        assertThat(params.get("[arguments]")).isEqualTo(List.class);
 
         options.nonOptions().withValuesConvertedBy(new OnlinePlayerValueConverter(true));
         params = parser.getParameters(options);
 
         assertThat(params.size()).isEqualTo(7);
-        assertThat(params.get("[arguments]")).isEqualTo(Player[][].class);
+        assertThat(params.get("[arguments]")).isEqualTo(List.class);
 
         options.nonOptions().ofType(Double.class);
         params = parser.getParameters(options);
 
         assertThat(params.size()).isEqualTo(7);
-        assertThat(params.get("[arguments]")).isEqualTo(Double[].class);
+        assertThat(params.get("[arguments]")).isEqualTo(List.class);
     }
 
     @Test

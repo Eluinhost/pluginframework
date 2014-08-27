@@ -34,6 +34,7 @@ import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 
 import java.lang.reflect.Method;
+import java.util.List;
 
 @SuppressWarnings("UnusedDeclaration")
 public class TestMethods
@@ -98,7 +99,7 @@ public class TestMethods
     public void methodWithNonStandardHelp(OptionSet set, CommandSender sender)
     {}
 
-    public void testOptionPosistions(OptionSet set, CommandSender sender, Location ex, String param, Double r, Player[][] players)
+    public void testOptionPosistions(OptionSet set, CommandSender sender, Location ex, String param, Double r, List players)
     {}
 
     public Method getMethod() throws NoSuchMethodException
@@ -168,7 +169,7 @@ public class TestMethods
 
     public Method getTestOptionsPosistions() throws NoSuchMethodException
     {
-        return TestMethods.class.getDeclaredMethod("testOptionPosistions", OptionSet.class, CommandSender.class, Location.class, String.class, Double.class, Player[][].class);
+        return TestMethods.class.getDeclaredMethod("testOptionPosistions", OptionSet.class, CommandSender.class, Location.class, String.class, Double.class, List.class);
     }
 
     public OptionParser getParserForOptionPosistionMethod()
