@@ -30,7 +30,6 @@ import java.lang.annotation.*;
 @Documented
 public @interface CommandMethod
 {
-    public static final String NO_PERMISSIONS = "NO PERMISSIONS REQUIRED";
     public static final String DEFAULT_HELP = "?";
 
     public String command();
@@ -39,7 +38,7 @@ public @interface CommandMethod
 
     public String[] optionOrder() default {};
 
-    public String permission() default NO_PERMISSIONS;
+    public String[] permissions() default {};
 
     public String helpOption() default DEFAULT_HELP;
 

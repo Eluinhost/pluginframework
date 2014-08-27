@@ -57,7 +57,7 @@ public class TestMethods
         optionParser.accepts("b").withOptionalArg();
     }
 
-    @CommandMethod(command = "test", permission = "TEST.PERMISSION")
+    @CommandMethod(command = "test", permissions = "TEST.PERMISSION")
     public void methodWithPermissions(OptionSet set, CommandSender sender)
     {}
 

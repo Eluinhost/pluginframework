@@ -42,19 +42,19 @@ public class DefaultCommandRoute implements CommandRoute
     private final OptionParser parser;
     private final String commandName;
     private final String[] startsWith;
-    private final String permission;
+    private final String[] permissions;
     private final String[] optionPosistions;
     private final OptionSpec helpSpec;
     private final Class<? extends CommandSender>[] allowedSenders;
 
-    public DefaultCommandRoute(String commandName, String permission, Class<? extends CommandSender>[] allowedSenders, MethodProxy proxy, OptionParser parser, String[] optionPosistions, OptionSpec helpSpec)
+    public DefaultCommandRoute(String commandName, String permissions[], Class<? extends CommandSender>[] allowedSenders, MethodProxy proxy, OptionParser parser, String[] optionPosistions, OptionSpec helpSpec)
     {
         this.helpSpec = helpSpec;
         this.optionPosistions = optionPosistions;
         this.allowedSenders = allowedSenders;
         this.proxy = proxy;
         this.parser = parser;
-        this.permission = permission.equals(CommandMethod.NO_PERMISSIONS) ? null : permission;
+        this.permissions = permissions;
 
         String[] commandParts = commandName.split(" ");
         this.commandName = commandParts[0];
@@ -106,10 +106,11 @@ public class DefaultCommandRoute implements CommandRoute
         }
 
         //check permissions
-        String permission = getPermission();
-        if(null != permission && !sender.hasPermission(permission)) {
-            sender.sendMessage(ChatColor.RED + "You do not have permission to run this command. (" + permission + ")");
-            return;
+        for(String permission : permissions) {
+            if(!sender.hasPermission(permission)) {
+                sender.sendMessage(ChatColor.RED + "You do not have permission to run this command. (" + permission + ")");
+                return;
+            }
         }
 
         try {
@@ -145,8 +146,8 @@ public class DefaultCommandRoute implements CommandRoute
     }
 
     @Override
-    public String getPermission() {
-        return permission;
+    public String[] getPermissions() {
+        return permissions;
     }
 
     @Override

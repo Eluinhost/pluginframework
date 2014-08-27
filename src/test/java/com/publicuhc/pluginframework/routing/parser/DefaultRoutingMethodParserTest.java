@@ -58,12 +58,12 @@ public class DefaultRoutingMethodParserTest
         Method method = testMethods.getMethodWithPermission();
 
         CommandRoute route = parser.parseCommandMethodAnnotation(method, testMethods);
-        assertThat(route.getPermission().equals("TEST.PERMISSION"));
+        assertThat(route.getPermissions()).containsExactly("TEST.PERMISSION");
 
         method = testMethods.getMethod();
 
         route = parser.parseCommandMethodAnnotation(method, testMethods);
-        assertThat(route.getPermission()).isNull();
+        assertThat(route.getPermissions()).isEmpty();
     }
 
     @Test
