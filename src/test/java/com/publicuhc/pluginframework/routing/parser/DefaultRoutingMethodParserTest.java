@@ -21,342 +21,241 @@
 
 package com.publicuhc.pluginframework.routing.parser;
 
-import com.publicuhc.pluginframework.routing.CommandMethod;
-import com.publicuhc.pluginframework.routing.CommandRequest;
 import com.publicuhc.pluginframework.routing.CommandRoute;
-import com.publicuhc.pluginframework.routing.exception.AnnotationMissingException;
+import com.publicuhc.pluginframework.routing.converters.OnlinePlayerValueConverter;
 import com.publicuhc.pluginframework.routing.exception.CommandParseException;
-import com.publicuhc.pluginframework.routing.proxy.MethodProxy;
-import joptsimple.OptionDeclarer;
-import joptsimple.OptionException;
 import joptsimple.OptionParser;
-import joptsimple.OptionSet;
-import junit.framework.AssertionFailedError;
-import org.bukkit.block.CommandBlock;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.powermock.modules.junit4.PowerMockRunner;
 
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.List;
+import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.mock;
+import static org.powermock.api.mockito.PowerMockito.spy;
 
 @RunWith(PowerMockRunner.class)
 public class DefaultRoutingMethodParserTest
 {
     private DefaultRoutingMethodParser parser;
+    private TestMethods testMethods;
 
     @Before
     public void onStartup()
     {
         parser = new DefaultRoutingMethodParser();
+        testMethods = spy(new TestMethods());
     }
-
-    //sample methods to use in tests
-    @CommandMethod(command = "test", options = true, permission = "TEST.PERMISSION")
-    public String commandWithAnnotation(CommandRequest request)
-    {
-        return "TEST_STRING";
-    }
-
-    public void commandWithAnnotation(OptionDeclarer optionParser)
-    {
-        optionParser.accepts("a").withRequiredArg().ofType(Integer.class).required();
-        optionParser.accepts("b").withOptionalArg().ofType(String.class);
-    }
-
-    @CommandMethod(command = "test", allowedSenders = Player.class)
-    public String commandWithSenderRestriction(CommandRequest request)
-    {
-        return "TEST_STRING";
-    }
-
-    @CommandMethod(command = "test subcommand system")
-    public String commandWithStartsWithRestriction(CommandRequest request)
-    {
-        return "TEST_STRING";
-    }
-
-    public void commandWithoutAnnotation(CommandRequest request)
-    {}
-
-    @CommandMethod(command = "test", options = true)
-    public String commandWithAnnotationOptions(CommandRequest request)
-    {
-        return "TEST_STRING";
-    }
-
-    public void commandWithAnnotationOptions(OptionDeclarer optionParser)
-    {
-        optionParser.accepts("a").withRequiredArg().required();
-        optionParser.accepts("b").withOptionalArg();
-    }
-
-    @CommandMethod(command = "test", options = true)
-    public void commandWithAnnotationButNoOptions(CommandRequest request)
-    {}
-
-    @CommandMethod(command = "test")
-    public void commandWithExtraArgs(CommandRequest request, String[] extra)
-    {}
-
-    @CommandMethod(command = "test")
-    public void commandWithNotEnoughArgs()
-    {}
-
-    @CommandMethod(command = "test")
-    public void commandWithWrongArg1(CommandBlock command)
-    {}
-
-    @CommandMethod(command = "test", options = true)
-    public void commandWithInvalidOptionsReturn(CommandRequest request)
-    {}
-
-    public String[] commandWithInvalidOptionsReturn(OptionDeclarer optionParser)
-    {return null;}
-
-    @CommandMethod(command = "test", options = true)
-    public void commandWithInvalidOptionsParam(CommandRequest request)
-    {}
-
-    public void commandWithInvalidOptionsParam(OptionSet set)
-    {}
-
-    @CommandMethod(command = "test", helpOption = "t", options = true)
-    public void commandWithNonStandardHelp(CommandRequest request)
-    {}
-
-    public void commandWithNonStandardHelp(OptionDeclarer optionParser)
-    {}
-
-    //helpful methods
-    private void assertOptionsValid(OptionParser optionParser)
-    {
-        OptionSet set = optionParser.parse("-a", "299");
-        assertThat(set.hasArgument("a")).isTrue();
-        assertThat(set.hasArgument("b")).isFalse();
-        assertThat(set.valueOf("a")).isEqualTo(299);
-
-        set = optionParser.parse("bleh", "--a=2", "-b=test", "random", "words");
-        assertThat(set.hasArgument("a")).isTrue();
-        assertThat(set.hasArgument("b")).isTrue();
-        assertThat(set.valueOf("a")).isEqualTo(2);
-        assertThat(set.valueOf("b")).isEqualTo("test");
-        assertThat(set.nonOptionArguments()).containsExactly("bleh", "random", "words");
-    }
-
-    private void assertOptionsValidStrings(OptionParser optionParser)
-    {
-        OptionSet set = optionParser.parse("-a", "299");
-        assertThat(set.hasArgument("a")).isTrue();
-        assertThat(set.hasArgument("b")).isFalse();
-        assertThat(set.valueOf("a")).isEqualTo("299");
-
-        set = optionParser.parse("bleh", "--a=2", "-b=test", "random", "words");
-        assertThat(set.hasArgument("a")).isTrue();
-        assertThat(set.hasArgument("b")).isTrue();
-        assertThat(set.valueOf("a")).isEqualTo("2");
-        assertThat(set.valueOf("b")).isEqualTo("test");
-        assertThat(set.nonOptionArguments()).containsExactly("bleh", "random", "words");
-
-        try {
-            optionParser.parse("-b=test");
-            throw new AssertionFailedError("Expected OptionException for missing argument a");
-        } catch(OptionException ignored) {
-        }
-    }
-
-    //actual tests
     @Test
-    public void test_has_command_method_annotation() throws NoSuchMethodException
+    public void test_parse_with_permissions() throws NoSuchMethodException, CommandParseException
     {
-        Method valid = DefaultRoutingMethodParserTest.class.getDeclaredMethod("commandWithAnnotation", CommandRequest.class);
-        assertThat(parser.hasCommandMethodAnnotation(valid)).isTrue();
+        Method method = testMethods.getMethodWithPermission();
 
-        Method invalid = DefaultRoutingMethodParserTest.class.getDeclaredMethod("commandWithoutAnnotation", CommandRequest.class);
-        assertThat(parser.hasCommandMethodAnnotation(invalid)).isFalse();
-    }
-
-    @Test
-    public void test_get_options_method() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException
-    {
-        Method method = DefaultRoutingMethodParserTest.class.getDeclaredMethod("commandWithAnnotation", CommandRequest.class);
-        OptionParser optionParser = parser.getOptionsForMethod(method, this);
-        assertOptionsValid(optionParser);
-    }
-
-    @Test
-    public void test_parse_permissions() throws NoSuchMethodException, CommandParseException
-    {
-        Method method = DefaultRoutingMethodParserTest.class.getDeclaredMethod("commandWithAnnotation", CommandRequest.class);
-
-        CommandRoute route = parser.parseCommandMethodAnnotation(method, this);
+        CommandRoute route = parser.parseCommandMethodAnnotation(method, testMethods);
         assertThat(route.getPermission().equals("TEST.PERMISSION"));
-        assertThat(route.getOptionDetails().recognizedOptions()).containsKey("?");
-        assertThat(route.getOptionDetails().recognizedOptions()).doesNotContainKey("t");
 
-        method = DefaultRoutingMethodParserTest.class.getDeclaredMethod("commandWithAnnotationOptions", CommandRequest.class);
+        method = testMethods.getMethod();
 
-        route = parser.parseCommandMethodAnnotation(method, this);
+        route = parser.parseCommandMethodAnnotation(method, testMethods);
         assertThat(route.getPermission()).isNull();
-        assertThat(route.getOptionDetails().recognizedOptions()).containsKey("?");
-        assertThat(route.getOptionDetails().recognizedOptions()).doesNotContainKey("t");
     }
 
     @Test
-    public void test_parse_method_options_method() throws Throwable
+    public void test_parse_options() throws NoSuchMethodException, CommandParseException
     {
-        Method method = DefaultRoutingMethodParserTest.class.getDeclaredMethod("commandWithAnnotation", CommandRequest.class);
-        CommandRoute route = parser.parseCommandMethodAnnotation(method, this);
+        Method method = testMethods.getMethodWithOptions();
+        CommandRoute route = parser.parseCommandMethodAnnotation(method, testMethods);
+        assertThat(route.getOptionDetails().recognizedOptions().keySet()).containsOnly("a", "b", "?", "[arguments]"); //will have the ? and [arguments] automatically added
 
-        assertThat(route.getCommandName()).isEqualTo("test");
-        assertOptionsValid(route.getOptionDetails());
+        method = testMethods.getMethod();
+        route = parser.parseCommandMethodAnnotation(method, testMethods);
+        assertThat(route.getOptionDetails().recognizedOptions().keySet()).containsExactly("?", "[arguments]"); //will have the ? and [arguments] automatically added
+    }
 
-        MethodProxy proxy = route.getProxy();
-        assertThat(proxy.getInstance()).isSameAs(this);
-        assertThat(proxy.invoke(mock(CommandRequest.class))).isEqualTo("TEST_STRING");
-        assertThat(route.getOptionDetails().recognizedOptions()).containsKey("?");
-        assertThat(route.getOptionDetails().recognizedOptions()).doesNotContainKey("t");
-        assertThat(route.getStartsWith()).isEmpty();
+    @Test
+    public void test_starts_with() throws NoSuchMethodException, CommandParseException
+    {
+        Method method = testMethods.getMethodSubcommand();
+        CommandRoute route = parser.parseCommandMethodAnnotation(method, testMethods);
+        assertThat(route.getStartsWith()).containsExactly("subcommand");
+
+        method = testMethods.getMethod();
+        route = parser.parseCommandMethodAnnotation(method, testMethods);
+        assertThat(route.getStartsWith().length).isEqualTo(0);
+    }
+
+    @Test
+    public void test_parse_method_chosen_senders() throws NoSuchMethodException, CommandParseException
+    {
+        Method method = testMethods.getMethodWithChosenSenders();
+        CommandRoute route = parser.parseCommandMethodAnnotation(method, testMethods);
+        //noinspection unchecked
+        assertThat(route.getAllowedSenders()).containsExactly(ConsoleCommandSender.class, Player.class);
+
+        method = testMethods.getMethod();
+        route = parser.parseCommandMethodAnnotation(method, testMethods);
         //noinspection unchecked
         assertThat(route.getAllowedSenders()).containsExactly(CommandSender.class);
     }
 
-    @Test
-    public void test_starts_with() throws Throwable
+    @Test(expected = CommandParseException.class)
+    public void test_parse_method_options_method_missing() throws CommandParseException, NoSuchMethodException
     {
-        Method method = DefaultRoutingMethodParserTest.class.getDeclaredMethod("commandWithStartsWithRestriction", CommandRequest.class);
-        CommandRoute route = parser.parseCommandMethodAnnotation(method, this);
+        Method method = testMethods.getMethodWithOptionsMissing();
+        parser.parseCommandMethodAnnotation(method, testMethods);
+    }
 
-        assertThat(route.getStartsWith()).containsExactly("subcommand", "system");
+    @Test(expected = CommandParseException.class)
+    public void test_parse_method_options_method_invalid_parameters() throws NoSuchMethodException, CommandParseException
+    {
+        Method method = testMethods.getMethodWithOptionsWithInvalidParam();
+        parser.parseCommandMethodAnnotation(method, testMethods);
+    }
+
+    @Test(expected = CommandParseException.class)
+    public void test_parse_method_no_annotation() throws NoSuchMethodException, CommandParseException
+    {
+        Method method = testMethods.getMethodWithoutAnnotation();
+        parser.parseCommandMethodAnnotation(method, testMethods);
+    }
+
+    @Test(expected = CommandParseException.class)
+    public void test_parse_command_method_invalid_arg_1() throws NoSuchMethodException, CommandParseException
+    {
+        Method method = testMethods.getMethodWithInvalidParam1();
+        parser.parseCommandMethodAnnotation(method, testMethods);
+    }
+
+    @Test(expected = CommandParseException.class)
+    public void test_parse_command_method_invalid_arg_2() throws NoSuchMethodException, CommandParseException
+    {
+        Method method = testMethods.getMethodWithInvalidParam2();
+        parser.parseCommandMethodAnnotation(method, testMethods);
+    }
+
+    @Test(expected = CommandParseException.class)
+    public void test_parse_command_method_unmatched_sender() throws NoSuchMethodException, CommandParseException
+    {
+        Method method = testMethods.getMethodWithUnmatchedSender();
+        parser.parseCommandMethodAnnotation(method, testMethods);
+    }
+
+    @Test()
+    public void test_parse_command_method_matched_sender() throws NoSuchMethodException, CommandParseException
+    {
+        Method method = testMethods.getMethodWithMatchedSender();
+        parser.parseCommandMethodAnnotation(method, testMethods);
     }
 
     @Test
-    public void test_parse_method_chosen_senders() throws Throwable
+    public void test_parse_command_method_non_standard_help() throws NoSuchMethodException, CommandParseException
     {
-        Method method = DefaultRoutingMethodParserTest.class.getDeclaredMethod("commandWithSenderRestriction", CommandRequest.class);
-        CommandRoute route = parser.parseCommandMethodAnnotation(method, this);
-
-        assertThat(route.getCommandName()).isEqualTo("test");
-
-        MethodProxy proxy = route.getProxy();
-        assertThat(proxy.getInstance()).isSameAs(this);
-        assertThat(proxy.invoke(mock(CommandRequest.class))).isEqualTo("TEST_STRING");
-        assertThat(route.getOptionDetails().recognizedOptions()).containsKey("?");
-        assertThat(route.getOptionDetails().recognizedOptions()).doesNotContainKey("t");
-        //noinspection unchecked
-        assertThat(route.getAllowedSenders()).containsExactly(Player.class);
-    }
-
-    @Test
-    public void test_parse_method_options_method_missing() throws NoSuchMethodException
-    {
-        Method method = DefaultRoutingMethodParserTest.class.getDeclaredMethod("commandWithAnnotationButNoOptions", CommandRequest.class);
-
-        try {
-            parser.parseCommandMethodAnnotation(method, this);
-            throw new AssertionFailedError("Expected CommandParseException");
-        } catch(CommandParseException ex) {
-            Throwable cause = ex.getCause();
-            assertThat(cause).isInstanceOf(NoSuchMethodException.class);
-        }
-    }
-
-    @Test
-    public void test_parse_method_options_method_invalid_return() throws NoSuchMethodException
-    {
-        Method method = DefaultRoutingMethodParserTest.class.getDeclaredMethod("commandWithInvalidOptionsReturn", CommandRequest.class);
-
-        try {
-            parser.parseCommandMethodAnnotation(method, this);
-            throw new AssertionFailedError("Expected CommandParseException");
-        } catch(CommandParseException ex) {
-            Throwable cause = ex.getCause();
-            assertThat(cause).isInstanceOf(NoSuchMethodException.class);
-        }
-    }
-
-    @Test
-    public void test_parse_method_options_method_invalid_parameters() throws NoSuchMethodException
-    {
-        Method method = DefaultRoutingMethodParserTest.class.getDeclaredMethod("commandWithInvalidOptionsParam", CommandRequest.class);
-
-        try {
-            parser.parseCommandMethodAnnotation(method, this);
-            throw new AssertionFailedError("Expected CommandParseException");
-        } catch(CommandParseException ex) {
-            Throwable cause = ex.getCause();
-            assertThat(cause).isInstanceOf(NoSuchMethodException.class);
-        }
-    }
-
-    @Test
-    public void test_parse_method_no_annotation() throws NoSuchMethodException
-    {
-        Method method = DefaultRoutingMethodParserTest.class.getDeclaredMethod("commandWithoutAnnotation", CommandRequest.class);
-
-        try {
-            parser.parseCommandMethodAnnotation(method, this);
-            throw new AssertionFailedError("Expected CommandParseException");
-        } catch(CommandParseException ex) {
-            assertThat(ex).isInstanceOf(AnnotationMissingException.class);
-        }
-    }
-
-    @Test
-    public void test_parse_method_annotation_with_options() throws Throwable
-    {
-        Method method = DefaultRoutingMethodParserTest.class.getDeclaredMethod("commandWithAnnotationOptions", CommandRequest.class);
-
-        CommandRoute route = parser.parseCommandMethodAnnotation(method, this);
-
-        assertThat(route.getCommandName()).isEqualTo("test");
-        assertOptionsValidStrings(route.getOptionDetails());
-        assertThat(route.getProxy().invoke(mock(CommandRequest.class))).isEqualTo("TEST_STRING");
-        assertThat(route.getOptionDetails().recognizedOptions()).containsKey("?");
-        assertThat(route.getOptionDetails().recognizedOptions()).doesNotContainKey("t");
-    }
-
-    @Test
-    public void test_command_method_parameters_correct() throws NoSuchMethodException
-    {
-        Method method = DefaultRoutingMethodParserTest.class.getDeclaredMethod("commandWithExtraArgs", CommandRequest.class, String[].class);
-        assertThat(parser.areCommandMethodParametersCorrect(method)).isFalse();
-
-        method = DefaultRoutingMethodParserTest.class.getDeclaredMethod("commandWithNotEnoughArgs");
-        assertThat(parser.areCommandMethodParametersCorrect(method)).isFalse();
-
-        method = DefaultRoutingMethodParserTest.class.getDeclaredMethod("commandWithWrongArg1", CommandBlock.class);
-        assertThat(parser.areCommandMethodParametersCorrect(method)).isFalse();
-
-        method = DefaultRoutingMethodParserTest.class.getDeclaredMethod("commandWithAnnotation", CommandRequest.class);
-        assertThat(parser.areCommandMethodParametersCorrect(method)).isTrue();
-    }
-
-    @Test
-    public void test_parse_command_method_invalid_args() throws NoSuchMethodException
-    {
-        Method method = DefaultRoutingMethodParserTest.class.getDeclaredMethod("commandWithExtraArgs", CommandRequest.class, String[].class);
-
-        try {
-            parser.parseCommandMethodAnnotation(method, this);
-            throw new AssertionFailedError("Expected CommandParseException");
-        } catch(CommandParseException ex) {
-            assertThat(ex.getMessage()).contains("Invalid command method parameters");
-        }
-    }
-
-    @Test
-    public void test_parse_command_method_non_standard_help() throws NoSuchMethodException, CommandParseException {
-        Method method = DefaultRoutingMethodParserTest.class.getDeclaredMethod("commandWithNonStandardHelp", CommandRequest.class);
-        CommandRoute route = parser.parseCommandMethodAnnotation(method, this);
-
+        Method method = testMethods.getMethodWithNonStandardHelp();
+        CommandRoute route = parser.parseCommandMethodAnnotation(method, testMethods);
         assertThat(route.getOptionDetails().recognizedOptions()).containsKey("t");
         assertThat(route.getOptionDetails().recognizedOptions()).doesNotContainKey("?");
+    }
+
+    @Test
+    public void test_fetch_parameters_from_parser()
+    {
+        OptionParser options = new OptionParser();
+        options.accepts("a", "description"); //no arg shouldn't show up
+        options.accepts("b").withOptionalArg(); //should show up as string
+        options.accepts("c").withOptionalArg().ofType(Integer.class); //should show up as Integer
+        options.accepts("d").withOptionalArg().withValuesConvertedBy(new OnlinePlayerValueConverter(true)); //should show up as Player
+        options.accepts("e").withRequiredArg(); //should show up as string
+        options.accepts("f").withRequiredArg().ofType(Integer.class); //should show up as Integer
+        options.accepts("g").withRequiredArg().withValuesConvertedBy(new OnlinePlayerValueConverter(true)); //should show up as Player
+
+        Map<String, Class> params = parser.getParameters(options);
+
+        assertThat(params.size()).isEqualTo(7);
+        assertThat(params.get("a")).isNull();
+        assertThat(params.get("b")).isEqualTo(String.class);
+        assertThat(params.get("c")).isEqualTo(Integer.class);
+        assertThat(params.get("d")).isEqualTo(Player[].class);
+        assertThat(params.get("e")).isEqualTo(String.class);
+        assertThat(params.get("f")).isEqualTo(Integer.class);
+        assertThat(params.get("g")).isEqualTo(Player[].class);
+        assertThat(params.get("[arguments]")).isEqualTo(List.class);
+
+        options.nonOptions().withValuesConvertedBy(new OnlinePlayerValueConverter(true));
+        params = parser.getParameters(options);
+
+        assertThat(params.size()).isEqualTo(7);
+        assertThat(params.get("[arguments]")).isEqualTo(List.class);
+
+        options.nonOptions().ofType(Double.class);
+        params = parser.getParameters(options);
+
+        assertThat(params.size()).isEqualTo(7);
+        assertThat(params.get("[arguments]")).isEqualTo(List.class);
+    }
+
+    @Test
+    public void test_option_posistion_correct() throws NoSuchMethodException, CommandParseException
+    {
+        Method method = testMethods.getTestOptionsPosistions();
+        OptionParser p = testMethods.getParserForOptionPosistionMethod();
+
+        String[] posistion = new String[]{"l", "string", "radius", "[arguments]"};
+        parser.checkPositionsCorrect(method, posistion, p, 2);
+    }
+
+    @Test(expected = CommandParseException.class)
+    public void test_option_posistion_wrong_offset() throws NoSuchMethodException, CommandParseException
+    {
+        Method method = testMethods.getTestOptionsPosistions();
+        OptionParser p = testMethods.getParserForOptionPosistionMethod();
+
+        String[] posistion = new String[]{"l", "string", "radius", "[arguments]"};
+        parser.checkPositionsCorrect(method, posistion, p, 3); //wrong offset so now the arg list is all wrong
+    }
+
+    @Test(expected = CommandParseException.class)
+    public void test_option_posistions_too_many() throws NoSuchMethodException, CommandParseException
+    {
+        Method method = testMethods.getTestOptionsPosistions();
+        OptionParser p = testMethods.getParserForOptionPosistionMethod();
+
+        String[] posistion = new String[]{"l", "string", "radius", "[arguments]", "l"}; //added extra 'l', method doesn't have correct param count now
+        parser.checkPositionsCorrect(method, posistion, p, 2);
+    }
+
+    @Test(expected = CommandParseException.class)
+    public void test_option_posistions_not_enough() throws NoSuchMethodException, CommandParseException
+    {
+        Method method = testMethods.getTestOptionsPosistions();
+        OptionParser p = testMethods.getParserForOptionPosistionMethod();
+
+        String[] posistion = new String[]{"l", "string", "radius"}; //removed the [arguments], method doesn't have correct param count now
+        parser.checkPositionsCorrect(method, posistion, p, 2);
+    }
+
+    @Test(expected = CommandParseException.class)
+    public void test_option_posistions_wrong_class() throws NoSuchMethodException, CommandParseException
+    {
+        Method method = testMethods.getTestOptionsPosistions();
+        OptionParser p = testMethods.getParserForOptionPosistionMethod();
+
+        String[] posistion = new String[]{"l", "radius", "string", "[arguments]"}; //switch string and radius so class don't match now
+        parser.checkPositionsCorrect(method, posistion, p, 2);
+    }
+
+    @Test(expected = CommandParseException.class)
+    public void test_option_posistions_invalid_option() throws NoSuchMethodException, CommandParseException
+    {
+        Method method = testMethods.getTestOptionsPosistions();
+        OptionParser p = testMethods.getParserForOptionPosistionMethod();
+
+        String[] posistion = new String[]{"l", "strings", "radius", "[arguments]"}; //switch string with strings which is an invalid option
+        parser.checkPositionsCorrect(method, posistion, p, 2);
     }
 }

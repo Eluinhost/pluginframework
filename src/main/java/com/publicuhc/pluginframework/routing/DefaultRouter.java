@@ -28,7 +28,6 @@ import com.publicuhc.pluginframework.routing.exception.CommandInvocationExceptio
 import com.publicuhc.pluginframework.routing.exception.CommandParseException;
 import com.publicuhc.pluginframework.routing.parser.RoutingMethodParser;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.PluginCommand;
@@ -195,16 +194,11 @@ public class DefaultRouter implements Router
             //grab the one with the longest argument list (deepest subcommand)
             CommandRoute route = applicable.peek();
 
-            //check permissions
-            String permission = route.getPermission();
-            if(null != permission && !sender.hasPermission(permission)) {
-                sender.sendMessage(ChatColor.RED + "You do not have permission to run that command. (" + permission + ")");
-                return true;
-            }
+            String[] subcommandArgs = Arrays.copyOfRange(args, route.getStartsWith().length, args.length);
 
             //run the actual command
             try {
-                route.run(command, sender, args);
+                route.run(command, sender, subcommandArgs);
             } catch(CommandInvocationException e) {
                 e.printStackTrace();
             }

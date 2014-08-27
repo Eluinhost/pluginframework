@@ -21,7 +21,6 @@
 
 package com.publicuhc.pluginframework.routing.proxy;
 
-import com.publicuhc.pluginframework.TestObject;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.powermock.modules.junit4.PowerMockRunner;
@@ -30,8 +29,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.*;
-import static org.powermock.api.mockito.PowerMockito.spy;
+import static org.powermock.api.mockito.PowerMockito.mock;
 
 @RunWith(PowerMockRunner.class)
 public class ReflectionMethodProxyTest
@@ -39,30 +37,42 @@ public class ReflectionMethodProxyTest
     @Test
     public void test_invoking_without_arguments() throws InvocationTargetException, IllegalAccessException, NoSuchMethodException
     {
-        TestObject object = spy(new TestObject());
-        Method method = TestObject.class.getMethod("getNoArg");
+        TestReflectedObject object = new TestReflectedObject();
+        Method method = TestReflectedObject.class.getMethod("testNoArg");
         ReflectionMethodProxy proxy = new ReflectionMethodProxy(object, method);
-
-        Object returns = proxy.invoke();
-
-        assertThat(returns).isInstanceOf(String.class);
-        assertThat(returns).isSameAs(TestObject.TEST_STRING);
-        verify(object, times(1)).getNoArg();
-        verifyNoMoreInteractions(object);
+        proxy.invoke();
     }
 
     @Test
     public void test_invoking_with_arguments() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException
     {
-        TestObject object = spy(new TestObject());
-        Method method = TestObject.class.getMethod("getArg", String.class);
+        TestReflectedObject object = new TestReflectedObject();
+        Method method = TestReflectedObject.class.getMethod("testCorrect", String.class, Double.class, Integer[].class);
         ReflectionMethodProxy proxy = new ReflectionMethodProxy(object, method);
 
-        Object returns = proxy.invoke(TestObject.TEST_STRING);
+        proxy.invoke("test", 10.2D, new Integer[]{1, 2, 3});
+    }
 
-        assertThat(returns).isInstanceOf(String.class);
-        assertThat(returns).isSameAs(TestObject.TEST_STRING);
-        verify(object, times(1)).getArg(TestObject.TEST_STRING);
-        verifyNoMoreInteractions(object);
+    @Test
+    public void test_with_return() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException
+    {
+        TestReflectedObject object = new TestReflectedObject();
+        String mocked = mock(String.class);
+        Method method = TestReflectedObject.class.getMethod("testReturn", String.class);
+        ReflectionMethodProxy proxy = new ReflectionMethodProxy(object, method);
+
+        assertThat(proxy.invoke(mocked)).isSameAs(mocked);
+    }
+
+    @Test
+    public void test_invoke_with_arguments_array() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException
+    {
+        TestReflectedObject object = new TestReflectedObject();
+        Method method = TestReflectedObject.class.getMethod("testCorrect", String.class, Double.class, Integer[].class);
+        ReflectionMethodProxy proxy = new ReflectionMethodProxy(object, method);
+
+        Object[] args = new Object[]{"test", 10.2D, new Integer[]{1, 2, 3}};
+
+        proxy.invoke(args);
     }
 }

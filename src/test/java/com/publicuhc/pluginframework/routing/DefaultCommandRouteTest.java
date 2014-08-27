@@ -23,7 +23,6 @@ package com.publicuhc.pluginframework.routing;
 
 import com.publicuhc.pluginframework.routing.exception.CommandInvocationException;
 import com.publicuhc.pluginframework.routing.proxy.MethodProxy;
-import com.publicuhc.pluginframework.routing.proxy.ReflectionMethodProxy;
 import joptsimple.OptionException;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
@@ -40,54 +39,50 @@ import org.junit.runner.RunWith;
 import org.mockito.Matchers;
 import org.powermock.modules.junit4.PowerMockRunner;
 
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.List;
-
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.*;
-import static org.powermock.api.mockito.PowerMockito.mock;
-import static org.powermock.api.mockito.PowerMockito.spy;
-import static org.powermock.api.mockito.PowerMockito.when;
 
 @RunWith(PowerMockRunner.class)
 public class DefaultCommandRouteTest
 {
-    private OptionParser parser;
-    private OptionSpec helpSpec;
-    private OptionSet set;
-    private TestClass testObject;
-
     @SuppressWarnings("unchecked")
     private Class<? extends CommandSender>[] allSenders = (Class<? extends CommandSender>[]) new Class<?>[]{CommandSender.class};
     @SuppressWarnings("unchecked")
     private Class<? extends CommandSender>[] playerOrConsoleSender = (Class<? extends CommandSender>[]) new Class<?>[]{Player.class, ConsoleCommandSender.class};
 
+    private OptionParser parser;
+    private OptionSet set;
+    private OptionSpec help;
+    private Command command;
+    private MethodProxy proxy;
+
     @Before
     public void onStartup() throws NoSuchMethodException
     {
-        testObject = new TestClass();
         parser = mock(OptionParser.class);
-        helpSpec = mock(OptionSpec.class);
+        help = mock(OptionSpec.class);
+        command = mock(Command.class);
+        proxy = mock(MethodProxy.class);
         set = mock(OptionSet.class);
+
         when(parser.parse(Matchers.<String[]>anyVararg())).thenReturn(set);
-        List nonOptions = new ArrayList<String>();
-        nonOptions.add("a");
-        nonOptions.add("abc");
-        when(set.nonOptionArguments()).thenReturn(nonOptions);
+        when(set.has(help)).thenReturn(false);
     }
 
     @Test
     public void test_sender_restricted() throws Throwable
     {
-        Method method = TestClass.class.getMethod("testMethod", CommandRequest.class);
-        MethodProxy proxy = spy(new ReflectionMethodProxy(testObject, method));
+        DefaultCommandRoute route = new DefaultCommandRoute(
+                "test",
+                CommandMethod.NO_PERMISSIONS,
+                playerOrConsoleSender,
+                proxy,
+                parser,
+                new String[]{},
+                help
+        );
 
-        DefaultCommandRoute route = new DefaultCommandRoute("test", CommandMethod.NO_PERMISSIONS, playerOrConsoleSender, proxy, parser, helpSpec);
-
-        Command command = mock(Command.class);
         CommandSender sender = mock(BlockCommandSender.class);
         String[] args = new String[]{};
 
@@ -97,9 +92,8 @@ public class DefaultCommandRouteTest
             throw ex.getCause();
         }
         verify(parser, never()).parse(args);
-        verify(proxy, never()).invoke(any(CommandRequest.class));
+        verifyNoMoreInteractions(proxy);
         verify(sender).sendMessage(contains("run that command"));
-        assertThat(testObject.wasRan()).isFalse();
 
         sender = mock(Player.class);
         try {
@@ -108,29 +102,42 @@ public class DefaultCommandRouteTest
             throw ex.getCause();
         }
         verify(parser, times(1)).parse(args);
-        verify(proxy, times(1)).invoke(any(CommandRequest.class));
+        verify(proxy, times(1)).invoke(set, sender);
         verify(sender, never()).sendMessage(anyString());
-        assertThat(testObject.wasRan()).isTrue();
     }
 
     @Test
     public void test_permission_set_default() throws NoSuchMethodException {
-        Method method = TestClass.class.getMethod("testMethod", CommandRequest.class);
-        MethodProxy proxy = spy(new ReflectionMethodProxy(testObject, method));
-
-        DefaultCommandRoute route = new DefaultCommandRoute("test", CommandMethod.NO_PERMISSIONS, allSenders, proxy, parser, helpSpec);
+        DefaultCommandRoute route = new DefaultCommandRoute("test", CommandMethod.NO_PERMISSIONS, allSenders, proxy, parser, new String[]{}, help);
         assertThat(route.getPermission()).isNull();
 
-        route = new DefaultCommandRoute("test", "TEST.PERMISSION", allSenders, proxy, parser, helpSpec);
+        route = new DefaultCommandRoute("test", "TEST.PERMISSION", allSenders, proxy, parser, new String[]{}, help);
         assertThat(route.getPermission()).isEqualTo("TEST.PERMISSION");
+    }
+
+    @Test
+    public void test_invalid_permission() throws Throwable
+    {
+        DefaultCommandRoute route = new DefaultCommandRoute("test", "test.permission", allSenders, proxy, parser, new String[]{}, help);
+
+        Command command = mock(Command.class);
+        CommandSender sender = mock(CommandSender.class);
+        when(sender.hasPermission("test.permission")).thenReturn(false);
+        String[] args = new String[]{};
+
+        try {
+            route.run(command, sender, args);
+        } catch(CommandInvocationException ex) {
+            throw ex.getCause();
+        }
+        verifyNoMoreInteractions(proxy);
+        verify(sender).sendMessage(anyString());
     }
 
     @Test
     public void test_valid_invocation() throws Throwable
     {
-        Method method = TestClass.class.getMethod("testMethod", CommandRequest.class);
-        MethodProxy proxy = spy(new ReflectionMethodProxy(testObject, method));
-        DefaultCommandRoute route = new DefaultCommandRoute("test", CommandMethod.NO_PERMISSIONS, allSenders, proxy, parser, helpSpec);
+        DefaultCommandRoute route = new DefaultCommandRoute("test", CommandMethod.NO_PERMISSIONS, allSenders, proxy, parser, new String[]{}, help);
 
         Command command = mock(Command.class);
         CommandSender sender = mock(CommandSender.class);
@@ -142,19 +149,15 @@ public class DefaultCommandRouteTest
             throw ex.getCause();
         }
         verify(parser, times(1)).parse(args);
-        verify(proxy, times(1)).invoke(any(CommandRequest.class));
-
-        assertThat(testObject.wasRan()).isTrue();
+        verify(proxy, times(1)).invoke(set, sender);
     }
 
     @Test
     public void test_help_print_option() throws Throwable
     {
-        when(set.has(helpSpec)).thenReturn(true);
+        when(set.has(help)).thenReturn(true);
 
-        Method method = TestClass.class.getMethod("testMethod", CommandRequest.class);
-        MethodProxy proxy = spy(new ReflectionMethodProxy(testObject, method));
-        DefaultCommandRoute route = new DefaultCommandRoute("test", CommandMethod.NO_PERMISSIONS, allSenders, proxy, parser, helpSpec);
+        DefaultCommandRoute route = new DefaultCommandRoute("test", CommandMethod.NO_PERMISSIONS, allSenders, proxy, parser, new String[]{}, help);
 
         Command command = mock(Command.class);
         CommandSender sender = mock(CommandSender.class);
@@ -166,9 +169,29 @@ public class DefaultCommandRouteTest
             throw ex.getCause();
         }
         verify(parser, times(1)).parse(args);
-        verify(proxy, never()).invoke(any(CommandRequest.class));
-
+        verifyNoMoreInteractions(proxy);
         verify(sender).sendMessage(anyString());
+    }
+
+
+
+    @Test
+    public void test_valid_permission() throws Throwable
+    {
+        DefaultCommandRoute route = new DefaultCommandRoute("test", "test.permission", allSenders, proxy, parser, new String[]{}, help);
+
+        Command command = mock(Command.class);
+        CommandSender sender = mock(CommandSender.class);
+        when(sender.hasPermission("test.permission")).thenReturn(true);
+        String[] args = new String[]{};
+
+        try {
+            route.run(command, sender, args);
+        } catch(CommandInvocationException ex) {
+            throw ex.getCause();
+        }
+        verify(proxy, times(1)).invoke(set, sender);
+        verify(sender, never()).sendMessage(anyString());
     }
 
     @Test
@@ -176,9 +199,7 @@ public class DefaultCommandRouteTest
     {
         when(parser.parse(Matchers.<String[]>anyVararg())).thenThrow(mock(OptionException.class));
 
-        Method method = TestClass.class.getMethod("testMethod", CommandRequest.class);
-        MethodProxy proxy = spy(new ReflectionMethodProxy(testObject, method));
-        DefaultCommandRoute route = new DefaultCommandRoute("test", CommandMethod.NO_PERMISSIONS, allSenders, proxy, parser, helpSpec);
+        DefaultCommandRoute route = new DefaultCommandRoute("test", CommandMethod.NO_PERMISSIONS, allSenders, proxy, parser, new String[]{}, help);
 
         Command command = mock(Command.class);
         CommandSender sender = mock(CommandSender.class);
@@ -190,54 +211,28 @@ public class DefaultCommandRouteTest
             throw ex.getCause();
         }
         verify(parser, times(1)).parse(args);
-        verify(proxy, never()).invoke(any(CommandRequest.class));
-
+        verifyNoMoreInteractions(proxy);
         verify(sender).sendMessage(anyString());
     }
 
     @Test
     public void test_invocation_with_exception() throws Throwable
     {
-        Method method = TestClass.class.getMethod("exceptionMethod", CommandRequest.class);
-        MethodProxy proxy = spy(new ReflectionMethodProxy(testObject, method));
-        DefaultCommandRoute route = new DefaultCommandRoute("test", CommandMethod.NO_PERMISSIONS, allSenders, proxy, parser, helpSpec);
+        DefaultCommandRoute route = new DefaultCommandRoute("test", CommandMethod.NO_PERMISSIONS, allSenders, proxy, parser, new String[]{}, help);
 
         Command command = mock(Command.class);
         CommandSender sender = mock(CommandSender.class);
         String[] args = new String[]{"1", "2"};
+
+        //noinspection unchecked
+        when(proxy.invoke(set, sender)).thenThrow(CommandInvocationException.class);
 
         try {
             route.run(command, sender, args);
             throw new AssertionFailedError("Expected CommandInvocationException");
         } catch(CommandInvocationException ignored) {
             verify(parser, times(1)).parse(args);
-            verify(proxy, times(1)).invoke(any(CommandRequest.class));
-            assertThat(testObject.wasRan()).isFalse();
-        }
-    }
-
-    public static class TestClass
-    {
-        private boolean ran = false;
-
-        public void testMethod(CommandRequest request)
-        {
-            setRan(true);
-        }
-
-        public void exceptionMethod(CommandRequest request)
-        {
-            throw new IllegalStateException();
-        }
-
-        public void setRan(boolean ran)
-        {
-            this.ran = ran;
-        }
-
-        public boolean wasRan()
-        {
-            return ran;
+            verify(proxy, times(1)).invoke(set, sender);
         }
     }
 }

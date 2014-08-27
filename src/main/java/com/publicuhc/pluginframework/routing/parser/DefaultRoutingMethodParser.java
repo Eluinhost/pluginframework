@@ -22,7 +22,6 @@
 package com.publicuhc.pluginframework.routing.parser;
 
 import com.publicuhc.pluginframework.routing.CommandMethod;
-import com.publicuhc.pluginframework.routing.CommandRequest;
 import com.publicuhc.pluginframework.routing.CommandRoute;
 import com.publicuhc.pluginframework.routing.DefaultCommandRoute;
 import com.publicuhc.pluginframework.routing.exception.AnnotationMissingException;
@@ -30,15 +29,85 @@ import com.publicuhc.pluginframework.routing.exception.CommandParseException;
 import com.publicuhc.pluginframework.routing.help.BukkitHelpFormatter;
 import com.publicuhc.pluginframework.routing.proxy.MethodProxy;
 import com.publicuhc.pluginframework.routing.proxy.ReflectionMethodProxy;
-import joptsimple.OptionDeclarer;
-import joptsimple.OptionParser;
-import joptsimple.OptionSpec;
+import joptsimple.*;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class DefaultRoutingMethodParser extends RoutingMethodParser
 {
+
+    private final Field converterFieldArguments;
+    private final Field converterFieldNonOptions;
+
+    /**
+     * Used to create CommandRoute objects from a method with an @CommandMethod annotation
+     */
+    public DefaultRoutingMethodParser()
+    {
+        //setup the reflection to get the ValueConverter from the option specs
+        Field argConverterField = null;
+        Field optionsConverterField = null;
+        try {
+            //get the converter field and allow it to be accessed via reflection
+            argConverterField = ArgumentAcceptingOptionSpec.class.getDeclaredField("converter");
+            argConverterField.setAccessible(true);
+
+            optionsConverterField = NonOptionArgumentSpec.class.getDeclaredField("converter");
+            optionsConverterField.setAccessible(true);
+        } catch(NoSuchFieldException e) {
+            e.printStackTrace();
+        }
+
+        this.converterFieldArguments = argConverterField;
+        this.converterFieldNonOptions = optionsConverterField;
+    }
+
+    /**
+     * Gets a map of option name->converted class, adds 'arguments' for nonOptions. Ignores options without arguments
+     *
+     * @param parser the parser to use to generate the map
+     * @return map of options to their class
+     */
+    protected Map<String, Class> getParameters(OptionParser parser)
+    {
+        Map<String, Class> parameterTypes = new HashMap<String, Class>();
+
+        for(Map.Entry<String, OptionSpec<?>> option : parser.recognizedOptions().entrySet()) {
+
+            //get the name of the option
+            OptionSpec optionSpec = option.getValue();
+
+            //if its the non options we add it to 'arguments'
+            if(optionSpec instanceof NonOptionArgumentSpec) {
+                NonOptionArgumentSpec nonOptionsSpec = (NonOptionArgumentSpec) optionSpec;
+                parameterTypes.put("[arguments]", List.class);
+            }
+
+            //if its an an option with an argument we add it as it's option name
+            if(optionSpec instanceof ArgumentAcceptingOptionSpec) {
+                ArgumentAcceptingOptionSpec argspec = (ArgumentAcceptingOptionSpec) optionSpec;
+
+                //only do it for options that accept arguments
+                if(argspec.acceptsArguments()) {
+                    try {
+                        ValueConverter converter = (ValueConverter) converterFieldArguments.get(argspec);
+                        Class convertClass = converter == null ? String.class : converter.valueType();
+                        parameterTypes.put(option.getKey(), convertClass);
+                    } catch(IllegalAccessException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }
+
+        return parameterTypes;
+    }
 
     /**
      * Returns an OptionParser after it has been pased through a method
@@ -63,11 +132,49 @@ public class DefaultRoutingMethodParser extends RoutingMethodParser
         return parser;
     }
 
-    protected boolean areCommandMethodParametersCorrect(Method method)
+    /**
+     * Checks if the given option posistions are valid for the method given
+     *
+     * @param method the method to check
+     * @param posistions array of option names and their posistions
+     * @param parser the parser with the options set
+     * @param offset the offset in the methods parameters to start checking from (inclusive), 0 = all parameters
+     * @throws com.publicuhc.pluginframework.routing.exception.CommandParseException when something isn't right
+     */
+    protected void checkPositionsCorrect(Method method, String[] posistions, OptionParser parser, int offset) throws CommandParseException
     {
-        Class[] types = method.getParameterTypes();
+        Map<String, Class> parameterClassMap = getParameters(parser);
 
-        return types.length == 1 && types[0].equals(CommandRequest.class);
+        Class<?>[] parameters = method.getParameterTypes();
+
+        //check if the offset exists
+        if(parameters.length < offset)
+            throw new CommandParseException("Method " + method + " does not have enough parameters");
+
+        //remove all of the parameters we don't care about
+        parameters = Arrays.copyOfRange(parameters, offset, parameters.length);
+
+        //don't allow extra arguments not defined in the posistions array
+        if(posistions.length != parameters.length)
+            throw new CommandParseException("Method " + method + " option posistions length does not match method parameters");
+
+        int numberOfOptions = posistions.length;
+
+        if(numberOfOptions > parameterClassMap.size()) {
+            throw new CommandParseException("Method " + method + " has more arguments than are defined in it's parser");
+        }
+
+        for(int i = 0; i < numberOfOptions; i++) {
+            String optionName = posistions[i];
+
+            if(!parameterClassMap.containsKey(optionName))
+                throw new CommandParseException("Method " + method + " contains invalid option in posistions: " + optionName);
+
+            Class<?> parameterClass = parameters[i];
+
+            if(!parameterClass.isAssignableFrom(parameterClassMap.get(optionName)))
+                throw new CommandParseException("Method " + method + " has wrong class type " + parameterClass.getName() + " for option: " + optionName);
+        }
     }
 
     @Override
@@ -77,9 +184,6 @@ public class DefaultRoutingMethodParser extends RoutingMethodParser
 
         if(null == annotation)
             throw new AnnotationMissingException(method, CommandMethod.class);
-
-        if(!areCommandMethodParametersCorrect(method))
-            throw new CommandParseException("Invalid command method parameters at " + method.getName());
 
         OptionParser optionParser;
 
@@ -94,12 +198,34 @@ public class DefaultRoutingMethodParser extends RoutingMethodParser
             optionParser = new OptionParser();
         }
 
+        String[] optionPositions = annotation.optionOrder();
+
+        Class[] parameters = method.getParameterTypes();
+
+        if(parameters.length < 2)
+            throw new CommandParseException("Method " + method.getName() + " needs at least 2 parameters, an OptionSet and a CommandSender");
+
+        if(!parameters[0].equals(OptionSet.class))
+            throw new CommandParseException("Method " + method.getName() + " does not have an OptionSet as parameter 1");
+
+        Class[] allowedSenders = annotation.allowedSenders();
+        Class<?> senderType = parameters[1];
+
+        for(Class<?> senderClass : allowedSenders) {
+            if(!senderType.isAssignableFrom(senderClass))
+                throw new CommandParseException("Method " + method.getName() + " argument #2 is " + senderType.getName() + " but is not applicable to one of the restricted sender types: " + senderClass.getName());
+        }
+
+        //offset 2 because 1 = OptionSet and 2 = CommandSender (or subclasses)
+        checkPositionsCorrect(method, optionPositions, optionParser, 2);
+
+        //add the help formatter and add the default help option
         optionParser.formatHelpWith(new BukkitHelpFormatter());
         OptionSpec helpSpec = optionParser.accepts(annotation.helpOption(), "Shows help").forHelp();
 
+        //setup the proxy and create the route
         MethodProxy proxy = new ReflectionMethodProxy(instance, method);
-
-        return new DefaultCommandRoute(annotation.command(), annotation.permission(), annotation.allowedSenders(), proxy, optionParser, helpSpec);
+        return new DefaultCommandRoute(annotation.command(), annotation.permission(), annotation.allowedSenders(), proxy, optionParser, optionPositions, helpSpec);
     }
 
     @Override
