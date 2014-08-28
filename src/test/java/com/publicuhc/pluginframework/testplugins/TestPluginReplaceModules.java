@@ -23,25 +23,17 @@ package com.publicuhc.pluginframework.testplugins;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.Inject;
-import com.google.inject.Injector;
-import com.google.inject.name.Named;
+import com.google.inject.Module;
+import com.google.inject.util.Modules;
 import com.publicuhc.pluginframework.FrameworkJavaPlugin;
-import com.publicuhc.pluginframework.configuration.Configurator;
-import com.publicuhc.pluginframework.configuration.DefaultConfigurator;
-import com.publicuhc.pluginframework.routing.DefaultRouter;
-import com.publicuhc.pluginframework.routing.Router;
-import com.publicuhc.pluginframework.routing.parser.DefaultRoutingMethodParser;
-import com.publicuhc.pluginframework.routing.parser.RoutingMethodParser;
-import com.publicuhc.pluginframework.translate.DefaultTranslate;
-import com.publicuhc.pluginframework.translate.Translate;
-import joptsimple.OptionParser;
+import com.publicuhc.pluginframework.PluginModule;
 import org.bukkit.Server;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginLoader;
 import org.bukkit.plugin.PluginLogger;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.List;
 
 public class TestPluginReplaceModules extends FrameworkJavaPlugin {
@@ -55,53 +47,34 @@ public class TestPluginReplaceModules extends FrameworkJavaPlugin {
         super(loader, server, pdf, file1, file2);
     }
 
-    @Inject
-    public OptionParser parser;
-
     @Override
-    public boolean initUseDefaultBindings() {
-        return false;
-    }
-
-    @Override
-    public List<AbstractModule> initialModules() {
-        List<AbstractModule> modules = new ArrayList<AbstractModule>();
+    protected void initialModules(List<Module> modules)
+    {
         AbstractModule module = new AbstractModule() {
             @Override
-            protected void configure() {
-                bind(Router.class).to(TestConcreteRouter.class);
-                bind(Configurator.class).to(TestConcreteConfigurator.class);
-                bind(Translate.class).to(TestConcreteTranslate.class);
-                bind(RoutingMethodParser.class).to(TestRoutingMethodParser.class);
-                bind(ClassLoader.class).toInstance(getClass().getClassLoader());
+            protected void configure()
+            {
+                bind(PluginLogger.class).to(TestPluginLogger.class);
             }
         };
-        modules.add(module);
-        return modules;
+        Module overriden = Modules.override(new PluginModule(this)).with(module);
+        modules.add(overriden);
     }
 
-    public static class TestConcreteRouter extends DefaultRouter
+    public PluginLogger logger;
+
+    @Inject
+    private void setLogger(PluginLogger logger)
+    {
+        this.logger = logger;
+    }
+
+    public static class TestPluginLogger extends PluginLogger
     {
         @Inject
-        protected TestConcreteRouter(RoutingMethodParser parser, Injector injector, PluginLogger logger)
+        public TestPluginLogger(Plugin context)
         {
-            super(parser, injector, logger);
+            super(context);
         }
     }
-
-    public static class TestConcreteTranslate extends DefaultTranslate {
-        @Inject
-        protected TestConcreteTranslate(Configurator configurator) {
-            super(configurator);
-        }
-    }
-
-    public static class TestConcreteConfigurator extends DefaultConfigurator {
-        @Inject
-        public TestConcreteConfigurator(@Named("dataFolder") File file, ClassLoader loader) {
-            super(file, loader);
-        }
-    }
-
-    public static class TestRoutingMethodParser extends DefaultRoutingMethodParser {}
 }

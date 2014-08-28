@@ -21,12 +21,11 @@
 
 package com.publicuhc.pluginframework;
 
-import com.publicuhc.pluginframework.configuration.DefaultConfigurator;
-import com.publicuhc.pluginframework.routing.DefaultRouter;
+import com.google.inject.Module;
 import com.publicuhc.pluginframework.testplugins.TestPluginDefaultModules;
 import com.publicuhc.pluginframework.testplugins.TestPluginExtraModules;
+import com.publicuhc.pluginframework.testplugins.TestPluginNoModules;
 import com.publicuhc.pluginframework.testplugins.TestPluginReplaceModules;
-import com.publicuhc.pluginframework.translate.DefaultTranslate;
 import org.bukkit.Server;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginLoader;
@@ -38,6 +37,7 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
 import java.io.File;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.powermock.api.mockito.PowerMockito.mock;
@@ -48,7 +48,8 @@ import static org.powermock.api.mockito.PowerMockito.when;
 public class FrameworkJavaPluginTest {
 
     @Test
-    public void testUseDefaultModules() throws Exception {
+    public void test_no_modules() throws Exception
+    {
         PluginLoader loader = mock(PluginLoader.class);
         Server server = mock(Server.class);
         PluginDescriptionFile pdf = mock(PluginDescriptionFile.class);
@@ -57,27 +58,35 @@ public class FrameworkJavaPluginTest {
         PluginLogger logger = mock(PluginLogger.class);
         when(server.getLogger()).thenReturn(logger);
 
-        TestPluginDefaultModules plugin = new TestPluginDefaultModules(loader, server, pdf, file1, file1) { };
-
-        assertThat(plugin.getConfigurator()).isNull();
-        assertThat(plugin.getRouter()).isNull();
-        assertThat(plugin.getTranslate()).isNull();
-
+        TestPluginNoModules plugin = new TestPluginNoModules(loader, server, pdf, file1, file1);
         plugin.onLoad();
-
-        assertThat(plugin.getConfigurator()).isNull();
-        assertThat(plugin.getRouter()).isNull();
-        assertThat(plugin.getTranslate()).isNull();
-
         plugin.onEnable();
-
-        assertThat(plugin.getConfigurator()).isInstanceOf(DefaultConfigurator.class);
-        assertThat(plugin.getTranslate()).isInstanceOf(DefaultTranslate.class);
-        assertThat(plugin.getRouter()).isInstanceOf(DefaultRouter.class);
     }
 
     @Test
-    public void testUseExtraModules() throws Exception {
+    public void test_default_modules() throws Exception
+    {
+        PluginLoader loader = mock(PluginLoader.class);
+        Server server = mock(Server.class);
+        PluginDescriptionFile pdf = mock(PluginDescriptionFile.class);
+        File file1 = new File("target" + File.separator + "testdatafolder");
+
+        PluginLogger logger = mock(PluginLogger.class);
+        when(server.getLogger()).thenReturn(logger);
+
+        TestPluginDefaultModules plugin = new TestPluginDefaultModules(loader, server, pdf, file1, file1);
+        assertThat(plugin.injectedPlugin).isNull();
+
+        plugin.onLoad();
+        assertThat(plugin.injectedPlugin).isNull();
+
+        plugin.onEnable();
+        assertThat(plugin.injectedPlugin).isSameAs(plugin);
+    }
+
+    @Test
+    public void test_extra_modules() throws Exception
+    {
         PluginLoader loader = mock(PluginLoader.class);
         Server server = mock(Server.class);
         PluginDescriptionFile pdf = mock(PluginDescriptionFile.class);
@@ -87,32 +96,18 @@ public class FrameworkJavaPluginTest {
         when(server.getLogger()).thenReturn(logger);
 
         TestPluginExtraModules plugin = new TestPluginExtraModules(loader, server, pdf, file1, file1);
-
-        assertThat(plugin.getConfigurator()).isNull();
-        assertThat(plugin.getRouter()).isNull();
-        assertThat(plugin.getTranslate()).isNull();
-
         assertThat(plugin.i).isNull();
 
         plugin.onLoad();
-
-        assertThat(plugin.getConfigurator()).isNull();
-        assertThat(plugin.getRouter()).isNull();
-        assertThat(plugin.getTranslate()).isNull();
-
         assertThat(plugin.i).isNull();
 
         plugin.onEnable();
-
-        assertThat(plugin.getConfigurator()).isInstanceOf(DefaultConfigurator.class);
-        assertThat(plugin.getTranslate()).isInstanceOf(DefaultTranslate.class);
-        assertThat(plugin.getRouter()).isInstanceOf(DefaultRouter.class);
-
         assertThat(plugin.i).isInstanceOf(TestPluginExtraModules.TestConcrete.class);
     }
 
     @Test
-    public void testReplaceModules() throws Exception {
+    public void test_override_modules() throws Exception
+    {
         PluginLoader loader = mock(PluginLoader.class);
         Server server = mock(Server.class);
         PluginDescriptionFile pdf = mock(PluginDescriptionFile.class);
@@ -122,28 +117,22 @@ public class FrameworkJavaPluginTest {
         when(server.getLogger()).thenReturn(logger);
 
         TestPluginReplaceModules plugin = new TestPluginReplaceModules(loader, server, pdf, file1, file1);
-
-        assertThat(plugin.getConfigurator()).isNull();
-        assertThat(plugin.getRouter()).isNull();
-        assertThat(plugin.getTranslate()).isNull();
-        assertThat(plugin.parser).isNull();
+        assertThat(plugin.logger).isNull();
 
         plugin.onLoad();
-
-        assertThat(plugin.getConfigurator()).isNull();
-        assertThat(plugin.getRouter()).isNull();
-        assertThat(plugin.getTranslate()).isNull();
-        assertThat(plugin.parser).isNull();
+        assertThat(plugin.logger).isNull();
 
         plugin.onEnable();
-
-        assertThat(plugin.getConfigurator()).isInstanceOf(TestPluginReplaceModules.TestConcreteConfigurator.class);
-        assertThat(plugin.getTranslate()).isInstanceOf(TestPluginReplaceModules.TestConcreteTranslate.class);
-        assertThat(plugin.getRouter()).isInstanceOf(TestPluginReplaceModules.TestConcreteRouter.class);
+        assertThat(plugin.logger).isInstanceOf(TestPluginReplaceModules.TestPluginLogger.class);
     }
 
     @Test(expected = IllegalStateException.class)
-    public void testWrongClassloader() {
-        FrameworkJavaPlugin javaPlugin = new FrameworkJavaPlugin() { };
+    public void test_wrong_classloader()
+    {
+        new FrameworkJavaPlugin() {
+            @Override
+            protected void initialModules(List<Module> modules)
+            {}
+        };
     }
 }

@@ -23,13 +23,14 @@ package com.publicuhc.pluginframework.testplugins;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.Inject;
+import com.google.inject.Module;
 import com.publicuhc.pluginframework.FrameworkJavaPlugin;
+import com.publicuhc.pluginframework.PluginModule;
 import org.bukkit.Server;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginLoader;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.List;
 
 public class TestPluginExtraModules extends FrameworkJavaPlugin {
@@ -39,20 +40,14 @@ public class TestPluginExtraModules extends FrameworkJavaPlugin {
      *
      * @see org.bukkit.plugin.java.JavaPlugin
      */
-    public TestPluginExtraModules(PluginLoader loader, Server server, PluginDescriptionFile pdf, File file1, File file2) {
+    public TestPluginExtraModules(PluginLoader loader, Server server, PluginDescriptionFile pdf, File file1, File file2)
+    {
         super(loader, server, pdf, file1, file2);
     }
 
-    public TestInterface i;
-
-    @Inject
-    public void setTest(TestInterface i) {
-        this.i = i;
-    }
-
     @Override
-    public List<AbstractModule> initialModules() {
-        List<AbstractModule> modules = new ArrayList<AbstractModule>();
+    protected void initialModules(List<Module> modules)
+    {
         AbstractModule module = new AbstractModule() {
             @Override
             protected void configure() {
@@ -60,10 +55,20 @@ public class TestPluginExtraModules extends FrameworkJavaPlugin {
             }
         };
         modules.add(module);
-        return modules;
+        modules.add(new PluginModule(this));
     }
 
-    public static interface TestInterface { }
+    public TestInterface i;
 
-    public static class TestConcrete implements TestInterface { }
+    @Inject
+    public void setTest(TestInterface i)
+    {
+        this.i = i;
+    }
+
+    public static interface TestInterface
+    {}
+
+    public static class TestConcrete implements TestInterface
+    {}
 }
