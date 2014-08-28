@@ -76,6 +76,7 @@ public class DefaultCommandRouteTest
         DefaultCommandRoute route = new DefaultCommandRoute(
                 "test",
                 new String[]{},
+                true,
                 playerOrConsoleSender,
                 proxy,
                 parser,
@@ -108,17 +109,17 @@ public class DefaultCommandRouteTest
 
     @Test
     public void test_permission_set_default() throws NoSuchMethodException {
-        DefaultCommandRoute route = new DefaultCommandRoute("test", new String[]{}, allSenders, proxy, parser, new String[]{}, help);
+        DefaultCommandRoute route = new DefaultCommandRoute("test", new String[]{}, true, allSenders, proxy, parser, new String[]{}, help);
         assertThat(route.getPermissions()).isEmpty();
 
-        route = new DefaultCommandRoute("test", new String[]{"TEST.PERMISSION"}, allSenders, proxy, parser, new String[]{}, help);
+        route = new DefaultCommandRoute("test", new String[]{"TEST.PERMISSION"}, true, allSenders, proxy, parser, new String[]{}, help);
         assertThat(route.getPermissions()).containsExactly("TEST.PERMISSION");
     }
 
     @Test
     public void test_invalid_permission() throws Throwable
     {
-        DefaultCommandRoute route = new DefaultCommandRoute("test", new String[]{"test.permission"}, allSenders, proxy, parser, new String[]{}, help);
+        DefaultCommandRoute route = new DefaultCommandRoute("test", new String[]{"test.permission"}, true, allSenders, proxy, parser, new String[]{}, help);
 
         Command command = mock(Command.class);
         CommandSender sender = mock(CommandSender.class);
@@ -137,7 +138,7 @@ public class DefaultCommandRouteTest
     @Test
     public void test_valid_invocation() throws Throwable
     {
-        DefaultCommandRoute route = new DefaultCommandRoute("test", new String[]{}, allSenders, proxy, parser, new String[]{}, help);
+        DefaultCommandRoute route = new DefaultCommandRoute("test", new String[]{}, true, allSenders, proxy, parser, new String[]{}, help);
 
         Command command = mock(Command.class);
         CommandSender sender = mock(CommandSender.class);
@@ -157,7 +158,7 @@ public class DefaultCommandRouteTest
     {
         when(set.has(help)).thenReturn(true);
 
-        DefaultCommandRoute route = new DefaultCommandRoute("test", new String[]{}, allSenders, proxy, parser, new String[]{}, help);
+        DefaultCommandRoute route = new DefaultCommandRoute("test", new String[]{}, true, allSenders, proxy, parser, new String[]{}, help);
 
         Command command = mock(Command.class);
         CommandSender sender = mock(CommandSender.class);
@@ -178,7 +179,7 @@ public class DefaultCommandRouteTest
     @Test
     public void test_valid_permission() throws Throwable
     {
-        DefaultCommandRoute route = new DefaultCommandRoute("test", new String[]{"test.permission"}, allSenders, proxy, parser, new String[]{}, help);
+        DefaultCommandRoute route = new DefaultCommandRoute("test", new String[]{"test.permission"}, true, allSenders, proxy, parser, new String[]{}, help);
 
         Command command = mock(Command.class);
         CommandSender sender = mock(CommandSender.class);
@@ -199,7 +200,7 @@ public class DefaultCommandRouteTest
     {
         when(parser.parse(Matchers.<String[]>anyVararg())).thenThrow(mock(OptionException.class));
 
-        DefaultCommandRoute route = new DefaultCommandRoute("test", new String[]{}, allSenders, proxy, parser, new String[]{}, help);
+        DefaultCommandRoute route = new DefaultCommandRoute("test", new String[]{}, true, allSenders, proxy, parser, new String[]{}, help);
 
         Command command = mock(Command.class);
         CommandSender sender = mock(CommandSender.class);
@@ -218,7 +219,7 @@ public class DefaultCommandRouteTest
     @Test
     public void test_invocation_with_exception() throws Throwable
     {
-        DefaultCommandRoute route = new DefaultCommandRoute("test", new String[]{}, allSenders, proxy, parser, new String[]{}, help);
+        DefaultCommandRoute route = new DefaultCommandRoute("test", new String[]{}, true, allSenders, proxy, parser, new String[]{}, help);
 
         Command command = mock(Command.class);
         CommandSender sender = mock(CommandSender.class);
