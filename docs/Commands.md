@@ -11,6 +11,12 @@ Register command
 To register a command use the Router object. You can get a router object via @Inject or by
 using the getRouter method in the main plugin class (after it has been loaded).
 
+    @Inject
+    public void getRouter(Router router)
+    {
+        router.registerCommands(CommandClass.class);
+    }
+
 You can register a class and it will be created by the framework and have constructor/setter injectors
 completed and then it will be parsed for commands. You can also pass an instance of an object and optionally
 inject setter dependencies before it parses for commands.
