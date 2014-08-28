@@ -24,11 +24,10 @@ package com.publicuhc.pluginframework.routing.annotation;
 import java.lang.annotation.*;
 
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.METHOD, ElementType.TYPE})
+@Target(ElementType.METHOD)
 @Documented
 /**
- * Adds a permission restriction for a command. If a class and method annotation are both found the permissions lists
- * are combined and the methods 'needsAll' value overrides the class one.
+ * Adds a permission restriction for a command.
  */
 public @interface PermissionRestriction
 {

@@ -26,11 +26,10 @@ import org.bukkit.command.CommandSender;
 import java.lang.annotation.*;
 
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.METHOD, ElementType.TYPE})
+@Target({ElementType.METHOD})
 @Documented
 /**
- * Restrict the given command to only the given classes + subclasses, if defined on a class + method the allowed values
- * are combined.
+ * Restrict the given command to only the given classes + subclasses
  */
 public @interface SenderRestriction
 {
