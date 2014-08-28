@@ -1,5 +1,5 @@
 /*
- * PermissionTester.java
+ * DefaultPermissionTester.java
  *
  * Copyright (c) 2014. Graham Howden <graham_howden1 at yahoo.co.uk>.
  *
@@ -21,15 +21,43 @@
 
 package com.publicuhc.pluginframework.routing.tester;
 
-public interface PermissionTester extends CommandTester
-{
-    /**
-     * @return whether all the permission need to match to apply or just one
-     */
-    public boolean isMatchingAll();
+import org.bukkit.ChatColor;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandSender;
 
-    /**
-     * Sets whether all the permissions need to match to applly or just one
-     */
-    public void setMatchingAll(boolean matching);
+import java.util.HashSet;
+
+/**
+ * A tester that allows the command based on the permissions of the sender
+ */
+public class PermissionTester extends HashSet<String> implements CommandTester
+{
+    boolean matchingAll = false;
+
+    public boolean isMatchingAll()
+    {
+        return matchingAll;
+    }
+
+    public void setMatchingAll(boolean matching)
+    {
+        matchingAll = matching;
+    }
+
+    @Override
+    public boolean testCommand(Command command, CommandSender sender, String[] args)
+    {
+        //check permissions
+        for(String permission : this) {
+            if(sender.hasPermission(permission)) {
+                if(!matchingAll) {
+                    break;
+                }
+            } else {
+                sender.sendMessage(ChatColor.RED + "You do not have permission to run this command. (" + permission + ")");
+                return false;
+            }
+        }
+        return true;
+    }
 }
