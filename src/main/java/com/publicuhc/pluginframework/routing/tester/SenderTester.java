@@ -27,7 +27,8 @@ import org.bukkit.command.CommandSender;
 import java.util.HashSet;
 
 /**
- * A tester that allows a command if any of the classes provided match the sender
+ * A tester that allows a command if any of the classes provided match the sender. If no senders are defined it will
+ * always fail
  */
 public class SenderTester extends HashSet<Class<? extends CommandSender>> implements CommandTester
 {

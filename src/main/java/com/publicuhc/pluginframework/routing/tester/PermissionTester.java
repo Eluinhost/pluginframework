@@ -28,7 +28,8 @@ import org.bukkit.command.CommandSender;
 import java.util.HashSet;
 
 /**
- * A tester that allows the command based on the permissions of the sender
+ * A tester that allows the command based on the permissions of the sender. NOTE: If no permissions are defined, it will always
+ * pass.
  */
 public class PermissionTester extends HashSet<String> implements CommandTester
 {
