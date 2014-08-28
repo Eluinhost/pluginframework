@@ -249,15 +249,17 @@ public class DefaultRoutingMethodParser extends RoutingMethodParser
 
         //read the permissions from the annotation
         PermissionRestriction permissionRestriction = getAnnotation(method, PermissionRestriction.class);
+        boolean matchAll = true;
         String[] permissions = new String[0];
 
         if(null != permissionRestriction) {
             permissions = permissionRestriction.value();
+            matchAll = permissionRestriction.needsAll();
         }
 
         //setup the proxy and create the route
         MethodProxy proxy = new ReflectionMethodProxy(instance, method);
-        return new DefaultCommandRoute(annotation.value(), permissions, allowedSenders, proxy, optionParser, optionPosistions, helpSpec);
+        return new DefaultCommandRoute(annotation.value(), permissions, matchAll, allowedSenders, proxy, optionParser, optionPosistions, helpSpec);
     }
 
     @Override
