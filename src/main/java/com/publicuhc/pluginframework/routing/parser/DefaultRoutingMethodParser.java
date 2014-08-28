@@ -43,6 +43,7 @@ public class DefaultRoutingMethodParser extends RoutingMethodParser
 {
 
     private final Field converterFieldArguments;
+    private final Field separaterFieldArguments;
 
     /**
      * Used to create CommandRoute objects from a method with an @CommandMethod annotation
@@ -51,15 +52,20 @@ public class DefaultRoutingMethodParser extends RoutingMethodParser
     {
         //setup the reflection to get the ValueConverter from the option specs
         Field argConverterField = null;
+        Field argSeparaterField = null;
         try {
             //get the converter field and allow it to be accessed via reflection
             argConverterField = ArgumentAcceptingOptionSpec.class.getDeclaredField("converter");
             argConverterField.setAccessible(true);
+
+            argSeparaterField = ArgumentAcceptingOptionSpec.class.getDeclaredField("valueSeparator");
+            argSeparaterField.setAccessible(true);
         } catch(NoSuchFieldException e) {
             e.printStackTrace();
         }
 
         this.converterFieldArguments = argConverterField;
+        this.separaterFieldArguments = argSeparaterField;
     }
 
     /**
@@ -79,7 +85,6 @@ public class DefaultRoutingMethodParser extends RoutingMethodParser
 
             //if its the non options we add it to 'arguments'
             if(optionSpec instanceof NonOptionArgumentSpec) {
-                NonOptionArgumentSpec nonOptionsSpec = (NonOptionArgumentSpec) optionSpec;
                 parameterTypes.put("[arguments]", List.class);
             }
 
@@ -90,9 +95,14 @@ public class DefaultRoutingMethodParser extends RoutingMethodParser
                 //only do it for options that accept arguments
                 if(argspec.acceptsArguments()) {
                     try {
-                        ValueConverter converter = (ValueConverter) converterFieldArguments.get(argspec);
-                        Class convertClass = converter == null ? String.class : converter.valueType();
-                        parameterTypes.put(option.getKey(), convertClass);
+                        String separater = (String) separaterFieldArguments.get(argspec);
+                        if(!separater.equals("\u0000")) {
+                            parameterTypes.put(option.getKey(), List.class);
+                        } else {
+                            ValueConverter converter = (ValueConverter) converterFieldArguments.get(argspec);
+                            Class convertClass = converter == null ? String.class : converter.valueType();
+                            parameterTypes.put(option.getKey(), convertClass);
+                        }
                     } catch(IllegalAccessException e) {
                         e.printStackTrace();
                     }
