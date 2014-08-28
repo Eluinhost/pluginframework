@@ -43,7 +43,6 @@ public class DefaultRoutingMethodParser extends RoutingMethodParser
 {
 
     private final Field converterFieldArguments;
-    private final Field converterFieldNonOptions;
 
     /**
      * Used to create CommandRoute objects from a method with an @CommandMethod annotation
@@ -52,20 +51,15 @@ public class DefaultRoutingMethodParser extends RoutingMethodParser
     {
         //setup the reflection to get the ValueConverter from the option specs
         Field argConverterField = null;
-        Field optionsConverterField = null;
         try {
             //get the converter field and allow it to be accessed via reflection
             argConverterField = ArgumentAcceptingOptionSpec.class.getDeclaredField("converter");
             argConverterField.setAccessible(true);
-
-            optionsConverterField = NonOptionArgumentSpec.class.getDeclaredField("converter");
-            optionsConverterField.setAccessible(true);
         } catch(NoSuchFieldException e) {
             e.printStackTrace();
         }
 
         this.converterFieldArguments = argConverterField;
-        this.converterFieldNonOptions = optionsConverterField;
     }
 
     /**
