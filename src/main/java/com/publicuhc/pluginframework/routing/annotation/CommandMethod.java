@@ -37,7 +37,7 @@ public @interface CommandMethod
 {
     public static final String DEFAULT_HELP = "?";
 
-    public String command();
+    public String value();
 
     public String helpOption() default DEFAULT_HELP;
 }

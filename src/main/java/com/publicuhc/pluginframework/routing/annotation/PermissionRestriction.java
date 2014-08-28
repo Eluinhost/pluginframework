@@ -35,7 +35,7 @@ public @interface PermissionRestriction
     /**
      * List of permissions to check for the method to run
      */
-    String[] permissions() default {};
+    String[] value() default {};
 
     /**
      * Whether the method needs all permissions to pass or just one

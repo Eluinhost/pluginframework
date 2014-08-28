@@ -34,5 +34,5 @@ public @interface CommandOptions
     /**
      * Defines the order the options will be within the method signature, defaults to no extra args
      */
-    public String[] order() default {};
+    public String[] value() default {};
 }
