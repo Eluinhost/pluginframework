@@ -21,13 +21,15 @@
 
 package com.publicuhc.pluginframework.routing.tester;
 
-import java.util.List;
-
 public interface PermissionTester extends CommandTester
 {
-    public PermissionTester addPermission();
-    public PermissionTester removePermission();
-    public List<String> getPermissions();
+    /**
+     * @return whether all the permission need to match to apply or just one
+     */
     public boolean isMatchingAll();
-    public PermissionTester setMatchingAll();
+
+    /**
+     * Sets whether all the permissions need to match to applly or just one
+     */
+    public void setMatchingAll(boolean matching);
 }
