@@ -23,19 +23,11 @@ package com.publicuhc.pluginframework;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.Guice;
-import com.google.inject.Inject;
 import com.google.inject.Injector;
-import com.publicuhc.pluginframework.configuration.ConfigurationModule;
-import com.publicuhc.pluginframework.configuration.Configurator;
-import com.publicuhc.pluginframework.routing.Router;
-import com.publicuhc.pluginframework.routing.RoutingModule;
-import com.publicuhc.pluginframework.translate.Translate;
-import com.publicuhc.pluginframework.translate.TranslateModule;
 import org.bukkit.Server;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginLoader;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.mcstats.Metrics;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -43,35 +35,28 @@ import java.util.List;
 
 public abstract class FrameworkJavaPlugin extends JavaPlugin {
 
-    private Configurator m_configurator;
-    private Translate m_translate;
-    private Router m_router;
-    private Metrics m_metrics;
-
     /**
      * This method is intended for unit testing purposes. Its existence may be temporary.
      *
      * @see org.bukkit.plugin.java.JavaPlugin
      */
     @SuppressWarnings("deprecation")
-    protected FrameworkJavaPlugin(PluginLoader loader, Server server, PluginDescriptionFile pdf, File file1, File file2) {
+    protected FrameworkJavaPlugin(PluginLoader loader, Server server, PluginDescriptionFile pdf, File file1, File file2)
+    {
         super(loader, server, pdf, file1, file2);
     }
 
     public FrameworkJavaPlugin() {}
 
     @Override
-    public final void onEnable() {
+    public final void onEnable()
+    {
         List<AbstractModule> modules = initialModules();
         if (modules == null) {
             modules = new ArrayList<AbstractModule>();
         }
         modules.add(new PluginModule(this));
-        if (initUseDefaultBindings()) {
-            modules.add(new RoutingModule());
-            modules.add(new ConfigurationModule(this.getClassLoader()));
-            modules.add(new TranslateModule());
-        }
+
         Injector injector = Guice.createInjector(modules);
         injector.injectMembers(this);
         onFrameworkEnable();
@@ -80,97 +65,18 @@ public abstract class FrameworkJavaPlugin extends JavaPlugin {
     /**
      * Called when the framework is loaded
      */
-    protected void onFrameworkEnable() {
+    protected void onFrameworkEnable()
+    {
     }
 
     /**
-     * Return a list of extra modules to initialize DI with.
-     * Override this method to change the extra modules to load with.
+     * Return a list of modules to load for the DI
+     * Override this method to add modules to load with.
      *
      * @return the list of modules
      */
-    protected List<AbstractModule> initialModules() {
+    protected List<AbstractModule> initialModules()
+    {
         return null;
-    }
-
-    /**
-     * If returns true will include default modules on init.
-     * If false you must specify all the bindings for the framework
-     *
-     * @return whether to use the defaults or not
-     */
-    protected boolean initUseDefaultBindings() {
-        return true;
-    }
-
-    @Inject
-    private void setMetrics(Metrics metrics) {
-        m_metrics = metrics;
-    }
-
-    /**
-     * <b>ONLY USE THIS AFTER onEnable HAS BEEN CALLED. (onFrameworkEnable and later) otherwise it will return null</b>
-     *
-     * @return the plugin metrics
-     */
-    protected Metrics getMetrics() {
-        return m_metrics;
-    }
-
-    /**
-     * Set the router by injection
-     *
-     * @param router the router object
-     */
-    @Inject
-    private void setRouter(Router router) {
-        m_router = router;
-    }
-
-    /**
-     * Set the configurator by injection
-     *
-     * @param configurator the configurator object
-     */
-    @Inject
-    private void setConfigurator(Configurator configurator) {
-        m_configurator = configurator;
-    }
-
-    /**
-     * Set the translate by injection
-     *
-     * @param translate the translate object
-     */
-    @Inject
-    private void setTranslate(Translate translate) {
-        m_translate = translate;
-    }
-
-    /**
-     * <b>ONLY USE THIS AFTER onLoad HAS BEEN CALLED. (onFrameworkEnable and later) otherwise it will return null</b>
-     *
-     * @return the router object
-     */
-    protected Router getRouter() {
-        return m_router;
-    }
-
-    /**
-     * <b>ONLY USE THIS AFTER onLoad HAS BEEN CALLED. (onFrameworkEnable and later) otherwise it will return null</b>
-     *
-     * @return the configurator object
-     */
-    protected Configurator getConfigurator() {
-        return m_configurator;
-    }
-
-    /**
-     * <b>ONLY USE THIS AFTER onEnable HAS BEEN CALLED. (onFrameworkEnable and later) otherwise it will return null</b>
-     *
-     * @return the translate object
-     */
-    protected Translate getTranslate() {
-        return m_translate;
     }
 }
