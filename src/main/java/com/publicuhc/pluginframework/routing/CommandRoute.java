@@ -23,13 +23,15 @@ package com.publicuhc.pluginframework.routing;
 
 import com.publicuhc.pluginframework.routing.exception.CommandInvocationException;
 import com.publicuhc.pluginframework.routing.proxy.MethodProxy;
+import com.publicuhc.pluginframework.routing.tester.CommandTester;
 import joptsimple.OptionParser;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 
+import java.util.List;
+
 public interface CommandRoute
 {
-
     /**
      * @return the option details that define the allowed options
      */
@@ -46,19 +48,14 @@ public interface CommandRoute
     public String getCommandName();
 
     /**
-     * @return all of the permissions required to run the command
-     */
-    public String[] getPermissions();
-
-    /**
      * @return the arguments to start with
      */
     public String[] getStartsWith();
 
     /**
-     * @return a array of classes (or subclasses of) which are allowed to be command senders to trigger the command
+     * @return all of the testers applied to this route
      */
-    public Class<? extends CommandSender>[] getAllowedSenders();
+    public List<CommandTester> getTesters();
 
     /**
      * Run this command route

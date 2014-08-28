@@ -21,7 +21,8 @@
 
 package com.publicuhc.pluginframework.routing.testcommands;
 
-import com.publicuhc.pluginframework.routing.CommandMethod;
+import com.publicuhc.pluginframework.routing.annotation.CommandMethod;
+import com.publicuhc.pluginframework.routing.annotation.CommandOptions;
 import joptsimple.OptionDeclarer;
 import joptsimple.OptionSet;
 import org.bukkit.command.CommandSender;
@@ -34,7 +35,8 @@ public class SampleSubcommand
     public boolean subCommandRan;
     public List<String> args;
 
-    @CommandMethod(command = "test", options = true, optionOrder = {"r", "[arguments]"})
+    @CommandMethod("test")
+    @CommandOptions({"r", "[arguments]"})
     public void testMethod(OptionSet set, CommandSender sender, Double radius, List<String> arguments)
     {
         commandRan = true;
@@ -54,7 +56,8 @@ public class SampleSubcommand
                 .ofType(Integer.class);
     }
 
-    @CommandMethod(command = "test subcommand", options = true, optionOrder = {"r", "[arguments]"})
+    @CommandMethod("test subcommand")
+    @CommandOptions({"r", "[arguments]"})
     public void testMethodSubcommand(OptionSet set, CommandSender sender, Double radius, List<String> arguments)
     {
         subCommandRan = true;

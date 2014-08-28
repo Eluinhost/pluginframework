@@ -1,5 +1,5 @@
 /*
- * InvalidCommand.java
+ * CommandTester.java
  *
  * Copyright (c) 2014. Graham Howden <graham_howden1 at yahoo.co.uk>.
  *
@@ -19,18 +19,20 @@
  * along with PluginFramework.  If not, see <http ://www.gnu.org/licenses/>.
  */
 
-package com.publicuhc.pluginframework.routing.testcommands;
+package com.publicuhc.pluginframework.routing.tester;
 
-import com.publicuhc.pluginframework.routing.annotation.CommandMethod;
-import com.publicuhc.pluginframework.routing.annotation.CommandOptions;
-import joptsimple.OptionSet;
+import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 
-public class InvalidCommand
+public interface CommandTester
 {
-    //invalid because missing options method
-    @CommandMethod("testcommand")
-    @CommandOptions()
-    public void testCommand(OptionSet set, CommandSender sender)
-    {}
+    /**
+     * Tests for the given run command. Failure should usually be indicated by sending a message and returning false
+     *
+     * @param command the command run
+     * @param sender the sender that ran it
+     * @param args the arguments ran with
+     * @return true to continue command, false to quit
+     */
+    public boolean testCommand(Command command, CommandSender sender, String[] args);
 }

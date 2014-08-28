@@ -24,6 +24,9 @@ package com.publicuhc.pluginframework.routing.parser;
 import com.publicuhc.pluginframework.routing.CommandRoute;
 import com.publicuhc.pluginframework.routing.converters.OnlinePlayerValueConverter;
 import com.publicuhc.pluginframework.routing.exception.CommandParseException;
+import com.publicuhc.pluginframework.routing.tester.CommandTester;
+import com.publicuhc.pluginframework.routing.tester.PermissionTester;
+import com.publicuhc.pluginframework.routing.tester.SenderTester;
 import joptsimple.OptionParser;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
@@ -58,12 +61,23 @@ public class DefaultRoutingMethodParserTest
         Method method = testMethods.getMethodWithPermission();
 
         CommandRoute route = parser.parseCommandMethodAnnotation(method, testMethods);
-        assertThat(route.getPermissions()).containsExactly("TEST.PERMISSION");
+
+        CommandTester tester = route.getTesters().get(0);
+        assertThat(tester).isInstanceOf(PermissionTester.class);
+
+        PermissionTester pTester = (PermissionTester) tester;
+        assertThat(pTester).containsExactly("TEST.PERMISSION");
+        assertThat(pTester.isMatchingAll()).isTrue();
 
         method = testMethods.getMethod();
-
         route = parser.parseCommandMethodAnnotation(method, testMethods);
-        assertThat(route.getPermissions()).isEmpty();
+
+        tester = route.getTesters().get(0);
+        assertThat(tester).isInstanceOf(PermissionTester.class);
+
+        pTester = (PermissionTester) tester;
+        assertThat(pTester).isEmpty();
+        assertThat(pTester.isMatchingAll()).isTrue();
     }
 
     @Test
@@ -95,13 +109,22 @@ public class DefaultRoutingMethodParserTest
     {
         Method method = testMethods.getMethodWithChosenSenders();
         CommandRoute route = parser.parseCommandMethodAnnotation(method, testMethods);
+
+        CommandTester commandTester = route.getTesters().get(1);
+        assertThat(commandTester).isInstanceOf(SenderTester.class);
+
+        SenderTester tester = (SenderTester) commandTester;
         //noinspection unchecked
-        assertThat(route.getAllowedSenders()).containsExactly(ConsoleCommandSender.class, Player.class);
+        assertThat(tester).containsOnly(ConsoleCommandSender.class, Player.class);
 
         method = testMethods.getMethod();
         route = parser.parseCommandMethodAnnotation(method, testMethods);
+        commandTester = route.getTesters().get(1);
+        assertThat(commandTester).isInstanceOf(SenderTester.class);
+
+        tester = (SenderTester) commandTester;
         //noinspection unchecked
-        assertThat(route.getAllowedSenders()).containsExactly(CommandSender.class);
+        assertThat(tester).containsExactly(CommandSender.class);
     }
 
     @Test(expected = CommandParseException.class)

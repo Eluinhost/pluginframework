@@ -1,5 +1,5 @@
 /*
- * InvalidCommand.java
+ * CommandOptions.java
  *
  * Copyright (c) 2014. Graham Howden <graham_howden1 at yahoo.co.uk>.
  *
@@ -19,18 +19,20 @@
  * along with PluginFramework.  If not, see <http ://www.gnu.org/licenses/>.
  */
 
-package com.publicuhc.pluginframework.routing.testcommands;
+package com.publicuhc.pluginframework.routing.annotation;
 
-import com.publicuhc.pluginframework.routing.annotation.CommandMethod;
-import com.publicuhc.pluginframework.routing.annotation.CommandOptions;
-import joptsimple.OptionSet;
-import org.bukkit.command.CommandSender;
+import java.lang.annotation.*;
 
-public class InvalidCommand
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.METHOD)
+@Documented
+/**
+ * Flags an associated @CommandMethod annotation for the same method to use options
+ */
+public @interface CommandOptions
 {
-    //invalid because missing options method
-    @CommandMethod("testcommand")
-    @CommandOptions()
-    public void testCommand(OptionSet set, CommandSender sender)
-    {}
+    /**
+     * Defines the order the options will be within the method signature, defaults to no extra args
+     */
+    public String[] value() default {};
 }
