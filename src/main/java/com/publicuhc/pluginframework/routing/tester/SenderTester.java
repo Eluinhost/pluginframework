@@ -32,15 +32,19 @@ import java.util.HashSet;
  */
 public class SenderTester extends HashSet<Class<? extends CommandSender>> implements CommandTester
 {
-    @Override
-    public boolean testCommand(Command command, CommandSender sender, String[] args)
+    public boolean isApplicable(Class<? extends CommandSender> klass)
     {
-        Class<? extends CommandSender> senderClass = sender.getClass();
         for(Class<? extends CommandSender> senderType : this) {
-            if(senderType.isAssignableFrom(senderClass)) {
+            if(senderType.isAssignableFrom(klass)) {
                 return true;
             }
         }
         return false;
+    }
+
+    @Override
+    public boolean testCommand(Command command, CommandSender sender, String[] args)
+    {
+        return isApplicable(sender.getClass());
     }
 }
