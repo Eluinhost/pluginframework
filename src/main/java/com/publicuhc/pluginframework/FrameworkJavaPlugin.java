@@ -21,9 +21,9 @@
 
 package com.publicuhc.pluginframework;
 
-import com.google.inject.AbstractModule;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
+import com.google.inject.Module;
 import org.bukkit.Server;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginLoader;
@@ -51,11 +51,8 @@ public abstract class FrameworkJavaPlugin extends JavaPlugin {
     @Override
     public final void onEnable()
     {
-        List<AbstractModule> modules = initialModules();
-        if (modules == null) {
-            modules = new ArrayList<AbstractModule>();
-        }
-        modules.add(new PluginModule(this));
+        List<Module> modules = new ArrayList<Module>();
+        initialModules(modules);
 
         Injector injector = Guice.createInjector(modules);
         injector.injectMembers(this);
@@ -70,13 +67,7 @@ public abstract class FrameworkJavaPlugin extends JavaPlugin {
     }
 
     /**
-     * Return a list of modules to load for the DI
-     * Override this method to add modules to load with.
-     *
-     * @return the list of modules
+     * Setup the list of modules to load for the DI
      */
-    protected List<AbstractModule> initialModules()
-    {
-        return null;
-    }
+    protected abstract void initialModules(List<Module> modules);
 }
