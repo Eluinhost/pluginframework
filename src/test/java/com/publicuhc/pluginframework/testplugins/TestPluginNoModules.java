@@ -21,20 +21,41 @@
 
 package com.publicuhc.pluginframework.testplugins;
 
+import com.google.inject.Inject;
+import com.google.inject.Module;
 import com.publicuhc.pluginframework.FrameworkJavaPlugin;
+import com.publicuhc.pluginframework.PluginModule;
 import org.bukkit.Server;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginLoader;
 
 import java.io.File;
+import java.util.List;
 
-public class TestPluginDefaultModules extends FrameworkJavaPlugin {
+public class TestPluginNoModules extends FrameworkJavaPlugin {
+
+    public Plugin injectedPlugin;
+
     /**
      * This method is intended for unit testing purposes. Its existence may be temporary.
      *
      * @see org.bukkit.plugin.java.JavaPlugin
      */
-    public TestPluginDefaultModules(PluginLoader loader, Server server, PluginDescriptionFile pdf, File file1, File file2) {
+    public TestPluginNoModules(PluginLoader loader, Server server, PluginDescriptionFile pdf, File file1, File file2)
+    {
         super(loader, server, pdf, file1, file2);
+    }
+
+    @Override
+    protected void initialModules(List<Module> modules)
+    {
+        modules.add(new PluginModule(this));
+    }
+
+    @Inject
+    public void setInjectedPlugin(Plugin plugin)
+    {
+        this.injectedPlugin = plugin;
     }
 }
