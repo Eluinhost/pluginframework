@@ -22,6 +22,7 @@
 package com.publicuhc.pluginframework;
 
 import com.google.inject.Module;
+import com.publicuhc.pluginframework.testplugins.TestPluginDefaultModules;
 import com.publicuhc.pluginframework.testplugins.TestPluginExtraModules;
 import com.publicuhc.pluginframework.testplugins.TestPluginNoModules;
 import com.publicuhc.pluginframework.testplugins.TestPluginReplaceModules;
@@ -47,7 +48,7 @@ import static org.powermock.api.mockito.PowerMockito.when;
 public class FrameworkJavaPluginTest {
 
     @Test
-    public void testUseNoModules() throws Exception
+    public void test_no_modules() throws Exception
     {
         PluginLoader loader = mock(PluginLoader.class);
         Server server = mock(Server.class);
@@ -58,6 +59,22 @@ public class FrameworkJavaPluginTest {
         when(server.getLogger()).thenReturn(logger);
 
         TestPluginNoModules plugin = new TestPluginNoModules(loader, server, pdf, file1, file1);
+        plugin.onLoad();
+        plugin.onEnable();
+    }
+
+    @Test
+    public void test_default_modules() throws Exception
+    {
+        PluginLoader loader = mock(PluginLoader.class);
+        Server server = mock(Server.class);
+        PluginDescriptionFile pdf = mock(PluginDescriptionFile.class);
+        File file1 = new File("target" + File.separator + "testdatafolder");
+
+        PluginLogger logger = mock(PluginLogger.class);
+        when(server.getLogger()).thenReturn(logger);
+
+        TestPluginDefaultModules plugin = new TestPluginDefaultModules(loader, server, pdf, file1, file1);
         assertThat(plugin.injectedPlugin).isNull();
 
         plugin.onLoad();
@@ -68,7 +85,8 @@ public class FrameworkJavaPluginTest {
     }
 
     @Test
-    public void testUseExtraModules() throws Exception {
+    public void test_extra_modules() throws Exception
+    {
         PluginLoader loader = mock(PluginLoader.class);
         Server server = mock(Server.class);
         PluginDescriptionFile pdf = mock(PluginDescriptionFile.class);
@@ -88,7 +106,8 @@ public class FrameworkJavaPluginTest {
     }
 
     @Test
-    public void testReplaceModules() throws Exception {
+    public void test_override_modules() throws Exception
+    {
         PluginLoader loader = mock(PluginLoader.class);
         Server server = mock(Server.class);
         PluginDescriptionFile pdf = mock(PluginDescriptionFile.class);
@@ -108,8 +127,9 @@ public class FrameworkJavaPluginTest {
     }
 
     @Test(expected = IllegalStateException.class)
-    public void testWrongClassloader() {
-        FrameworkJavaPlugin javaPlugin = new FrameworkJavaPlugin() {
+    public void test_wrong_classloader()
+    {
+        new FrameworkJavaPlugin() {
             @Override
             protected void initialModules(List<Module> modules)
             {}

@@ -24,6 +24,9 @@ package com.publicuhc.pluginframework;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.Module;
+import com.publicuhc.pluginframework.configuration.ConfigurationModule;
+import com.publicuhc.pluginframework.routing.RoutingModule;
+import com.publicuhc.pluginframework.translate.TranslateModule;
 import org.bukkit.Server;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginLoader;
@@ -70,4 +73,14 @@ public abstract class FrameworkJavaPlugin extends JavaPlugin {
      * Setup the list of modules to load for the DI
      */
     protected abstract void initialModules(List<Module> modules);
+
+    protected List<Module> getDefaultModules()
+    {
+        List<Module> defaults = new ArrayList<Module>();
+        defaults.add(new PluginModule(this));
+        defaults.add(new TranslateModule());
+        defaults.add(new ConfigurationModule(this.getClassLoader()));
+        defaults.add(new RoutingModule());
+        return defaults;
+    }
 }
