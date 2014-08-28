@@ -25,6 +25,7 @@ import com.publicuhc.pluginframework.routing.annotation.CommandMethod;
 import com.publicuhc.pluginframework.routing.CommandRoute;
 import com.publicuhc.pluginframework.routing.DefaultCommandRoute;
 import com.publicuhc.pluginframework.routing.annotation.CommandOptions;
+import com.publicuhc.pluginframework.routing.annotation.SenderRestriction;
 import com.publicuhc.pluginframework.routing.exception.AnnotationMissingException;
 import com.publicuhc.pluginframework.routing.exception.CommandParseException;
 import com.publicuhc.pluginframework.routing.help.BukkitHelpFormatter;
@@ -32,6 +33,7 @@ import com.publicuhc.pluginframework.routing.proxy.MethodProxy;
 import com.publicuhc.pluginframework.routing.proxy.ReflectionMethodProxy;
 import joptsimple.*;
 import net.minecraft.server.v1_7_R2.CommandOp;
+import org.bukkit.command.CommandSender;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -220,7 +222,15 @@ public class DefaultRoutingMethodParser extends RoutingMethodParser
         if(!parameters[0].equals(OptionSet.class))
             throw new CommandParseException("Method " + method.getName() + " does not have an OptionSet as parameter 1");
 
-        Class[] allowedSenders = annotation.allowedSenders();
+        SenderRestriction senders = getAnnotation(method, SenderRestriction.class);
+        Class[] allowedSenders;
+
+        if(null == senders) {
+            allowedSenders = new Class[]{CommandSender.class};
+        } else {
+            allowedSenders = senders.value();
+        }
+
         Class<?> senderType = parameters[1];
 
         for(Class<?> senderClass : allowedSenders) {
