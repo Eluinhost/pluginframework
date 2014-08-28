@@ -193,11 +193,13 @@ public class DefaultRoutingMethodParser extends RoutingMethodParser
 
         CommandOptions options = getAnnotation(method, CommandOptions.class);
 
-        //get our parser
         OptionParser optionParser;
+        String[] optionPosistions;
+
         //if the annotation doesn't exist, use default parser
         if(null == options) {
             optionParser = new OptionParser();
+            optionPosistions = new String[0];
         } else {
             //otherwise call the options method to get the parser
             try {
@@ -205,10 +207,11 @@ public class DefaultRoutingMethodParser extends RoutingMethodParser
             } catch(Exception e) {
                 throw new CommandParseException("Exception occured when trying to run the options method for " + method.getName(), e);
             }
+            //set the options posistions
+            optionPosistions = options.value();
         }
 
-        String[] optionPositions = annotation.optionOrder();
-
+        //check the basics of the signature
         Class[] parameters = method.getParameterTypes();
 
         if(parameters.length < 2)
