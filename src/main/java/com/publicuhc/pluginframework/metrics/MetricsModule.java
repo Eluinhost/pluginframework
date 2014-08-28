@@ -1,5 +1,5 @@
 /*
- * PluginModule.java
+ * MetricsModule.java
  *
  * Copyright (c) 2014. Graham Howden <graham_howden1 at yahoo.co.uk>.
  *
@@ -19,27 +19,16 @@
  * along with PluginFramework.  If not, see <http ://www.gnu.org/licenses/>.
  */
 
-package com.publicuhc.pluginframework;
+package com.publicuhc.pluginframework.metrics;
 
 import com.google.inject.AbstractModule;
-import com.google.inject.name.Names;
-import org.bukkit.plugin.Plugin;
-import org.bukkit.plugin.PluginLogger;
+import org.mcstats.Metrics;
 
-import java.io.File;
-
-public class PluginModule extends AbstractModule {
-
-    private final Plugin m_plugin;
-
-    public PluginModule(Plugin plugin) {
-        m_plugin = plugin;
-    }
-
+public class MetricsModule extends AbstractModule
+{
     @Override
-    protected void configure() {
-        bind(File.class).annotatedWith(Names.named("dataFolder")).toInstance(m_plugin.getDataFolder());
-        bind(Plugin.class).toInstance(m_plugin);
-        bind(PluginLogger.class).to(PluginLoggerInjectable.class);
+    protected void configure()
+    {
+        bind(Metrics.class).to(PluginMetrics.class);
     }
 }
