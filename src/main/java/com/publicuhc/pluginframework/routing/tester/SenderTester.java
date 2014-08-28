@@ -33,7 +33,28 @@ import java.util.HashSet;
  */
 public class SenderTester extends HashSet<Class<? extends CommandSender>> implements CommandTester
 {
+    /**
+     * Check if all of the supplied classes can be treated as the supplied class
+     * @param klass the class to check
+     * @return true if no classes in the set or all classes are applicable
+     */
+    @SuppressWarnings("unchecked")
     public boolean isApplicable(Class klass)
+    {
+        for(Class<? extends CommandSender> senderType : this) {
+            if(!klass.isAssignableFrom(senderType)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Checks to see if any of the classes in set are superclasses of the provided class
+     * @param klass the class to check
+     * @return true if any of the classes match, false otherwise or if set is empty
+     */
+    public boolean isAllowed(Class klass)
     {
         for(Class<? extends CommandSender> senderType : this) {
             if(senderType.isAssignableFrom(klass)) {
@@ -46,7 +67,7 @@ public class SenderTester extends HashSet<Class<? extends CommandSender>> implem
     @Override
     public boolean testCommand(Command command, CommandSender sender, String[] args)
     {
-        boolean passed = isApplicable(sender.getClass());
+        boolean passed = isAllowed(sender.getClass());
 
         if(!passed)
             sender.sendMessage(ChatColor.RED + "You cannot run that command from here!");
