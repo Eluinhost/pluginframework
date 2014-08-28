@@ -23,17 +23,18 @@ package com.publicuhc.pluginframework.routing;
 
 import com.publicuhc.pluginframework.routing.exception.CommandInvocationException;
 import com.publicuhc.pluginframework.routing.proxy.MethodProxy;
+import com.publicuhc.pluginframework.routing.tester.CommandTester;
 import joptsimple.OptionException;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 import joptsimple.OptionSpec;
-import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 
 import java.io.IOException;
 import java.io.StringWriter;
 import java.util.Arrays;
+import java.util.List;
 
 public class DefaultCommandRoute implements CommandRoute
 {
@@ -42,21 +43,17 @@ public class DefaultCommandRoute implements CommandRoute
     private final OptionParser parser;
     private final String commandName;
     private final String[] startsWith;
-    private final String[] permissions;
-    private final boolean permsMatchAll;
     private final String[] optionPosistions;
     private final OptionSpec helpSpec;
-    private final Class<? extends CommandSender>[] allowedSenders;
+    private final List<CommandTester> restrictions;
 
-    public DefaultCommandRoute(String commandName, String permissions[], boolean permsMatchAll, Class<? extends CommandSender>[] allowedSenders, MethodProxy proxy, OptionParser parser, String[] optionPosistions, OptionSpec helpSpec)
+    public DefaultCommandRoute(String commandName, MethodProxy proxy, OptionParser parser, String[] optionPosistions, OptionSpec helpSpec, List<CommandTester> restrictions)
     {
         this.helpSpec = helpSpec;
         this.optionPosistions = optionPosistions;
-        this.allowedSenders = allowedSenders;
         this.proxy = proxy;
         this.parser = parser;
-        this.permissions = permissions;
-        this.permsMatchAll = permsMatchAll;
+        this.restrictions = restrictions;
 
         String[] commandParts = commandName.split(" ");
         this.commandName = commandParts[0];
@@ -88,33 +85,12 @@ public class DefaultCommandRoute implements CommandRoute
         }
     }
 
-    private boolean isSenderTypeAllowed(CommandSender sender)
-    {
-        Class<? extends CommandSender> senderClass = sender.getClass();
-        for(Class<? extends CommandSender> senderType : allowedSenders) {
-            if(senderType.isAssignableFrom(senderClass)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
     @Override
     public void run(Command command, CommandSender sender, String[] args) throws CommandInvocationException
     {
-        if(!isSenderTypeAllowed(sender)) {
-            sender.sendMessage(ChatColor.RED + "You cannot run that command from here!");
-            return;
-        }
-
-        //check permissions
-        for(String permission : permissions) {
-            if(sender.hasPermission(permission)) {
-                if(!permsMatchAll) {
-                    break;
-                }
-            } else {
-                sender.sendMessage(ChatColor.RED + "You do not have permission to run this command. (" + permission + ")");
+        //run all of the restrictions
+        for(CommandTester tester : restrictions) {
+            if(!tester.testCommand(command, sender, args)) {
                 return;
             }
         }
@@ -152,19 +128,8 @@ public class DefaultCommandRoute implements CommandRoute
     }
 
     @Override
-    public String[] getPermissions() {
-        return permissions;
-    }
-
-    @Override
     public String[] getStartsWith()
     {
         return startsWith;
-    }
-
-    @Override
-    public Class<? extends CommandSender>[] getAllowedSenders()
-    {
-        return allowedSenders;
     }
 }

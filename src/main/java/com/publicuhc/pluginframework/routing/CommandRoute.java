@@ -29,7 +29,6 @@ import org.bukkit.command.CommandSender;
 
 public interface CommandRoute
 {
-
     /**
      * @return the option details that define the allowed options
      */
@@ -46,19 +45,9 @@ public interface CommandRoute
     public String getCommandName();
 
     /**
-     * @return all of the permissions required to run the command
-     */
-    public String[] getPermissions();
-
-    /**
      * @return the arguments to start with
      */
     public String[] getStartsWith();
-
-    /**
-     * @return a array of classes (or subclasses of) which are allowed to be command senders to trigger the command
-     */
-    public Class<? extends CommandSender>[] getAllowedSenders();
 
     /**
      * Run this command route
