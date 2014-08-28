@@ -21,10 +21,11 @@
 
 package com.publicuhc.pluginframework.routing.parser;
 
-import com.publicuhc.pluginframework.routing.annotation.CommandMethod;
 import com.publicuhc.pluginframework.routing.CommandRoute;
 import com.publicuhc.pluginframework.routing.DefaultCommandRoute;
+import com.publicuhc.pluginframework.routing.annotation.CommandMethod;
 import com.publicuhc.pluginframework.routing.annotation.CommandOptions;
+import com.publicuhc.pluginframework.routing.annotation.PermissionRestriction;
 import com.publicuhc.pluginframework.routing.annotation.SenderRestriction;
 import com.publicuhc.pluginframework.routing.exception.AnnotationMissingException;
 import com.publicuhc.pluginframework.routing.exception.CommandParseException;
@@ -32,7 +33,6 @@ import com.publicuhc.pluginframework.routing.help.BukkitHelpFormatter;
 import com.publicuhc.pluginframework.routing.proxy.MethodProxy;
 import com.publicuhc.pluginframework.routing.proxy.ReflectionMethodProxy;
 import joptsimple.*;
-import net.minecraft.server.v1_7_R2.CommandOp;
 import org.bukkit.command.CommandSender;
 
 import java.lang.reflect.Field;
@@ -222,32 +222,42 @@ public class DefaultRoutingMethodParser extends RoutingMethodParser
         if(!parameters[0].equals(OptionSet.class))
             throw new CommandParseException("Method " + method.getName() + " does not have an OptionSet as parameter 1");
 
+        //get the sender restrictions applied to the method
         SenderRestriction senders = getAnnotation(method, SenderRestriction.class);
-        Class[] allowedSenders;
+        Class<? extends CommandSender>[] allowedSenders;
 
         if(null == senders) {
+            //noinspection unchecked
             allowedSenders = new Class[]{CommandSender.class};
         } else {
             allowedSenders = senders.value();
         }
 
+        //check the second parameter fit the sender restriction
         Class<?> senderType = parameters[1];
-
         for(Class<?> senderClass : allowedSenders) {
             if(!senderType.isAssignableFrom(senderClass))
                 throw new CommandParseException("Method " + method.getName() + " argument #2 is " + senderType.getName() + " but is not applicable to one of the restricted sender types: " + senderClass.getName());
         }
 
         //offset 2 because 1 = OptionSet and 2 = CommandSender (or subclasses)
-        checkPositionsCorrect(method, optionPositions, optionParser, 2);
+        checkPositionsCorrect(method, optionPosistions, optionParser, 2);
 
         //add the help formatter and add the default help option
         optionParser.formatHelpWith(new BukkitHelpFormatter());
         OptionSpec helpSpec = optionParser.accepts(annotation.helpOption(), "Shows help").forHelp();
 
+        //read the permissions from the annotation
+        PermissionRestriction permissionRestriction = getAnnotation(method, PermissionRestriction.class);
+        String[] permissions = new String[0];
+
+        if(null != permissionRestriction) {
+            permissions = permissionRestriction.value();
+        }
+
         //setup the proxy and create the route
         MethodProxy proxy = new ReflectionMethodProxy(instance, method);
-        return new DefaultCommandRoute(annotation.command(), annotation.permissions(), annotation.allowedSenders(), proxy, optionParser, optionPositions, helpSpec);
+        return new DefaultCommandRoute(annotation.value(), permissions, allowedSenders, proxy, optionParser, optionPosistions, helpSpec);
     }
 
     @Override
