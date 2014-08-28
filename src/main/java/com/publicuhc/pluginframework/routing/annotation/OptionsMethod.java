@@ -26,5 +26,8 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
 @Documented
+/**
+ * Annotation for options, not required.
+ */
 public @interface OptionsMethod
 {}
