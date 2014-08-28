@@ -8,6 +8,46 @@ For the wiki follow [this link](http://wiki.publicuhc.com/display/PLUGIN/PluginF
 
 ##Features
 
+###Commands
+
+The main focus of the framework. Allows registering commands by passing a class/instance to the router like events.
+All command classes allow for dependency injection.
+
+####Example
+
+    //simplest version
+    @CommandMethod("test")
+    public void echoCommand(OptionSet set, CommandSender sender) {
+        sender.sendMessage("test command ran");
+    }
+
+    //version will all the features
+    @CommandMethod(value = "test", helpOption = "h")
+    @CommandOptions({"a", "z", "[arguments]"})
+    @PermissionRestriction(value = {"TEST.PERMISSION.1", "TEST.PERMISSION.2"}, needsAll = false)
+    @SenderRestriction({Player.class, SubClassPlayer.class})
+    public void method(OptionSet set, Player player, Double avalue, Location target, List<String> arguments)
+    {
+        //check teams
+        if(set.has("teams")) ...
+    }
+
+    @OptionsMethod
+    public void method(OptionDeclarer declarer)
+    {
+        declarer.accepts("z")
+                .withOptionalArg()
+                .required()
+                .withValuesConvertedBy(new LocationValueConverter());
+        declarer.accepts("a")
+                .withRequiredArg()
+                .ofType(Double.class);
+        declarer.accepts("teams");
+    }
+
+Commands can define sender restrictions, permission restrictions, options e.t.c. for the documentation read the
+[Command Documentation](docs/Commands.md)
+
 ###Configuration
 
 Allows you to get config files by an ID and will write them to the data directory automatically when first accessed.
@@ -20,24 +60,6 @@ Allows for saving/reloading files by ID too.
     //get the config file at /subfolder/configFile.yml
     //will save it to data directory with default if it doesn't already exist
     configurator.getConfig("subfolder:configFile");
-
-###Commands
-
-Allows registering commands by passing a class to the router. Commands are triggered by reflection and follow a naming rule.
-All command classes allow for dependency injection.
-
-####Example
-    //inside a 'command' class
-    @CommandMethod
-    public void echoCommand(CommandRequest request) {
-        request.sendMessage(request.getMatcherResult().group(0));
-    }
-
-    @RouteInfo
-    public void echoCommandDetails(RouteBuilder builder) {
-        builder.restrictPermission("test.permission")
-                .restrictCommand("config");
-    }
 
 ###Translate
 
