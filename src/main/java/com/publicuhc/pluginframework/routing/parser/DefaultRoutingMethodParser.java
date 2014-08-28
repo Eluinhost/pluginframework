@@ -32,16 +32,16 @@ import com.publicuhc.pluginframework.routing.exception.CommandParseException;
 import com.publicuhc.pluginframework.routing.help.BukkitHelpFormatter;
 import com.publicuhc.pluginframework.routing.proxy.MethodProxy;
 import com.publicuhc.pluginframework.routing.proxy.ReflectionMethodProxy;
+import com.publicuhc.pluginframework.routing.tester.CommandTester;
+import com.publicuhc.pluginframework.routing.tester.PermissionTester;
+import com.publicuhc.pluginframework.routing.tester.SenderTester;
 import joptsimple.*;
 import org.bukkit.command.CommandSender;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class DefaultRoutingMethodParser extends RoutingMethodParser
 {
@@ -224,20 +224,18 @@ public class DefaultRoutingMethodParser extends RoutingMethodParser
 
         //get the sender restrictions applied to the method
         SenderRestriction senders = getAnnotation(method, SenderRestriction.class);
-        Class<? extends CommandSender>[] allowedSenders;
+        SenderTester senderTester = new SenderTester();
 
         if(null == senders) {
-            //noinspection unchecked
-            allowedSenders = new Class[]{CommandSender.class};
+            senderTester.add(CommandSender.class);
         } else {
-            allowedSenders = senders.value();
+            Collections.addAll(senderTester, senders.value());
         }
 
         //check the second parameter fit the sender restriction
         Class<?> senderType = parameters[1];
-        for(Class<?> senderClass : allowedSenders) {
-            if(!senderType.isAssignableFrom(senderClass))
-                throw new CommandParseException("Method " + method.getName() + " argument #2 is " + senderType.getName() + " but is not applicable to one of the restricted sender types: " + senderClass.getName());
+        if(!senderTester.isApplicable(senderType)) {
+            throw new CommandParseException("Method " + method.getName() + " argument #2 is " + senderType.getName() + " but is not applicable to one of the restricted sender types");
         }
 
         //offset 2 because 1 = OptionSet and 2 = CommandSender (or subclasses)
@@ -249,17 +247,21 @@ public class DefaultRoutingMethodParser extends RoutingMethodParser
 
         //read the permissions from the annotation
         PermissionRestriction permissionRestriction = getAnnotation(method, PermissionRestriction.class);
-        boolean matchAll = true;
-        String[] permissions = new String[0];
+        PermissionTester permissionTester = new PermissionTester();
 
         if(null != permissionRestriction) {
-            permissions = permissionRestriction.value();
-            matchAll = permissionRestriction.needsAll();
+            Collections.addAll(permissionTester, permissionRestriction.value());
+            permissionTester.setMatchingAll(permissionRestriction.needsAll());
         }
+
+        //setup the restrictions for the route
+        List<CommandTester> testers = new ArrayList<CommandTester>();
+        testers.add(permissionTester);
+        testers.add(senderTester);
 
         //setup the proxy and create the route
         MethodProxy proxy = new ReflectionMethodProxy(instance, method);
-        return new DefaultCommandRoute(annotation.value(), permissions, matchAll, allowedSenders, proxy, optionParser, optionPosistions, helpSpec);
+        return new DefaultCommandRoute(annotation.value(), proxy, optionParser, optionPosistions, helpSpec, testers);
     }
 
     @Override
