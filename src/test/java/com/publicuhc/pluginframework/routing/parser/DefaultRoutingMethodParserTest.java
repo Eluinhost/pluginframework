@@ -258,4 +258,22 @@ public class DefaultRoutingMethodParserTest
         String[] posistion = new String[]{"l", "strings", "radius", "[arguments]"}; //switch string with strings which is an invalid option
         parser.checkPositionsCorrect(method, posistion, p, 2);
     }
+
+    @Test
+    public void test_list_type_correct()
+    {
+        OptionParser p = new OptionParser();
+        p.accepts("a")
+                .withRequiredArg()
+                .ofType(Double.class)
+                .withValuesSeparatedBy(",");
+        p.accepts("b")
+                .withOptionalArg();
+        Map<String, Class> map = parser.getParameters(p);
+
+        assertThat(map.get("a")).isEqualTo(List.class);
+        assertThat(map.get("b")).isEqualTo(String.class);
+        assertThat(map.get("[arguments]")).isEqualTo(List.class);
+        assertThat(map.keySet()).containsOnly("a", "b", "[arguments]");
+    }
 }
