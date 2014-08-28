@@ -132,4 +132,10 @@ public class DefaultCommandRoute implements CommandRoute
     {
         return startsWith;
     }
+
+    @Override
+    public List<CommandTester> getTesters()
+    {
+        return restrictions;
+    }
 }

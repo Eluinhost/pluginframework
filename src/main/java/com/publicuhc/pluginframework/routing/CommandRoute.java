@@ -23,9 +23,12 @@ package com.publicuhc.pluginframework.routing;
 
 import com.publicuhc.pluginframework.routing.exception.CommandInvocationException;
 import com.publicuhc.pluginframework.routing.proxy.MethodProxy;
+import com.publicuhc.pluginframework.routing.tester.CommandTester;
 import joptsimple.OptionParser;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+
+import java.util.List;
 
 public interface CommandRoute
 {
@@ -48,6 +51,11 @@ public interface CommandRoute
      * @return the arguments to start with
      */
     public String[] getStartsWith();
+
+    /**
+     * @return all of the testers applied to this route
+     */
+    public List<CommandTester> getTesters();
 
     /**
      * Run this command route
