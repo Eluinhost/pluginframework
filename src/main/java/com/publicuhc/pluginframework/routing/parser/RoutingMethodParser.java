@@ -32,7 +32,7 @@ public abstract class RoutingMethodParser
 
     /**
      * @param annotation the annotation to look for
-     * @return true if found, false otherwise
+     * @return annotation if found, null otherwise
      */
     public static <T extends Annotation> T getAnnotation(Method method, Class<T> annotation)
     {
