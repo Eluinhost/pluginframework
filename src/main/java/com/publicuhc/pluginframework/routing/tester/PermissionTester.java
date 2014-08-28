@@ -32,7 +32,7 @@ import java.util.HashSet;
  */
 public class PermissionTester extends HashSet<String> implements CommandTester
 {
-    boolean matchingAll = false;
+    boolean matchingAll = true;
 
     public boolean isMatchingAll()
     {
@@ -49,13 +49,13 @@ public class PermissionTester extends HashSet<String> implements CommandTester
     {
         //check permissions
         for(String permission : this) {
-            if(sender.hasPermission(permission)) {
-                if(!matchingAll) {
-                    break;
-                }
-            } else {
+            boolean matching = sender.hasPermission(permission);
+            if(matchingAll && !matching) {
                 sender.sendMessage(ChatColor.RED + "You do not have permission to run this command. (" + permission + ")");
                 return false;
+            }
+            if(!matchingAll && matching) {
+                break;
             }
         }
         return true;
