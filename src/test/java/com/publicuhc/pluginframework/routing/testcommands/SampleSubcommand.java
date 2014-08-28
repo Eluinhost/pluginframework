@@ -21,7 +21,7 @@
 
 package com.publicuhc.pluginframework.routing.testcommands;
 
-import com.publicuhc.pluginframework.routing.CommandMethod;
+import com.publicuhc.pluginframework.routing.annotation.CommandMethod;
 import joptsimple.OptionDeclarer;
 import joptsimple.OptionSet;
 import org.bukkit.command.CommandSender;

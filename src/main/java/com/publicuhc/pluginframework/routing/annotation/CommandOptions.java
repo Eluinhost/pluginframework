@@ -19,7 +19,7 @@
  * along with PluginFramework.  If not, see <http ://www.gnu.org/licenses/>.
  */
 
-package com.publicuhc.pluginframework.routing;
+package com.publicuhc.pluginframework.routing.annotation;
 
 import java.lang.annotation.*;
 

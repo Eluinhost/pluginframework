@@ -1,5 +1,5 @@
 /*
- * CommandMethod.java
+ * Permission.java
  *
  * Copyright (c) 2014. Graham Howden <graham_howden1 at yahoo.co.uk>.
  *
@@ -19,28 +19,22 @@
  * along with PluginFramework.  If not, see <http ://www.gnu.org/licenses/>.
  */
 
-package com.publicuhc.pluginframework.routing;
-
-import org.bukkit.command.CommandSender;
+package com.publicuhc.pluginframework.routing.annotation;
 
 import java.lang.annotation.*;
 
 @Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.METHOD)
+@Target({ElementType.METHOD})
 @Documented
-public @interface CommandMethod
+public @interface Permission
 {
-    public static final String DEFAULT_HELP = "?";
+    /**
+     * List of permissions to check for the method to run
+     */
+    String[] permissions() default {};
 
-    public String command();
-
-    public boolean options() default false;
-
-    public String[] optionOrder() default {};
-
-    public String[] permissions() default {};
-
-    public String helpOption() default DEFAULT_HELP;
-
-    public Class<? extends CommandSender>[] allowedSenders() default CommandSender.class;
+    /**
+     * Whether the method needs all permissions to pass or just one
+     */
+    boolean needsAll() default true;
 }

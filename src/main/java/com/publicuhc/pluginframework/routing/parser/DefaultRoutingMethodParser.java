@@ -21,7 +21,7 @@
 
 package com.publicuhc.pluginframework.routing.parser;
 
-import com.publicuhc.pluginframework.routing.CommandMethod;
+import com.publicuhc.pluginframework.routing.annotation.CommandMethod;
 import com.publicuhc.pluginframework.routing.CommandRoute;
 import com.publicuhc.pluginframework.routing.DefaultCommandRoute;
 import com.publicuhc.pluginframework.routing.exception.AnnotationMissingException;
