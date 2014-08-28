@@ -32,7 +32,7 @@ import java.lang.annotation.*;
 public @interface CommandOptions
 {
     /**
-     * Defines the order the options will be within the method signature
+     * Defines the order the options will be within the method signature, defaults to no extra args
      */
-    public String[] order();
+    public String[] order() default {};
 }
