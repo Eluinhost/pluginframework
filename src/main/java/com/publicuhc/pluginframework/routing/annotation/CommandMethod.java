@@ -21,26 +21,23 @@
 
 package com.publicuhc.pluginframework.routing.annotation;
 
-import org.bukkit.command.CommandSender;
-
 import java.lang.annotation.*;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
 @Documented
+/**
+ * Tags the relevant method as a command method.
+ *
+ * @see PermissionRestriction
+ * @see CommandOptions
+ * @see SenderRestriction
+ */
 public @interface CommandMethod
 {
     public static final String DEFAULT_HELP = "?";
 
     public String command();
 
-    public boolean options() default false;
-
-    public String[] optionOrder() default {};
-
-    public String[] permissions() default {};
-
     public String helpOption() default DEFAULT_HELP;
-
-    public Class<? extends CommandSender>[] allowedSenders() default CommandSender.class;
 }
