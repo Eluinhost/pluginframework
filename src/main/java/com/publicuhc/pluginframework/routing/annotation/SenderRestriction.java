@@ -37,5 +37,5 @@ public @interface SenderRestriction
     /**
      * All of the allowed sender classes for this command, subclasses of given classes also allowed
      */
-    Class<? extends CommandSender>[] value() default CommandSender.class;
+    Class<? extends CommandSender>[] value();
 }
