@@ -22,6 +22,9 @@
 package com.publicuhc.pluginframework.routing.parser;
 
 import com.publicuhc.pluginframework.routing.annotation.CommandMethod;
+import com.publicuhc.pluginframework.routing.annotation.CommandOptions;
+import com.publicuhc.pluginframework.routing.annotation.PermissionRestriction;
+import com.publicuhc.pluginframework.routing.annotation.SenderRestriction;
 import com.publicuhc.pluginframework.routing.converters.LocationValueConverter;
 import com.publicuhc.pluginframework.routing.converters.OnlinePlayerValueConverter;
 import joptsimple.OptionDeclarer;
@@ -39,15 +42,16 @@ import java.util.List;
 @SuppressWarnings("UnusedDeclaration")
 public class TestMethods
 {
-    @CommandMethod(command = "test")
+    @CommandMethod("test")
     public void method(OptionSet set, CommandSender sender)
     {}
 
-    @CommandMethod(command = "test subcommand")
+    @CommandMethod("test subcommand")
     public void methodSubcommand(OptionSet set, CommandSender sender)
     {}
 
-    @CommandMethod(command = "test", options = true)
+    @CommandMethod("test")
+    @CommandOptions
     public void methodWithOptions(OptionSet set, CommandSender sender)
     {}
 
@@ -57,19 +61,23 @@ public class TestMethods
         optionParser.accepts("b").withOptionalArg();
     }
 
-    @CommandMethod(command = "test", permissions = "TEST.PERMISSION")
+    @CommandMethod("test")
+    @PermissionRestriction("TEST.PERMISSION")
     public void methodWithPermissions(OptionSet set, CommandSender sender)
     {}
 
-    @CommandMethod(command = "test", allowedSenders = {ConsoleCommandSender.class, Player.class})
+    @CommandMethod("test")
+    @SenderRestriction({ConsoleCommandSender.class, Player.class})
     public void methodWithChosenSenders(OptionSet set, CommandSender sender)
     {}
 
-    @CommandMethod(command = "test", options = true)
+    @CommandMethod("test")
+    @CommandOptions
     public void methodWithOptionsMissing(OptionSet set, CommandSender sender)
     {}
 
-    @CommandMethod(command = "test", options = true)
+    @CommandMethod("test")
+    @CommandOptions
     public void methodWithOptionsWithInvalidParam(OptionSet set, CommandSender sender)
     {}
 
@@ -79,23 +87,24 @@ public class TestMethods
     public void methodWithoutAnnotation(OptionSet set, CommandSender sender)
     {}
 
-    @CommandMethod(command = "test")
+    @CommandMethod("test")
     public void methodWithInvalidParam1(OptionParser p, CommandSender sender)
     {}
 
-    @CommandMethod(command = "test")
+    @CommandMethod("test")
     public void methodWithInvalidParam2(OptionSet set, Block block)
     {}
 
-    @CommandMethod(command = "test")
+    @CommandMethod("test")
     public void methodWithUnmatchedSender(OptionSet set, Player sender)
     {}
 
-    @CommandMethod(command = "test", allowedSenders = Player.class)
+    @CommandMethod("test")
+    @SenderRestriction(Player.class)
     public void methodWithMatchedSender(OptionSet set, Player sender)
     {}
 
-    @CommandMethod(command = "test", helpOption = "t")
+    @CommandMethod(value = "test", helpOption = "t")
     public void methodWithNonStandardHelp(OptionSet set, CommandSender sender)
     {}
 

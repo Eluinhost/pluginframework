@@ -22,13 +22,15 @@
 package com.publicuhc.pluginframework.routing.testcommands;
 
 import com.publicuhc.pluginframework.routing.annotation.CommandMethod;
+import com.publicuhc.pluginframework.routing.annotation.CommandOptions;
 import joptsimple.OptionSet;
 import org.bukkit.command.CommandSender;
 
 public class InvalidCommand
 {
     //invalid because missing options method
-    @CommandMethod(command = "testcommand", options = true)
+    @CommandMethod("testcommand")
+    @CommandOptions()
     public void testCommand(OptionSet set, CommandSender sender)
     {}
 }

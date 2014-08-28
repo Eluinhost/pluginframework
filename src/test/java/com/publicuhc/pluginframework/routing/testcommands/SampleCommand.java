@@ -22,6 +22,7 @@
 package com.publicuhc.pluginframework.routing.testcommands;
 
 import com.publicuhc.pluginframework.routing.annotation.CommandMethod;
+import com.publicuhc.pluginframework.routing.annotation.CommandOptions;
 import com.publicuhc.pluginframework.routing.annotation.OptionsMethod;
 import joptsimple.OptionDeclarer;
 import joptsimple.OptionSet;
@@ -35,7 +36,8 @@ public class SampleCommand
     public List<String> arguments;
     public OptionSet set;
 
-    @CommandMethod(command = "test", options = true, optionOrder = {"r", "[arguments]"})
+    @CommandMethod("test")
+    @CommandOptions({"r", "[arguments]"})
     public void testMethod(OptionSet set, CommandSender sender, Double radius, List<String> arguments)
     {
         this.set = set;
