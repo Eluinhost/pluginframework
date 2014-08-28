@@ -115,7 +115,7 @@ public class DefaultRoutingMethodParserTest
 
         SenderTester tester = (SenderTester) commandTester;
         //noinspection unchecked
-        assertThat(tester).containsExactly(ConsoleCommandSender.class, Player.class);
+        assertThat(tester).containsOnly(ConsoleCommandSender.class, Player.class);
 
         method = testMethods.getMethod();
         route = parser.parseCommandMethodAnnotation(method, testMethods);
