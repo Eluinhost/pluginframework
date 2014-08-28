@@ -1,5 +1,5 @@
 /*
- * CommandMethod.java
+ * Permission.java
  *
  * Copyright (c) 2014. Graham Howden <graham_howden1 at yahoo.co.uk>.
  *
@@ -19,23 +19,25 @@
  * along with PluginFramework.  If not, see <http ://www.gnu.org/licenses/>.
  */
 
-package com.publicuhc.pluginframework.routing;
+package com.publicuhc.pluginframework.routing.annotation;
 
 import java.lang.annotation.*;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
 @Documented
-public @interface CommandMethod
+/**
+ * Adds a permission restriction for a command.
+ */
+public @interface PermissionRestriction
 {
-    public static final String NO_PERMISSIONS = "NO PERMISSIONS REQUIRED";
-    public static final String DEFAULT_HELP = "?";
+    /**
+     * List of permissions to check for the method to run
+     */
+    String[] value();
 
-    public String command();
-
-    public boolean options() default false;
-
-    public String permission() default NO_PERMISSIONS;
-
-    public String helpOption() default DEFAULT_HELP;
+    /**
+     * Whether the method needs all permissions to pass or just one
+     */
+    boolean needsAll() default true;
 }

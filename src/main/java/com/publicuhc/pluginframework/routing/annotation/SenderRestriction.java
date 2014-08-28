@@ -1,5 +1,5 @@
 /*
- * OptionsMethod.java
+ * SenderRestriction.java
  *
  * Copyright (c) 2014. Graham Howden <graham_howden1 at yahoo.co.uk>.
  *
@@ -19,12 +19,22 @@
  * along with PluginFramework.  If not, see <http ://www.gnu.org/licenses/>.
  */
 
-package com.publicuhc.pluginframework.routing;
+package com.publicuhc.pluginframework.routing.annotation;
+
+import org.bukkit.command.CommandSender;
 
 import java.lang.annotation.*;
 
 @Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.METHOD)
+@Target({ElementType.METHOD})
 @Documented
-public @interface OptionsMethod
-{}
+/**
+ * Restrict the given command to only the given classes + subclasses
+ */
+public @interface SenderRestriction
+{
+    /**
+     * All of the allowed sender classes for this command, subclasses of given classes also allowed
+     */
+    Class<? extends CommandSender>[] value();
+}

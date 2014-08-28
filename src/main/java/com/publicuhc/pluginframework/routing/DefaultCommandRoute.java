@@ -23,6 +23,7 @@ package com.publicuhc.pluginframework.routing;
 
 import com.publicuhc.pluginframework.routing.exception.CommandInvocationException;
 import com.publicuhc.pluginframework.routing.proxy.MethodProxy;
+import com.publicuhc.pluginframework.routing.tester.CommandTester;
 import joptsimple.OptionException;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
@@ -32,6 +33,8 @@ import org.bukkit.command.CommandSender;
 
 import java.io.IOException;
 import java.io.StringWriter;
+import java.util.Arrays;
+import java.util.List;
 
 public class DefaultCommandRoute implements CommandRoute
 {
@@ -39,16 +42,22 @@ public class DefaultCommandRoute implements CommandRoute
     private final MethodProxy proxy;
     private final OptionParser parser;
     private final String commandName;
-    private final String permission;
+    private final String[] startsWith;
+    private final String[] optionPosistions;
     private final OptionSpec helpSpec;
+    private final List<CommandTester> restrictions;
 
-    public DefaultCommandRoute(String commandName, String permission, MethodProxy proxy, OptionParser parser, OptionSpec helpSpec)
+    public DefaultCommandRoute(String commandName, MethodProxy proxy, OptionParser parser, String[] optionPosistions, OptionSpec helpSpec, List<CommandTester> restrictions)
     {
         this.helpSpec = helpSpec;
-        this.commandName = commandName;
+        this.optionPosistions = optionPosistions;
         this.proxy = proxy;
         this.parser = parser;
-        this.permission = permission.equals(CommandMethod.NO_PERMISSIONS) ? null : permission;
+        this.restrictions = restrictions;
+
+        String[] commandParts = commandName.split(" ");
+        this.commandName = commandParts[0];
+        this.startsWith = Arrays.copyOfRange(commandParts, 1, commandParts.length);
     }
 
     @Override
@@ -79,12 +88,31 @@ public class DefaultCommandRoute implements CommandRoute
     @Override
     public void run(Command command, CommandSender sender, String[] args) throws CommandInvocationException
     {
+        //run all of the restrictions
+        for(CommandTester tester : restrictions) {
+            if(!tester.testCommand(command, sender, args)) {
+                return;
+            }
+        }
+
         try {
             OptionSet optionSet = parser.parse(args);
             if(optionSet.has(helpSpec)) {
                 printHelpFor(sender);
             } else {
-                proxy.invoke(new CommandRequest(command, sender, optionSet));
+                Object[] parameters = new Object[2 + optionPosistions.length];
+                parameters[0] = optionSet;
+                parameters[1] = sender;
+                for(int i = 0; i < optionPosistions.length; i++) {
+                    String option = optionPosistions[i];
+                    if(option.equals("[arguments]")) {
+                        parameters[i + 2] = optionSet.nonOptionArguments();
+                    } else {
+                        parameters[i + 2] = optionSet.valueOf(option);
+                    }
+                }
+
+                proxy.invoke(parameters);
             }
         } catch(OptionException e) {
             printHelpFor(sender);
@@ -100,7 +128,14 @@ public class DefaultCommandRoute implements CommandRoute
     }
 
     @Override
-    public String getPermission() {
-        return permission;
+    public String[] getStartsWith()
+    {
+        return startsWith;
+    }
+
+    @Override
+    public List<CommandTester> getTesters()
+    {
+        return restrictions;
     }
 }

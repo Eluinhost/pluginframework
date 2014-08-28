@@ -30,7 +30,7 @@
     <version>0.2-SNAPSHOT</version>
 
     <properties>
-        <bukkit.version>LATEST</bukkit.version>
+        <bukkit.version>1.7.9-R0.2</bukkit.version>
         <mcstats.version>R8-SNAPSHOT</mcstats.version>
         <junit.version>4.11</junit.version>
         <mockito.version>1.9.5</mockito.version>
@@ -116,6 +116,7 @@
             <groupId>mkremins</groupId>
             <artifactId>fanciful</artifactId>
             <version>0.1.5</version>
+            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>net.sf.jopt-simple</groupId>
@@ -127,6 +128,18 @@
             <groupId>org.mcstats.bukkit</groupId>
             <artifactId>metrics</artifactId>
             <version>${mcstats.version}</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.sonatype.sisu</groupId>
+            <artifactId>sisu-guice</artifactId>
+            <version>${sisu-guice.version}</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.sonatype.sisu.inject</groupId>
+            <artifactId>guice-multibindings</artifactId>
+            <version>${sisu-guice.version}</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
@@ -152,11 +165,6 @@
             <artifactId>powermock-api-mockito</artifactId>
             <version>${powermock.version}</version>
             <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.sonatype.sisu</groupId>
-            <artifactId>sisu-guice</artifactId>
-            <version>${sisu-guice.version}</version>
         </dependency>
         <dependency>
             <groupId>org.assertj</groupId>
@@ -218,6 +226,7 @@
                     <artifactSet>
                         <includes>
                             <include>org.sonatype.sisu:sisu-guice</include>
+                            <include>org.sonatype.sisu.inject:guice-multibindings</include>
                             <include>javax.inject:javax.inject</include>
                             <include>aopalliance:aopalliance</include>
                             <include>org.mcstats.bukkit:metrics</include>

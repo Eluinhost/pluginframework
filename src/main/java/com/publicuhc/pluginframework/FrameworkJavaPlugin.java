@@ -80,7 +80,7 @@ public abstract class FrameworkJavaPlugin extends JavaPlugin {
     /**
      * Called when the framework is loaded
      */
-    public void onFrameworkEnable() {
+    protected void onFrameworkEnable() {
     }
 
     /**
@@ -89,7 +89,7 @@ public abstract class FrameworkJavaPlugin extends JavaPlugin {
      *
      * @return the list of modules
      */
-    public List<AbstractModule> initialModules() {
+    protected List<AbstractModule> initialModules() {
         return null;
     }
 
@@ -99,7 +99,7 @@ public abstract class FrameworkJavaPlugin extends JavaPlugin {
      *
      * @return whether to use the defaults or not
      */
-    public boolean initUseDefaultBindings() {
+    protected boolean initUseDefaultBindings() {
         return true;
     }
 
@@ -113,7 +113,7 @@ public abstract class FrameworkJavaPlugin extends JavaPlugin {
      *
      * @return the plugin metrics
      */
-    public Metrics getMetrics() {
+    protected Metrics getMetrics() {
         return m_metrics;
     }
 
@@ -152,7 +152,7 @@ public abstract class FrameworkJavaPlugin extends JavaPlugin {
      *
      * @return the router object
      */
-    public Router getRouter() {
+    protected Router getRouter() {
         return m_router;
     }
 
@@ -161,7 +161,7 @@ public abstract class FrameworkJavaPlugin extends JavaPlugin {
      *
      * @return the configurator object
      */
-    public Configurator getConfigurator() {
+    protected Configurator getConfigurator() {
         return m_configurator;
     }
 
@@ -170,7 +170,7 @@ public abstract class FrameworkJavaPlugin extends JavaPlugin {
      *
      * @return the translate object
      */
-    public Translate getTranslate() {
+    protected Translate getTranslate() {
         return m_translate;
     }
 }

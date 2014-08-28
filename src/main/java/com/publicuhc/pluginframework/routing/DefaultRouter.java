@@ -21,21 +21,21 @@
 
 package com.publicuhc.pluginframework.routing;
 
+import com.google.inject.AbstractModule;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
 import com.publicuhc.pluginframework.routing.exception.CommandInvocationException;
 import com.publicuhc.pluginframework.routing.exception.CommandParseException;
 import com.publicuhc.pluginframework.routing.parser.RoutingMethodParser;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.PluginCommand;
+import org.bukkit.plugin.PluginLogger;
 
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
+import java.util.logging.Level;
 
 public class DefaultRouter implements Router
 {
@@ -56,22 +56,32 @@ public class DefaultRouter implements Router
     private final RoutingMethodParser parser;
 
     /**
-     * Stores map of command name -> route for invocation later on
+     * Stores map of command name -> routes for invocation later on
      */
-    protected final HashMap<String, CommandRoute> commands = new HashMap<String, CommandRoute>();
+    protected final HashMap<String, List<CommandRoute>> commands = new HashMap<String, List<CommandRoute>>();
+
+    private final PluginLogger logger;
 
     @Inject
-    protected DefaultRouter(RoutingMethodParser parser, Injector injector)
+    protected DefaultRouter(RoutingMethodParser parser, Injector injector, PluginLogger logger)
     {
         this.injector = injector;
         this.parser = parser;
+        this.logger = logger;
     }
 
     @Override
-    public Object registerCommands(Class klass) throws CommandParseException
+    public Object registerCommands(Class klass) throws CommandParseException {
+        return registerCommands(klass, new ArrayList<AbstractModule>());
+    }
+
+    @Override
+    public Object registerCommands(Class klass, List<AbstractModule> modules) throws CommandParseException
     {
+        Injector childInjector = injector.createChildInjector(modules);
+
         //grab an instance of the class after injection
-        Object o = injector.getInstance(klass);
+        Object o = childInjector.getInstance(klass);
 
         //register it using the instanced version without injection
         registerCommands(o, false);
@@ -81,11 +91,19 @@ public class DefaultRouter implements Router
     }
 
     @Override
-    public void registerCommands(Object object, boolean inject) throws CommandParseException
+    public void registerCommands(Object object, boolean inject) throws CommandParseException {
+        registerCommands(object, inject, new ArrayList<AbstractModule>());
+    }
+
+    @Override
+    public void registerCommands(Object object, boolean inject, List<AbstractModule> modules) throws CommandParseException
     {
+        logger.log(Level.INFO, "Loading commands from class: " + object.getClass().getName());
+
         //inject if we need to
         if(inject) {
-            injector.injectMembers(object);
+            Injector childInjector = injector.createChildInjector(modules);
+            childInjector.injectMembers(object);
         }
 
         //the class of our object
@@ -96,7 +114,6 @@ public class DefaultRouter implements Router
         for(Method method : methods) {
             //if it's a command method
             if(parser.hasCommandMethodAnnotation(method)) {
-
                 //attempt to parse the route
                 CommandRoute route = parser.parseCommandMethodAnnotation(method, object);
 
@@ -110,10 +127,18 @@ public class DefaultRouter implements Router
                 command.setTabCompleter(this);
 
                 //add to command map
-                commands.put(route.getCommandName(), route);
+                List<CommandRoute> routes = commands.get(route.getCommandName());
+                if(null == routes) {
+                    routes = new ArrayList<CommandRoute>();
+                    commands.put(route.getCommandName(), routes);
+                }
+                routes.add(route);
+                logger.log(Level.INFO, "Loading command '" + route.getCommandName() + "' from: " + method.getName());
             }
             //TODO tab complete
         }
+
+        logger.log(Level.INFO, "Loaded all commands from class: " + object.getClass().getName());
     }
 
     @Override
@@ -136,37 +161,63 @@ public class DefaultRouter implements Router
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args)
     {
-        CommandRoute route = commands.get(command.getName());
+        String commandName = command.getName();
+        List<CommandRoute> routes = commands.get(commandName);
+        if(routes == null) {
+            routes = new ArrayList<CommandRoute>();
+            commands.put(commandName, routes);
+        }
 
-        //if we don't know how to handle this command
-        if(null == route) {
-            //get the list of messages set as the defaults for the command
-            List<String> messages = noRouteMessages.get(command.getName());
+        List<String> argsList = Arrays.asList(args);
+        PriorityQueue<CommandRoute> applicable = new PriorityQueue<CommandRoute>(Math.max(routes.size(), 1), new SubcommandLengthComparator());
 
-            //if none are set use the one set in the plugin.yml via bukkit
-            if(null == messages) {
-                return false;
+        for(CommandRoute route : routes) {
+            String[] routeStarts = route.getStartsWith();
+
+            //if no starts with it always applies
+            if(routeStarts.length == 0) {
+                applicable.add(route);
+                continue;
             }
 
-            //send all of the messages and return true to bukkit
-            for(String message : messages) {
-                sender.sendMessage(message);
+            // skip invalid subcommands
+            if(routeStarts.length <= argsList.size()) {
+                List<String> routeStartsList = Arrays.asList(routeStarts);
+                List<String> argsSubList = argsList.subList(0, routeStarts.length);
+                if(routeStartsList.equals(argsSubList)) {
+                    applicable.add(route);
+                }
+            }
+        }
+
+        if(applicable.size() > 0) {
+            //grab the one with the longest argument list (deepest subcommand)
+            CommandRoute route = applicable.peek();
+
+            String[] subcommandArgs = Arrays.copyOfRange(args, route.getStartsWith().length, args.length);
+
+            //run the actual command
+            try {
+                route.run(command, sender, subcommandArgs);
+            } catch(CommandInvocationException e) {
+                e.printStackTrace();
             }
             return true;
         }
 
-        //check permissions
-        String permission = route.getPermission();
-        if(null != permission && !sender.hasPermission(permission)) {
-            sender.sendMessage(ChatColor.RED + "You do not have permission to run that command. (" + permission + ")");
-            return true;
+        //we did't know how to handle this command
+
+        //get the list of messages set as the defaults for the command
+        List<String> messages = noRouteMessages.get(command.getName());
+
+        //if none are set use the one set in the plugin.yml via bukkit
+        if(null == messages) {
+            return false;
         }
 
-        //run the actual command
-        try {
-            route.run(command, sender, args);
-        } catch(CommandInvocationException e) {
-            e.printStackTrace();
+        //send all of the messages and return true to bukkit
+        for(String message : messages) {
+            sender.sendMessage(message);
         }
         return true;
     }
