@@ -21,6 +21,7 @@
 
 package com.publicuhc.pluginframework.routing.tester;
 
+import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 
@@ -45,6 +46,11 @@ public class SenderTester extends HashSet<Class<? extends CommandSender>> implem
     @Override
     public boolean testCommand(Command command, CommandSender sender, String[] args)
     {
-        return isApplicable(sender.getClass());
+        boolean passed = isApplicable(sender.getClass());
+
+        if(!passed)
+            sender.sendMessage(ChatColor.RED + "You cannot run that command from here!");
+
+        return passed;
     }
 }
