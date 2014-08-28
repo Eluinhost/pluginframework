@@ -4,6 +4,8 @@
 
 This is a framework used to give extra features to [Bukkit](http://www.bukkit.org/ "Bukkit") plugins.
 
+##[Usage + Documentation](docs/Usage.md)
+
 ##Features
 
 ###Commands
@@ -74,8 +76,8 @@ It also supplies a way to change the locale per Player but the implementing plug
 
 ###Dependency Injection
 
-Allows for the plugin class to be injected with it's dependencies. All registered command classes are also injected. Uses Google Guice.
-Allows to supply new/override existing bindings within the plugin creation
+Allows for the plugin class to be injected with it's dependencies. All registered command classes are also injected.
+Uses Google Guice. Allows to supply new/override existing bindings within the plugin creation
 
 ####Example
     //main plugin class does NOT get constructor injection and only get's injected just before onFrameworkEnable is called
@@ -86,13 +88,12 @@ Allows to supply new/override existing bindings within the plugin creation
         interface = ci;
     }
 
-    public List<AbstractModule> initialModules() {
-        List<AbstractModule> modules = new ArrayList<AbstractModule>();
+    public void initialModules(List<Module> modules) {
         modules.add(new AbstractModule() {
             @Override
             protected void configure() {
                 bind(CustomInterface.class).to(CustomConcrete.class);
             }
         });
-        return null;
+        modules.addAll(getDefaultModules());
     }
