@@ -24,6 +24,7 @@ package com.publicuhc.pluginframework.routing.parser;
 import com.publicuhc.pluginframework.routing.annotation.CommandMethod;
 import com.publicuhc.pluginframework.routing.CommandRoute;
 import com.publicuhc.pluginframework.routing.DefaultCommandRoute;
+import com.publicuhc.pluginframework.routing.annotation.CommandOptions;
 import com.publicuhc.pluginframework.routing.exception.AnnotationMissingException;
 import com.publicuhc.pluginframework.routing.exception.CommandParseException;
 import com.publicuhc.pluginframework.routing.help.BukkitHelpFormatter;
@@ -124,6 +125,10 @@ public class DefaultRoutingMethodParser extends RoutingMethodParser
      */
     protected OptionParser getOptionsForMethod(Method method, Object instance) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException
     {
+        CommandOptions optionAnnotation = getAnnotation(method, CommandOptions.class);
+        if(optionAnnotation == null) {
+            return new OptionParser();
+        }
         Method optionsMethod = instance.getClass().getMethod(method.getName(), OptionDeclarer.class);
 
         if(!(optionsMethod.getReturnType().equals(Void.TYPE)))
@@ -190,16 +195,10 @@ public class DefaultRoutingMethodParser extends RoutingMethodParser
             throw new AnnotationMissingException(method, CommandMethod.class);
 
         OptionParser optionParser;
-
-        //get our option parser for this command
-        if(annotation.options()) {
-            try {
-                optionParser = getOptionsForMethod(method, instance);
-            } catch(Exception e) {
-                throw new CommandParseException("Exception occured when trying to run the options method for " + method.getName(), e);
-            }
-        } else {
-            optionParser = new OptionParser();
+        try {
+            optionParser = getOptionsForMethod(method, instance);
+        } catch(Exception e) {
+            throw new CommandParseException("Exception occured when trying to fetch an option parser for the method " + method.getName(), e);
         }
 
         String[] optionPositions = annotation.optionOrder();
