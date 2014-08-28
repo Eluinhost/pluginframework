@@ -24,12 +24,14 @@ package com.publicuhc.pluginframework.routing.parser;
 import com.publicuhc.pluginframework.routing.annotation.CommandMethod;
 import com.publicuhc.pluginframework.routing.CommandRoute;
 import com.publicuhc.pluginframework.routing.DefaultCommandRoute;
+import com.publicuhc.pluginframework.routing.annotation.CommandOptions;
 import com.publicuhc.pluginframework.routing.exception.AnnotationMissingException;
 import com.publicuhc.pluginframework.routing.exception.CommandParseException;
 import com.publicuhc.pluginframework.routing.help.BukkitHelpFormatter;
 import com.publicuhc.pluginframework.routing.proxy.MethodProxy;
 import com.publicuhc.pluginframework.routing.proxy.ReflectionMethodProxy;
 import joptsimple.*;
+import net.minecraft.server.v1_7_R2.CommandOp;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -189,17 +191,20 @@ public class DefaultRoutingMethodParser extends RoutingMethodParser
         if(null == annotation)
             throw new AnnotationMissingException(method, CommandMethod.class);
 
-        OptionParser optionParser;
+        CommandOptions options = getAnnotation(method, CommandOptions.class);
 
-        //get our option parser for this command
-        if(annotation.options()) {
+        //get our parser
+        OptionParser optionParser;
+        //if the annotation doesn't exist, use default parser
+        if(null == options) {
+            optionParser = new OptionParser();
+        } else {
+            //otherwise call the options method to get the parser
             try {
                 optionParser = getOptionsForMethod(method, instance);
             } catch(Exception e) {
                 throw new CommandParseException("Exception occured when trying to run the options method for " + method.getName(), e);
             }
-        } else {
-            optionParser = new OptionParser();
         }
 
         String[] optionPositions = annotation.optionOrder();
