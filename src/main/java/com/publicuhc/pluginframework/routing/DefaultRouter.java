@@ -200,7 +200,7 @@ public class DefaultRouter implements Router
         List<CommandRoute> routes = getRoutesForCommand(command);
 
         List<String> argsList = Arrays.asList(args);
-        PriorityQueue<CommandRoute> applicable = new PriorityQueue<CommandRoute>(Math.max(routes.size(), 1), new SubcommandLengthComparator());
+        PriorityQueue<CommandRoute> applicable = new PriorityQueue<CommandRoute>(Math.max(routes.size(), 1), new SubcommandLengthComparator(true));
 
         for(CommandRoute route : routes) {
             String[] routeStarts = route.getStartsWith();

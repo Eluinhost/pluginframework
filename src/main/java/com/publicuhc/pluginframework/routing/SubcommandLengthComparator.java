@@ -25,6 +25,14 @@ import java.util.Comparator;
 
 class SubcommandLengthComparator implements Comparator<CommandRoute>
 {
+
+    private boolean mostApplicable;
+
+    public SubcommandLengthComparator(boolean mostApplicable)
+    {
+        this.mostApplicable = mostApplicable;
+    }
+
     @Override
     public int compare(CommandRoute route1, CommandRoute route2)
     {
@@ -34,12 +42,16 @@ class SubcommandLengthComparator implements Comparator<CommandRoute>
         if(r1 == r2)
             return 0;
 
+        int returnValue;
+
         if(r1 > r2)
-            return -1;
+            returnValue = 1;
+        else
+            returnValue = -1;
 
-        if(r2 > r1)
-            return 1;
+        if(mostApplicable)
+            returnValue *= -1;
 
-        throw new IllegalStateException();
+        return returnValue;
     }
 }
