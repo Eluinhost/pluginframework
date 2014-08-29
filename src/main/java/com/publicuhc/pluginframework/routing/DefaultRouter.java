@@ -262,7 +262,19 @@ public class DefaultRouter implements Router
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String label, String[] args)
     {
-        //TODO tab complete
-        return new ArrayList<String>();
+        PriorityQueue<CommandRoute> allRoutes = getApplicableRoutes(command, args, false);
+
+        List<String> options = new ArrayList<String>();
+
+        CommandRoute most = allRoutes.poll();
+        if(most != null) {
+            //TODO add all the options for the current route
+        }
+
+        for(CommandRoute route : allRoutes) {
+            //TODO add subcommand minus the current selected subcommand to the list
+        }
+
+        return options;
     }
 }
