@@ -34,7 +34,7 @@ public class OnlinePlayerValueConverter implements ValueConverter<Player[]> {
         @SuppressWarnings("deprecation")
         Player p = Bukkit.getPlayer(value);
         if(null == p)
-            throw new ValueConversionException("Player not found online");
+            throw new ValueConversionException("Player is not online: " + value);
         return new Player[]{p};
     }
 

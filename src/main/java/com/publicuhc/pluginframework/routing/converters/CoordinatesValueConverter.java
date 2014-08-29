@@ -13,7 +13,7 @@ public class CoordinatesValueConverter implements ValueConverter<Coordinates> {
     public Coordinates convert(String value) {
         String[] parts = value.split(",");
         if(parts.length < 2 || parts.length > 3)
-            throw new ValueConversionException("Invalid coordinates format");
+            throw new ValueConversionException("Invalid coordinates format: " + value + ". Must use the format x,y,z or x,z");
 
         Double[] parsed = new Double[parts.length];
         try {
@@ -21,7 +21,7 @@ public class CoordinatesValueConverter implements ValueConverter<Coordinates> {
                 parsed[i] = Double.parseDouble(parts[i]);
             }
         } catch (NumberFormatException ex) {
-            throw new ValueConversionException("Invalid coordinate value");
+            throw new ValueConversionException("Invalid coordinates: " + value);
         }
 
         double x = parsed[0];
