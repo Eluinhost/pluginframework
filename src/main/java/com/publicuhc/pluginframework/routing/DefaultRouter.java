@@ -182,7 +182,7 @@ public class DefaultRouter implements Router
      */
     private CommandRoute getMostApplicableRoute(Command command, String[] args)
     {
-        PriorityQueue<CommandRoute> routes = getApplicableRoutes(command, args);
+        PriorityQueue<CommandRoute> routes = getApplicableRoutes(command, args, true);
         return routes.peek();
     }
 
@@ -193,14 +193,15 @@ public class DefaultRouter implements Router
      *
      * @param command the command to check for
      * @param args the argument list to check for subcommands from
+     * @param mostApplicable whether to order by the most applicable first (true) or least applicable first (false)
      * @return queue with the first element the most applicable (longest subcommand string)
      */
-    private PriorityQueue<CommandRoute> getApplicableRoutes(Command command, String[] args)
+    private PriorityQueue<CommandRoute> getApplicableRoutes(Command command, String[] args, boolean mostApplicable)
     {
         List<CommandRoute> routes = getRoutesForCommand(command);
 
         List<String> argsList = Arrays.asList(args);
-        PriorityQueue<CommandRoute> applicable = new PriorityQueue<CommandRoute>(Math.max(routes.size(), 1), new SubcommandLengthComparator(true));
+        PriorityQueue<CommandRoute> applicable = new PriorityQueue<CommandRoute>(Math.max(routes.size(), 1), new SubcommandLengthComparator(mostApplicable));
 
         for(CommandRoute route : routes) {
             String[] routeStarts = route.getStartsWith();
