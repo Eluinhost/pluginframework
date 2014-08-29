@@ -43,6 +43,7 @@ import org.powermock.modules.junit4.PowerMockRunner;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.*;
 
@@ -231,5 +232,47 @@ public class DefaultCommandRouteTest
             verify(parser, times(1)).parse(args);
             verify(proxy, times(1)).invoke(set, sender);
         }
+    }
+
+    @Test
+    public void test_fix_quotes()
+    {
+        DefaultCommandRoute route = new DefaultCommandRoute("test", proxy, parser, new String[]{}, help, defaultTesters);
+
+        String[] testArgs = new String[]{
+                "separate",
+                "args",
+                "\"this",
+                "is",
+                "in",
+                "one",
+                "arg\"",
+                "outer",
+                "stuff"
+        };
+
+        String[] fixed = route.fixQuoted(testArgs);
+        assertThat(fixed).containsExactly("separate", "args", "this is in one arg", "outer", "stuff");
+
+        testArgs = new String[]{
+                "th\"ese",
+                "arg\"s",
+                "shouldn't\"",
+                "be",
+                "affected"
+        };
+        fixed = route.fixQuoted(testArgs);
+        assertThat(fixed).containsExactly("th\"ese", "arg\"s", "shouldn't\"", "be", "affected");
+
+        testArgs = new String[] {
+                "\"these",
+                "args",
+                "are",
+                "all",
+                "in",
+                "one"
+        };
+        fixed = route.fixQuoted(testArgs);
+        assertThat(fixed).containsExactly("these args are all in one");
     }
 }
