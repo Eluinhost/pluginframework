@@ -158,7 +158,7 @@ public class DefaultRouter implements Router
         setDefaultMessageForCommand(commandName, mes);
     }
 
-    private PriorityQueue<CommandRoute> getApplicableRoutes(Command command, String[] args)
+    private PriorityQueue<CommandRoute> getApplicableRoutes(Command command, String[] args, boolean removeSubcommands)
     {
         String commandName = command.getName();
         List<CommandRoute> routes = commands.get(commandName);
@@ -180,7 +180,7 @@ public class DefaultRouter implements Router
             }
 
             // skip invalid subcommands
-            if(routeStarts.length <= argsList.size()) {
+            if(removeSubcommands && routeStarts.length <= argsList.size()) {
                 List<String> routeStartsList = Arrays.asList(routeStarts);
                 List<String> argsSubList = argsList.subList(0, routeStarts.length);
                 if(routeStartsList.equals(argsSubList)) {
@@ -195,7 +195,7 @@ public class DefaultRouter implements Router
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args)
     {
-        PriorityQueue<CommandRoute> applicable = getApplicableRoutes(command, args);
+        PriorityQueue<CommandRoute> applicable = getApplicableRoutes(command, args, true);
 
         if(applicable.size() > 0) {
             //grab the one with the longest argument list (deepest subcommand)
