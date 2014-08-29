@@ -262,7 +262,15 @@ public class DefaultRouter implements Router
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String label, String[] args)
     {
-        PriorityQueue<CommandRoute> allRoutes = getApplicableRoutes(command, args, false);
+        //get the item to tab complete
+        String partial = args[args.length - 1];
+        //TODO check if last arg is empty if they havn't typed anything yet, hope to god it is
+
+        //remove the parial
+        String[] withoutPartial = Arrays.copyOfRange(args, 0, args.length - 2);
+
+        //get all the routes that apply to the base command
+        PriorityQueue<CommandRoute> allRoutes = getApplicableRoutes(command, withoutPartial, false);
 
         List<String> options = new ArrayList<String>();
 
