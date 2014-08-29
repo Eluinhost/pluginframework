@@ -174,6 +174,19 @@ public class DefaultRouter implements Router
     }
 
     /**
+     * Fetches the most applicable route (the routes that matches with the longest subcommand string)
+     *
+     * @param command the command to check for
+     * @param args the argument list to check for subcommands from
+     * @return the most applicable route or null if none exists
+     */
+    private CommandRoute getMostApplicableRoute(Command command, String[] args)
+    {
+        PriorityQueue<CommandRoute> routes = getApplicableRoutes(command, args);
+        return routes.peek();
+    }
+
+    /**
      * Get all routes that apply for the given command and argument list. Orders by longest subcommand first. e.g.
      * Running 'feature list' would not contain 'feature list subcommand' but would contain 'feature list' and 'feature'
      * in that order
@@ -214,12 +227,9 @@ public class DefaultRouter implements Router
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args)
     {
-        PriorityQueue<CommandRoute> applicable = getApplicableRoutes(command, args);
+        CommandRoute route = getMostApplicableRoute(command, args);
 
-        if(applicable.size() > 0) {
-            //grab the one with the longest argument list (deepest subcommand)
-            CommandRoute route = applicable.peek();
-
+        if(route != null) {
             String[] subcommandArgs = Arrays.copyOfRange(args, route.getStartsWith().length, args.length);
 
             //run the actual command
