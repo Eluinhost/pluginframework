@@ -158,7 +158,11 @@ public class DefaultRouter implements Router
         setDefaultMessageForCommand(commandName, mes);
     }
 
-    private PriorityQueue<CommandRoute> getApplicableRoutes(Command command, String[] args, boolean removeSubcommands)
+    /**
+     * @param command the command to check for
+     * @return list of all the registed routes
+     */
+    private List<CommandRoute> getRoutesForCommand(Command command)
     {
         String commandName = command.getName();
         List<CommandRoute> routes = commands.get(commandName);
@@ -166,6 +170,21 @@ public class DefaultRouter implements Router
             routes = new ArrayList<CommandRoute>();
             commands.put(commandName, routes);
         }
+        return routes;
+    }
+
+    /**
+     * Get all routes that apply for the given command and argument list. Orders by longest subcommand first. e.g.
+     * Running 'feature list' would not contain 'feature list subcommand' but would contain 'feature list' and 'feature'
+     * in that order
+     *
+     * @param command the command to check for
+     * @param args the argument list to check for subcommands from
+     * @return queue with the first element the most applicable (longest subcommand string)
+     */
+    private PriorityQueue<CommandRoute> getApplicableRoutes(Command command, String[] args)
+    {
+        List<CommandRoute> routes = getRoutesForCommand(command);
 
         List<String> argsList = Arrays.asList(args);
         PriorityQueue<CommandRoute> applicable = new PriorityQueue<CommandRoute>(Math.max(routes.size(), 1), new SubcommandLengthComparator());
@@ -180,7 +199,7 @@ public class DefaultRouter implements Router
             }
 
             // skip invalid subcommands
-            if(removeSubcommands && routeStarts.length <= argsList.size()) {
+            if(routeStarts.length <= argsList.size()) {
                 List<String> routeStartsList = Arrays.asList(routeStarts);
                 List<String> argsSubList = argsList.subList(0, routeStarts.length);
                 if(routeStartsList.equals(argsSubList)) {
@@ -195,7 +214,7 @@ public class DefaultRouter implements Router
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args)
     {
-        PriorityQueue<CommandRoute> applicable = getApplicableRoutes(command, args, true);
+        PriorityQueue<CommandRoute> applicable = getApplicableRoutes(command, args);
 
         if(applicable.size() > 0) {
             //grab the one with the longest argument list (deepest subcommand)
