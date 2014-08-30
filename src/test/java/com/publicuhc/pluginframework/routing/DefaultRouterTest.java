@@ -188,19 +188,19 @@ public class DefaultRouterTest
     @Test
     public void test_set_default_message()
     {
-        assertThat(router.noRouteMessages).hasSize(0);
-        assertThat(router.noRouteMessages.get("test")).isNull();
+        assertThat(router.noRouteMessages.keySet()).hasSize(0);
+        assertThat(router.noRouteMessages.get("test")).isEmpty();
 
         List<String> messages = new ArrayList<String>();
         messages.add("1");
         messages.add("2");
 
         router.setDefaultMessageForCommand("test", messages);
-        assertThat(router.noRouteMessages).hasSize(1);
+        assertThat(router.noRouteMessages.keySet()).hasSize(1);
         assertThat(router.noRouteMessages.get("test")).containsExactly("1", "2");
 
         router.setDefaultMessageForCommand("test", "3");
-        assertThat(router.noRouteMessages).hasSize(1);
+        assertThat(router.noRouteMessages.keySet()).hasSize(1);
         assertThat(router.noRouteMessages.get("test")).containsExactly("3");
     }
 

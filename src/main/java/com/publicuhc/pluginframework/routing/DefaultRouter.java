@@ -22,6 +22,7 @@
 package com.publicuhc.pluginframework.routing;
 
 import com.google.common.base.Joiner;
+import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import com.google.inject.AbstractModule;
@@ -47,7 +48,7 @@ public class DefaultRouter implements Router
     /**
      * Stores the message to send a player if a route wasn't found for the given command and parameters
      */
-    protected final HashMap<String, List<String>> noRouteMessages = new HashMap<String, List<String>>();
+    protected final Multimap<String, String> noRouteMessages = ArrayListMultimap.create();
 
     /**
      * Used to inject all parameters needed to the command classes when added
@@ -144,7 +145,7 @@ public class DefaultRouter implements Router
     @Override
     public void setDefaultMessageForCommand(String commandName, List<String> message)
     {
-        noRouteMessages.put(commandName, message);
+        noRouteMessages.replaceValues(commandName, message);
     }
 
     @Override
@@ -259,10 +260,10 @@ public class DefaultRouter implements Router
         //we did't know how to handle this command
 
         //get the list of messages set as the defaults for the command
-        List<String> messages = noRouteMessages.get(command.getName());
+        Collection<String> messages = noRouteMessages.get(command.getName());
 
         //if none are set use the one set in the plugin.yml via bukkit
-        if(null == messages) {
+        if(messages.isEmpty()) {
             return false;
         }
 
