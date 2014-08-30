@@ -21,6 +21,7 @@
 
 package com.publicuhc.pluginframework.routing;
 
+import com.google.common.base.Joiner;
 import com.google.inject.AbstractModule;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
@@ -32,6 +33,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.plugin.PluginLogger;
+import org.bukkit.util.StringUtil;
 
 import java.lang.reflect.Method;
 import java.util.*;
@@ -186,6 +188,35 @@ public class DefaultRouter implements Router
         return routes.peek();
     }
 
+    private PriorityQueue<CommandRoute> getWithSubcommands(Command command, String[] args, boolean mostApplicable)
+    {
+        List<CommandRoute> routes = getRoutesForCommand(command);
+
+        PriorityQueue<CommandRoute> applicable = new PriorityQueue<CommandRoute>(Math.max(routes.size(), 1), new SubcommandLengthComparator(mostApplicable));
+
+        for(CommandRoute route : routes) {
+            String[] routeStarts = route.getStartsWith();
+
+            if(routeStarts.length < args.length) {
+                continue;
+            }
+
+            String[] routeStartsApplicable = Arrays.copyOfRange(routeStarts, 0, args.length);
+            boolean matched = true;
+            for(int i = 0; i < routeStartsApplicable.length; i++) {
+                if(!routeStartsApplicable[i].equalsIgnoreCase(args[i])) {
+                    matched = false;
+                }
+            }
+
+            if(matched) {
+                applicable.add(route);
+            }
+        }
+
+        return applicable;
+    }
+
     /**
      * Get all routes that apply for the given command and argument list. Orders by longest subcommand first. e.g.
      * Running 'feature list' would not contain 'feature list subcommand' but would contain 'feature list' and 'feature'
@@ -259,30 +290,55 @@ public class DefaultRouter implements Router
         return true;
     }
 
+    /**
+     * On tab complete. The final arg is the one we want to match against, can be empty
+     */
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String label, String[] args)
     {
+        System.out.println(args.length + Joiner.on(",").useForNull("null").join(args));
+
         //get the item to tab complete
         String partial = args[args.length - 1];
-        //TODO check if last arg is empty if they havn't typed anything yet, hope to god it is
 
-        //remove the parial
-        String[] withoutPartial = Arrays.copyOfRange(args, 0, args.length - 2);
+        String[] withoutPartial;
+        if(args.length > 1) {
+            //remove the partial from original list
+            withoutPartial = Arrays.copyOfRange(args, 0, args.length - 2);
+        } else {
+            withoutPartial = new String[0];
+        }
 
-        //get all the routes that apply to the base command
-        PriorityQueue<CommandRoute> allRoutes = getApplicableRoutes(command, withoutPartial, false);
+        //get all the routes that apply
+        PriorityQueue<CommandRoute> allRoutes = getWithSubcommands(command, withoutPartial, false);
 
         List<String> options = new ArrayList<String>();
 
-        CommandRoute most = allRoutes.poll();
-        if(most != null) {
-            //TODO add all the options for the current route
+        if(allRoutes.size() == 0) {
+            return options;
         }
 
-        for(CommandRoute route : allRoutes) {
-            //TODO add subcommand minus the current selected subcommand to the list
+        CommandRoute current = allRoutes.poll();
+
+        if(!partial.isEmpty() && partial.charAt(0) == '-') {
+            for(String key : current.getOptionDetails().recognizedOptions().keySet()) {
+                if(!key.equals("[arguments]")) {
+                    options.add("-" + key);
+                }
+            }
         }
 
-        return options;
+        if(allRoutes.size() > 0) {
+            for(CommandRoute route : allRoutes) {
+                String[] startsWith = route.getStartsWith();
+                startsWith = Arrays.copyOfRange(startsWith, withoutPartial.length, startsWith.length);
+                Collections.addAll(options, startsWith);
+            }
+        }
+
+        List<String> actual = new LinkedList<String>();
+        StringUtil.copyPartialMatches(partial, options, actual);
+
+        return actual;
     }
 }
