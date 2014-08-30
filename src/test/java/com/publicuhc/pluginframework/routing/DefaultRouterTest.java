@@ -41,6 +41,7 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
@@ -91,7 +92,7 @@ public class DefaultRouterTest
     public void test_register_command_by_class_no_modules() throws Throwable
     {
         router.registerCommands(SampleCommand.class);
-        assertThat(router.commands).hasSize(1);
+        assertThat(router.commands.keySet()).hasSize(1);
         assertThat(router.commands.get("test")).hasSize(1);
 
         //it should create a child injector and use that to create the class
@@ -107,7 +108,7 @@ public class DefaultRouterTest
     {
         List<AbstractModule> modules = new ArrayList<AbstractModule>();
         router.registerCommands(SampleCommand.class, modules);
-        assertThat(router.commands).hasSize(1);
+        assertThat(router.commands.keySet()).hasSize(1);
         assertThat(router.commands.get("test")).hasSize(1);
 
         //it should create a child injector with given modules and use that to create the class
@@ -124,7 +125,7 @@ public class DefaultRouterTest
     public void test_register_command_by_instance_inject_no_modules() throws Throwable
     {
         router.registerCommands(new SampleCommand(), true);
-        assertThat(router.commands).hasSize(1);
+        assertThat(router.commands.keySet()).hasSize(1);
         assertThat(router.commands.get("test")).hasSize(1);
 
         //it should create a child injector and use that to inject, not creating a class
@@ -142,7 +143,7 @@ public class DefaultRouterTest
     {
         List<AbstractModule> modules = new ArrayList<AbstractModule>();
         router.registerCommands(new SampleCommand(), true, modules);
-        assertThat(router.commands).hasSize(1);
+        assertThat(router.commands.keySet()).hasSize(1);
         assertThat(router.commands.get("test")).hasSize(1);
 
         //it should create a child injector and use that to inject, not creating a class
@@ -158,7 +159,7 @@ public class DefaultRouterTest
     public void test_register_command_by_instance_no_inject_no_modules() throws Throwable
     {
         router.registerCommands(new SampleCommand(), false);
-        assertThat(router.commands).hasSize(1);
+        assertThat(router.commands.keySet()).hasSize(1);
         assertThat(router.commands.get("test")).hasSize(1);
 
         //it shouldn't do anything with the injector at all
@@ -170,7 +171,7 @@ public class DefaultRouterTest
     public void test_register_command_by_instance_no_inject_extra_modules() throws Throwable
     {
         router.registerCommands(new SampleCommand(), false, new ArrayList<AbstractModule>());
-        assertThat(router.commands).hasSize(1);
+        assertThat(router.commands.keySet()).hasSize(1);
         assertThat(router.commands.get("test")).hasSize(1);
 
         //it shouldn't do anything with the injector at all even though we gave it extra modules
@@ -270,7 +271,7 @@ public class DefaultRouterTest
         SampleSubcommand sample = new SampleSubcommand();
         router.registerCommands(sample, false);
 
-        assertThat(router.commands).hasSize(1);
+        assertThat(router.commands.keySet()).hasSize(1);
         assertThat(router.commands.get("test")).hasSize(2);
 
         CommandSender sender = mock(CommandSender.class);
@@ -289,7 +290,7 @@ public class DefaultRouterTest
         SampleSubcommand sample = new SampleSubcommand();
         router.registerCommands(sample, false);
 
-        assertThat(router.commands).hasSize(1);
+        assertThat(router.commands.keySet()).hasSize(1);
         assertThat(router.commands.get("test")).hasSize(2);
 
         CommandSender sender = mock(CommandSender.class);
@@ -308,7 +309,7 @@ public class DefaultRouterTest
         SampleSubcommand sample = new SampleSubcommand();
         router.registerCommands(sample, false);
 
-        List<CommandRoute> routes = router.commands.get("test");
+        Collection<CommandRoute> routes = router.commands.get("test");
         Iterator<CommandRoute> it = routes.iterator();
         while(it.hasNext()) {
             CommandRoute route = it.next();
@@ -316,7 +317,7 @@ public class DefaultRouterTest
                 it.remove();
         }
 
-        assertThat(router.commands).hasSize(1);
+        assertThat(router.commands.keySet()).hasSize(1);
         assertThat(router.commands.get("test")).hasSize(1);
 
         CommandSender sender = mock(CommandSender.class);

@@ -22,6 +22,8 @@
 package com.publicuhc.pluginframework.routing;
 
 import com.google.common.base.Joiner;
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Multimap;
 import com.google.inject.AbstractModule;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
@@ -60,7 +62,7 @@ public class DefaultRouter implements Router
     /**
      * Stores map of command name -> routes for invocation later on
      */
-    protected final HashMap<String, List<CommandRoute>> commands = new HashMap<String, List<CommandRoute>>();
+    protected final Multimap<String, CommandRoute> commands = HashMultimap.create();
 
     private final PluginLogger logger;
 
@@ -129,12 +131,8 @@ public class DefaultRouter implements Router
                 command.setTabCompleter(this);
 
                 //add to command map
-                List<CommandRoute> routes = commands.get(route.getCommandName());
-                if(null == routes) {
-                    routes = new ArrayList<CommandRoute>();
-                    commands.put(route.getCommandName(), routes);
-                }
-                routes.add(route);
+                commands.put(route.getCommandName(), route);
+
                 logger.log(Level.INFO, "Loading command '" + route.getCommandName() + "' from: " + method.getName());
             }
             //TODO tab complete
@@ -161,21 +159,6 @@ public class DefaultRouter implements Router
     }
 
     /**
-     * @param command the command to check for
-     * @return list of all the registed routes
-     */
-    private List<CommandRoute> getRoutesForCommand(Command command)
-    {
-        String commandName = command.getName();
-        List<CommandRoute> routes = commands.get(commandName);
-        if(routes == null) {
-            routes = new ArrayList<CommandRoute>();
-            commands.put(commandName, routes);
-        }
-        return routes;
-    }
-
-    /**
      * Fetches the most applicable route (the routes that matches with the longest subcommand string)
      *
      * @param command the command to check for
@@ -190,7 +173,7 @@ public class DefaultRouter implements Router
 
     private PriorityQueue<CommandRoute> getWithSubcommands(Command command, String[] args, boolean mostApplicable)
     {
-        List<CommandRoute> routes = getRoutesForCommand(command);
+        Collection<CommandRoute> routes = commands.get(command.getName());
 
         PriorityQueue<CommandRoute> applicable = new PriorityQueue<CommandRoute>(Math.max(routes.size(), 1), new SubcommandLengthComparator(mostApplicable));
 
@@ -229,7 +212,7 @@ public class DefaultRouter implements Router
      */
     private PriorityQueue<CommandRoute> getApplicableRoutes(Command command, String[] args, boolean mostApplicable)
     {
-        List<CommandRoute> routes = getRoutesForCommand(command);
+        Collection<CommandRoute> routes = commands.get(command.getName());
 
         List<String> argsList = Arrays.asList(args);
         PriorityQueue<CommandRoute> applicable = new PriorityQueue<CommandRoute>(Math.max(routes.size(), 1), new SubcommandLengthComparator(mostApplicable));
