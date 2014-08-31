@@ -38,6 +38,6 @@ public class CoordinatesValueConverter implements ValueConverter<Coordinates> {
 
     @Override
     public String valuePattern() {
-        return null;
+        return "x,y,z or x,z";
     }
 }

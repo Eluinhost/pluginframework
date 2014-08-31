@@ -22,6 +22,7 @@
 package com.publicuhc.pluginframework.routing;
 
 import com.google.common.base.Joiner;
+import com.google.common.base.Optional;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
@@ -164,12 +165,12 @@ public class DefaultRouter implements Router
      *
      * @param command the command to check for
      * @param args the argument list to check for subcommands from
-     * @return the most applicable route or null if none exists
+     * @return the most applicable route
      */
-    private CommandRoute getMostApplicableRoute(Command command, String[] args)
+    private Optional<CommandRoute> getMostApplicableRoute(Command command, String[] args)
     {
         PriorityQueue<CommandRoute> routes = getApplicableRoutes(command, args, true);
-        return routes.peek();
+        return Optional.fromNullable(routes.peek());
     }
 
     private PriorityQueue<CommandRoute> getWithSubcommands(Command command, String[] args, boolean mostApplicable)
@@ -243,9 +244,11 @@ public class DefaultRouter implements Router
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args)
     {
-        CommandRoute route = getMostApplicableRoute(command, args);
+        Optional<CommandRoute> routeOptional = getMostApplicableRoute(command, args);
 
-        if(route != null) {
+        if(routeOptional.isPresent()) {
+            CommandRoute route = routeOptional.get();
+
             String[] subcommandArgs = Arrays.copyOfRange(args, route.getStartsWith().length, args.length);
 
             //run the actual command

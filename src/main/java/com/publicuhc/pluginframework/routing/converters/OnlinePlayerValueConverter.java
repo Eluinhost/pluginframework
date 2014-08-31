@@ -47,7 +47,7 @@ public class OnlinePlayerValueConverter implements ValueConverter<Player[]> {
     @Override
     public String valuePattern()
     {
-        return null;
+        return "PlayerName";
     }
 
     /**

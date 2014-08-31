@@ -38,6 +38,6 @@ public class LocationValueConverter implements ValueConverter<Location> {
 
     @Override
     public String valuePattern() {
-        return null;
+        return "world,x,y,z or world,x,z";
     }
 }
