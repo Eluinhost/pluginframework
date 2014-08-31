@@ -39,19 +39,6 @@ class SubcommandLengthComparator implements Comparator<CommandRoute>
         int r1 = route1.getStartsWith().length;
         int r2 = route2.getStartsWith().length;
 
-        if(r1 == r2)
-            return 0;
-
-        int returnValue;
-
-        if(r1 > r2)
-            returnValue = 1;
-        else
-            returnValue = -1;
-
-        if(mostApplicable)
-            returnValue *= -1;
-
-        return returnValue;
+        return mostApplicable ? Integer.compare(r1, r2) : Integer.compare(r2, r1);
     }
 }
