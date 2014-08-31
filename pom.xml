@@ -38,6 +38,7 @@
         <sisu-guice.version>3.1.5</sisu-guice.version>
         <assertj.version>1.5.0</assertj.version>
         <jmh.version>0.9.5</jmh.version>
+        <fanciful.version>0.2.0-SNAPSHOT</fanciful.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
@@ -115,7 +116,7 @@
         <dependency>
             <groupId>mkremins</groupId>
             <artifactId>fanciful</artifactId>
-            <version>0.1.5</version>
+            <version>${fanciful.version}</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
