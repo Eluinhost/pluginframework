@@ -63,7 +63,7 @@ public class DefaultTranslateTest {
         when(p.getUniqueId()).thenReturn(uuid);
         translate.setLocaleForPlayer(p, "ru");
 
-        assertThat(configurator.getConfig("locales").getString("players." + uuid)).isEqualTo("ru");
+        assertThat(configurator.getConfig("locales").get().getString("players." + uuid)).isEqualTo("ru");
 
         mockStatic(Bukkit.class);
         PluginManager manager = mock(PluginManager.class);
@@ -71,7 +71,7 @@ public class DefaultTranslateTest {
 
         configurator.reloadConfig("locales");
 
-        assertThat(configurator.getConfig("locales").getString("players." + uuid)).isEqualTo("ru");
+        assertThat(configurator.getConfig("locales").get().getString("players." + uuid)).isEqualTo("ru");
     }
 
     @Test
@@ -83,7 +83,7 @@ public class DefaultTranslateTest {
         translate.setLocaleForPlayer(p, "fr");
         assertThat(translate.getLocaleForSender(p)).isEqualTo("fr");
 
-        FileConfiguration config = configurator.getConfig("locales");
+        FileConfiguration config = configurator.getConfig("locales").get();
 
         assertThat(translate.getLocaleForSender(mock(ConsoleCommandSender.class))).isEqualTo(config.getString("console"));
         assertThat(translate.getLocaleForSender(mock(BlockCommandSender.class))).isEqualTo(config.getString("commandBlock"));

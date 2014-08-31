@@ -21,6 +21,7 @@
 
 package com.publicuhc.pluginframework.configuration;
 
+import com.google.common.base.Optional;
 import com.publicuhc.pluginframework.configuration.events.ConfigFileReloadedEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -50,14 +51,16 @@ public class DefaultConfiguratorTest {
 
     @Test
     public void testGetResource() {
-        InputStream stream = m_configurator.getResource("test.yml");
-        assertThat(stream).isNotNull();
+        Optional<InputStream> stream = m_configurator.getResource("test.yml");
+        assertThat(stream.isPresent()).isTrue();
+        assertThat(stream.get()).isNotNull();
 
         stream = m_configurator.getResource("nonexisting.yml");
-        assertThat(stream).isNull();
+        assertThat(stream.isPresent()).isFalse();
 
         stream = m_configurator.getResource("testfolder:subtest.yml");
-        assertThat(stream).isNotNull();
+        assertThat(stream.isPresent()).isTrue();
+        assertThat(stream.get()).isNotNull();
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -67,13 +70,13 @@ public class DefaultConfiguratorTest {
 
     @Test
     public void testLoadConfig() {
-        FileConfiguration configuration = m_configurator.loadConfig("test");
-        assertThat(configuration).isNotNull();
-        assertThat(configuration.getString("testString")).isEqualTo("teststring");
+        Optional<FileConfiguration> configuration = m_configurator.loadConfig("test");
+        assertThat(configuration.isPresent()).isTrue();
+        assertThat(configuration.get().getString("testString")).isEqualTo("teststring");
 
         configuration = m_configurator.loadConfig("testfolder:subtest");
-        assertThat(configuration).isNotNull();
-        assertThat(configuration.getInt("test1")).isEqualTo(20);
+        assertThat(configuration.isPresent()).isTrue();
+        assertThat(configuration.get().getInt("test1")).isEqualTo(20);
     }
 
     @Test
@@ -91,11 +94,11 @@ public class DefaultConfiguratorTest {
 
     @Test
     public void testGetConfig() {
-        FileConfiguration configuration = m_configurator.getConfig("test");
-        assertThat(configuration.getString("testString")).isEqualTo("teststring");
+        Optional<FileConfiguration> configuration = m_configurator.getConfig("test");
+        assertThat(configuration.get().getString("testString")).isEqualTo("teststring");
 
         configuration = m_configurator.getConfig("testfolder:subtest");
-        assertThat(configuration.getInt("test1")).isEqualTo(20);
+        assertThat(configuration.get().getInt("test1")).isEqualTo(20);
     }
 
     @Test
@@ -104,7 +107,7 @@ public class DefaultConfiguratorTest {
         PluginManager manager = mock(PluginManager.class);
         when(Bukkit.getPluginManager()).thenReturn(manager);
 
-        FileConfiguration configuration = m_configurator.getConfig("test");
+        Optional<FileConfiguration> configuration = m_configurator.getConfig("test");
 
         m_configurator.reloadConfig("test");
 

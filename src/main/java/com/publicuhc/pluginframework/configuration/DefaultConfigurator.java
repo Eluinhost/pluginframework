@@ -21,9 +21,11 @@
 
 package com.publicuhc.pluginframework.configuration;
 
+import com.google.common.base.Optional;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import com.publicuhc.pluginframework.configuration.events.ConfigFileReloadedEvent;
+import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -51,12 +53,12 @@ public class DefaultConfigurator implements Configurator {
     }
 
     @Override
-    public FileConfiguration getConfig(String id) {
+    public Optional<FileConfiguration> getConfig(String id) {
         FileConfiguration config = m_configs.get(id);
         if (null == config) {
-            config = loadConfig(id);
+            return loadConfig(id);
         }
-        return config;
+        return Optional.of(config);
     }
 
     @Override
@@ -72,27 +74,37 @@ public class DefaultConfigurator implements Configurator {
     }
 
     @Override
-    public FileConfiguration reloadConfig(String id) {
-        FileConfiguration config = loadConfig(id);
-        ConfigFileReloadedEvent event = new ConfigFileReloadedEvent(id, config);
+    public Optional<FileConfiguration> reloadConfig(String id) {
+        Optional<FileConfiguration> config = loadConfig(id);
+
+        if(!config.isPresent()) {
+            return Optional.absent();
+        }
+
+        ConfigFileReloadedEvent event = new ConfigFileReloadedEvent(id, config.get());
         Bukkit.getPluginManager().callEvent(event);
         return config;
     }
 
-    protected FileConfiguration loadConfig(String id) {
+    protected Optional<FileConfiguration> loadConfig(String id) {
         File customConfigFile = new File(m_dataFolder, id.replaceAll(":", Matcher.quoteReplacement(File.separator)) + ".yml");
         FileConfiguration customConfig = YamlConfiguration.loadConfiguration(customConfigFile);
 
         // Look for defaults in the jar
-        InputStream defConfigStream = getResource(id + ".yml");
-        if (defConfigStream != null) {
-            YamlConfiguration defConfig = YamlConfiguration.loadConfiguration(new InputStreamReader(defConfigStream));
-            customConfig.options().copyDefaults(true);
-            customConfig.setDefaults(defConfig);
+        Optional<InputStream> defConfigStream = getResource(id + ".yml");
+
+        if(!defConfigStream.isPresent()) {
+            return Optional.absent();
         }
+
+        YamlConfiguration defConfig = YamlConfiguration.loadConfiguration(new InputStreamReader(defConfigStream.get()));
+        customConfig.options().copyDefaults(true);
+        customConfig.setDefaults(defConfig);
+
         m_configs.put(id, customConfig);
         saveConfig(id);
-        return customConfig;
+
+        return Optional.of(customConfig);
     }
 
     /**
@@ -101,24 +113,24 @@ public class DefaultConfigurator implements Configurator {
      * @param filename the filename to load
      * @return inputstream
      */
-    protected InputStream getResource(String filename) {
-        if (filename == null) {
-            throw new IllegalArgumentException("Filename cannot be null");
-        }
+    protected Optional<InputStream> getResource(String filename) {
+        Validate.notNull(filename, "Filename cannot be null");
+
         //getResource always uses /
         filename = filename.replaceAll(":", Matcher.quoteReplacement("/"));
+
         try {
             URL url = m_classLoader.getResource(filename);
 
             if (url == null) {
-                return null;
+                return Optional.absent();
             }
 
             URLConnection connection = url.openConnection();
             connection.setUseCaches(false);
-            return connection.getInputStream();
+            return Optional.of(connection.getInputStream());
         } catch (IOException ex) {
-            return null;
+            return Optional.absent();
         }
     }
 }

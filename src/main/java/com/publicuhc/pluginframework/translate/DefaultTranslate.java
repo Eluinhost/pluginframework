@@ -21,6 +21,7 @@
 
 package com.publicuhc.pluginframework.translate;
 
+import com.google.common.base.Optional;
 import com.google.inject.Inject;
 import com.publicuhc.pluginframework.configuration.Configurator;
 import org.bukkit.ChatColor;
@@ -55,9 +56,13 @@ public class DefaultTranslate implements Translate {
 
     @Override
     public String translate(String key, String locale, Map<String, String> vars) {
-        FileConfiguration configuration = m_configurator.getConfig("translations:" + locale);
+        Optional<FileConfiguration> configuration = m_configurator.getConfig("translations:" + locale);
 
-        String value = configuration.getString(key);
+        if(!configuration.isPresent()) {
+            return key;
+        }
+
+        String value = configuration.get().getString(key);
 
         if (null == value) {
             value = key;
@@ -91,7 +96,13 @@ public class DefaultTranslate implements Translate {
 
     @Override
     public String getLocaleForSender(CommandSender sender) {
-        FileConfiguration locales = m_configurator.getConfig("locales");
+        Optional<FileConfiguration> localesOptional = m_configurator.getConfig("locales");
+
+        if(!localesOptional.isPresent()) {
+            throw new IllegalStateException("Cannot find the locales configuration file");
+        }
+
+        FileConfiguration locales = localesOptional.get();
 
         String locale = null;
 
@@ -113,8 +124,13 @@ public class DefaultTranslate implements Translate {
 
     @Override
     public void setLocaleForPlayer(Player p, String code) {
-        FileConfiguration configuration = m_configurator.getConfig("locales");
-        configuration.set("players." + p.getUniqueId().toString(), code);
+        Optional<FileConfiguration> configuration = m_configurator.getConfig("locales");
+
+        if(!configuration.isPresent()) {
+            throw new IllegalStateException("Cannot find the locales configuration file");
+        }
+
+        configuration.get().set("players." + p.getUniqueId().toString(), code);
         m_configurator.saveConfig("locales");
     }
 }
