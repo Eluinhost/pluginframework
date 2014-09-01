@@ -23,6 +23,7 @@ package com.publicuhc.pluginframework.translate;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginLogger;
 import org.junit.Before;
 import org.junit.Test;
@@ -36,12 +37,15 @@ import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.powermock.api.mockito.PowerMockito.mock;
+import static org.powermock.api.mockito.PowerMockito.when;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({Bukkit.class, UUID.class})
 public class DefaultTranslateTest {
 
     private DefaultTranslate translate;
+    private Player englishPlayer;
+    private Player frenchPlayer;
 
     @Test
     public void testTranslateNoVars() {
@@ -66,6 +70,13 @@ public class DefaultTranslateTest {
         assertThat(translate.translate("testkeymultivar", Locale.ENGLISH, "one", "two")).isEqualTo("test one two one test");
     }
 
+    @Test
+    public void testTranslatePlayer()
+    {
+        assertThat(translate.translate("testkeynovars", englishPlayer)).isEqualTo("englishnovars");
+        assertThat(translate.translate("testkeynovars", frenchPlayer)).isEqualTo("frenchnovars");
+    }
+
     @Before
     public void onSetUp() {
         final File dataFolder = new File("target" + File.separator + "testdatafolder");
@@ -74,8 +85,14 @@ public class DefaultTranslateTest {
         }
         dataFolder.mkdir();
 
+        TranslateReflection reflection = mock(TranslateReflection.class);
+        englishPlayer = mock(Player.class);
+        frenchPlayer = mock(Player.class);
+        when(reflection.getLocaleForPlayer(englishPlayer)).thenReturn("en_US");
+        when(reflection.getLocaleForPlayer(frenchPlayer)).thenReturn("fr");
+
         translate = new DefaultTranslate(
-                mock(BukkitTranslateReflection.class),
+                reflection,
                 new YamlControl(dataFolder),
                 mock(PluginLogger.class)
         );
