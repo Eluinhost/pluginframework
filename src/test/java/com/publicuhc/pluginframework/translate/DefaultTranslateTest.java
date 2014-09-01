@@ -31,9 +31,7 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
 import java.io.File;
-import java.util.HashMap;
 import java.util.Locale;
-import java.util.Map;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -55,7 +53,7 @@ public class DefaultTranslateTest {
 
     @Test
     public void testTranslateSingleVar() {
-        assertThat(translate.translate("testkeyonevar", Locale.ENGLISH, "amount", "one")).isEqualTo("test key one var");
+        assertThat(translate.translate("testkeyonevar", Locale.ENGLISH, "one")).isEqualTo("test key one var");
     }
 
     @Test
@@ -65,10 +63,7 @@ public class DefaultTranslateTest {
 
     @Test
     public void testTranslateMultiVar() {
-        Map<String, String> trans = new HashMap<String, String>();
-        trans.put("var1", "one");
-        trans.put("var2", "two");
-        assertThat(translate.translate("testkeymultivar", Locale.ENGLISH, trans)).isEqualTo("test one two one test");
+        assertThat(translate.translate("testkeymultivar", Locale.ENGLISH, "one", "two")).isEqualTo("test one two one test");
     }
 
     @Before

@@ -47,17 +47,14 @@ public class DefaultTranslate implements Translate {
     }
 
     @Override
-    public String translate(String key, Locale locale) {
-        return translate(key, locale, new HashMap<String, String>());
+    public String translate(String key, CommandSender sender, Object... params)
+    {
+        return translate(key, getLocaleForSender(sender), params);
     }
 
     @Override
-    public String translate(String key, CommandSender sender) {
-        return translate(key, getLocaleForSender(sender));
-    }
-
-    @Override
-    public String translate(String key, Locale locale, Map<String, String> vars) {
+    public String translate(String key, Locale locale, Object... params)
+    {
         ResourceBundle configuration = getConfigForLocale(locale);
 
         String value = null;
@@ -70,30 +67,10 @@ public class DefaultTranslate implements Translate {
             value = key;
         }
 
-        for (String s : vars.keySet()) {
-            value = value.replaceAll("%" + s + "%", vars.get(s));
-        }
-
+        value = String.format(locale, value, params);
         value = ChatColor.translateAlternateColorCodes('&', value);
 
         return value;
-    }
-
-    @Override
-    public String translate(String key, CommandSender sender, Map<String, String> vars) {
-        return translate(key, getLocaleForSender(sender), vars);
-    }
-
-    @Override
-    public String translate(String key, Locale locale, String var, String value) {
-        HashMap<String, String> map = new HashMap<String, String>();
-        map.put(var, value);
-        return translate(key, locale, map);
-    }
-
-    @Override
-    public String translate(String key, CommandSender sender, String var, String value) {
-        return translate(key, getLocaleForSender(sender), var, value);
     }
 
     @Override

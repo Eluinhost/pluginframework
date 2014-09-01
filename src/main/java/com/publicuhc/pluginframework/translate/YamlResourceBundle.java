@@ -17,13 +17,8 @@ public class YamlResourceBundle extends ResourceBundle {
 
     private FileConfiguration cache = null;
 
-    public YamlResourceBundle(InputStream stream)
-    {
-        try {
-            cache = getYamlConfig(stream);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+    public YamlResourceBundle(InputStream stream) throws IOException, InvalidConfigurationException {
+        cache = getYamlConfig(stream);
     }
 
     @Override

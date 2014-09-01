@@ -1,4 +1,4 @@
 testkeynovars: englishnovars
-testkeyonevar: test key %amount% var
-testkeymultivar: test %var1% %var2% %var1% test
+testkeyonevar: test key %1$s var
+testkeymultivar: test %1$s %2$s %1$s test
 testkeycolour: "&ctest key"
