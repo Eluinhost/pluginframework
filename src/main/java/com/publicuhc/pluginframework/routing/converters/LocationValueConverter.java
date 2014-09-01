@@ -17,12 +17,12 @@ public class LocationValueConverter implements ValueConverter<Location> {
     public Location convert(String value) {
         int firstComma = value.indexOf(",");
         if(-1 == firstComma)
-            throw new ValueConversionException("Invalid format");
+            throw new ValueConversionException("Invalid Location format: " + value);
 
         String worldname = value.substring(0, firstComma);
         World world = Bukkit.getWorld(worldname);
         if(null == world)
-            throw new ValueConversionException("Invalid world name");
+            throw new ValueConversionException("Invalid world name for: " + value);
 
         String coordinateString = value.substring(firstComma + 1);
         CoordinatesValueConverter converter = new CoordinatesValueConverter();
@@ -38,6 +38,6 @@ public class LocationValueConverter implements ValueConverter<Location> {
 
     @Override
     public String valuePattern() {
-        return "world,x,y,z or world,x,z";
+        return "Location: world,x,y,z OR world,x,z";
     }
 }
