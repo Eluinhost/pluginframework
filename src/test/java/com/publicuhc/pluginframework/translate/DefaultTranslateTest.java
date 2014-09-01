@@ -21,20 +21,9 @@
 
 package com.publicuhc.pluginframework.translate;
 
-import com.google.inject.AbstractModule;
-import com.google.inject.Guice;
-import com.google.inject.Injector;
-import com.google.inject.name.Names;
-import com.publicuhc.pluginframework.configuration.Configurator;
-import com.publicuhc.pluginframework.configuration.DefaultConfigurator;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.command.BlockCommandSender;
-import org.bukkit.command.ConsoleCommandSender;
-import org.bukkit.command.RemoteConsoleCommandSender;
-import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.entity.Player;
-import org.bukkit.plugin.PluginManager;
+import org.bukkit.plugin.PluginLogger;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -43,73 +32,35 @@ import org.powermock.modules.junit4.PowerMockRunner;
 
 import java.io.File;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.powermock.api.mockito.PowerMockito.*;
+import static org.powermock.api.mockito.PowerMockito.mock;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({Bukkit.class, UUID.class})
 public class DefaultTranslateTest {
 
     private DefaultTranslate translate;
-    private Configurator configurator;
-
-    @Test
-    public void testSetLocaleForPlayer() {
-        Player p = mock(Player.class);
-        UUID uuid = UUID.randomUUID();
-        when(p.getUniqueId()).thenReturn(uuid);
-        translate.setLocaleForPlayer(p, "ru");
-
-        assertThat(configurator.getConfig("locales").getString("players." + uuid)).isEqualTo("ru");
-
-        mockStatic(Bukkit.class);
-        PluginManager manager = mock(PluginManager.class);
-        when(Bukkit.getPluginManager()).thenReturn(manager);
-
-        configurator.reloadConfig("locales");
-
-        assertThat(configurator.getConfig("locales").getString("players." + uuid)).isEqualTo("ru");
-    }
-
-    @Test
-    public void testGetLocaleForSender() {
-        Player p = mock(Player.class);
-        UUID uuid = UUID.randomUUID();
-        when(p.getUniqueId()).thenReturn(uuid);
-
-        translate.setLocaleForPlayer(p, "fr");
-        assertThat(translate.getLocaleForSender(p)).isEqualTo("fr");
-
-        FileConfiguration config = configurator.getConfig("locales");
-
-        assertThat(translate.getLocaleForSender(mock(ConsoleCommandSender.class))).isEqualTo(config.getString("console"));
-        assertThat(translate.getLocaleForSender(mock(BlockCommandSender.class))).isEqualTo(config.getString("commandBlock"));
-        assertThat(translate.getLocaleForSender(mock(RemoteConsoleCommandSender.class))).isEqualTo(config.getString("remoteConsole"));
-
-        Player p2 = mock(Player.class);
-        UUID uuid2 = UUID.randomUUID();
-        when(p2.getUniqueId()).thenReturn(uuid2);
-
-        assertThat(translate.getLocaleForSender(p2)).isEqualTo(config.getString("default"));
-    }
 
     @Test
     public void testTranslateNoVars() {
-        assertThat(translate.translate("novalidkey", "test")).isEqualTo("novalidkey");
-        assertThat(translate.translate("testkeynovars", "test")).isEqualTo("testkeynovars");
+        assertThat(translate.translate("testkeynovars", Locale.ENGLISH)).isEqualTo("englishnovars");
+        assertThat(translate.translate("testkeynovars", Locale.FRENCH)).isEqualTo("frenchnovars");
+        assertThat(translate.translate("novalidkey", Locale.ENGLISH)).isEqualTo("novalidkey");
+        assertThat(translate.translate("novalidkey", Locale.FRENCH)).isEqualTo("novalidkey");
     }
 
     @Test
     public void testTranslateSingleVar() {
-        assertThat(translate.translate("testkeyonevar", "test", "amount", "one")).isEqualTo("test key one var");
+        assertThat(translate.translate("testkeyonevar", Locale.ENGLISH, "amount", "one")).isEqualTo("test key one var");
     }
 
     @Test
     public void testTranslateColourCode() {
-        assertThat(translate.translate("testkeycolour", "test")).isEqualTo(ChatColor.RED + "test key");
+        assertThat(translate.translate("testkeycolour", Locale.ENGLISH)).isEqualTo(ChatColor.RED + "test key");
     }
 
     @Test
@@ -117,7 +68,7 @@ public class DefaultTranslateTest {
         Map<String, String> trans = new HashMap<String, String>();
         trans.put("var1", "one");
         trans.put("var2", "two");
-        assertThat(translate.translate("testkeymultivar", "test", trans)).isEqualTo("test one two one test");
+        assertThat(translate.translate("testkeymultivar", Locale.ENGLISH, trans)).isEqualTo("test one two one test");
     }
 
     @Before
@@ -128,16 +79,11 @@ public class DefaultTranslateTest {
         }
         dataFolder.mkdir();
 
-        Injector i = Guice.createInjector(new AbstractModule() {
-            @Override
-            protected void configure() {
-                bind(Configurator.class).to(DefaultConfigurator.class);
-                bind(File.class).annotatedWith(Names.named("dataFolder")).toInstance(dataFolder);
-                bind(ClassLoader.class).toInstance(getClass().getClassLoader());
-            }
-        });
-        configurator = i.getInstance(Configurator.class);
-        translate = new DefaultTranslate(configurator);
+        translate = new DefaultTranslate(
+                mock(BukkitTranslateReflection.class),
+                new YamlControl(dataFolder),
+                mock(PluginLogger.class)
+        );
     }
 
     public boolean deleteDirectory(File path) {
