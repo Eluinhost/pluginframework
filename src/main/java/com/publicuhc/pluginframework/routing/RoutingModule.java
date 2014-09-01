@@ -30,7 +30,7 @@ public class RoutingModule extends AbstractModule
     @Override
     protected void configure()
     {
-        bind(Router.class).to(DefaultRouter.class);
+        bind(Router.class).to(DefaultRouter.class).asEagerSingleton();
         bind(RoutingMethodParser.class).to(DefaultRoutingMethodParser.class);
     }
 }

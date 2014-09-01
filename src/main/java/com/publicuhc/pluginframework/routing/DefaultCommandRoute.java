@@ -39,6 +39,7 @@ import org.bukkit.command.CommandSender;
 import javax.annotation.Nullable;
 import java.io.IOException;
 import java.io.StringWriter;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -92,9 +93,46 @@ public class DefaultCommandRoute implements CommandRoute
         }
     }
 
+    protected String[] fixQuoted(String[] args)
+    {
+        List<String> fixed = new ArrayList<String>();
+        StringBuilder builder = new StringBuilder();
+        boolean insideQuotes = false;
+        for (String arg : args) {
+            if(!insideQuotes && arg.startsWith("\"")) {
+                insideQuotes = true;
+                arg = arg.substring(1);
+            }
+            if (insideQuotes && arg.endsWith("\"")) {
+                insideQuotes = false;
+                arg = arg.substring(0, arg.length() - 1);
+                builder.append(" ").append(arg);
+                //remove the extra " " at the start of the arg
+                arg = builder.toString().substring(1);
+                builder = new StringBuilder();
+            }
+            if (insideQuotes) {
+                builder.append(" ").append(arg);
+            } else {
+                fixed.add(arg);
+            }
+        }
+
+        //check and add any trailing data that wasn't closed
+        String trailing = builder.toString();
+        if(trailing.length() > 0) {
+            //remove the extra " " at the start of the arg
+            fixed.add(builder.toString().substring(1));
+        }
+        return fixed.toArray(new String[fixed.size()]);
+    }
+
     @Override
     public void run(Command command, CommandSender sender, String[] args) throws CommandInvocationException
     {
+        //check the quoted arguments
+        args = fixQuoted(args);
+
         //run all of the restrictions
         for(CommandTester tester : restrictions) {
             if(!tester.testCommand(command, sender, args)) {
