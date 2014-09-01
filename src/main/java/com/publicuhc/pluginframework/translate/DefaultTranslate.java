@@ -22,7 +22,6 @@
 package com.publicuhc.pluginframework.translate;
 
 import com.google.inject.Inject;
-import com.publicuhc.pluginframework.configuration.Configurator;
 import org.bukkit.ChatColor;
 import org.bukkit.command.BlockCommandSender;
 import org.bukkit.command.CommandSender;
@@ -30,19 +29,30 @@ import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.command.RemoteConsoleCommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.PluginLogger;
 
+import java.io.File;
+import java.net.URL;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
+import java.util.ResourceBundle;
+import java.util.logging.Level;
 
 public class DefaultTranslate implements Translate {
 
-    private final Configurator m_configurator;
     private final TranslateReflection locales;
+    private final YamlControl controller;
 
     @Inject
-    protected DefaultTranslate(Configurator configurator, TranslateReflection locales) {
-        m_configurator = configurator;
+    protected DefaultTranslate(TranslateReflection locales, YamlControl controller, PluginLogger logger) {
         this.locales = locales;
+        this.controller = controller;
+    }
+
+    protected ResourceBundle getConfigForLocale(Locale locale)
+    {
+        return YamlResourceBundle.getBundle("lang", locale, controller);
     }
 
     @Override
