@@ -21,8 +21,10 @@
 
 package com.publicuhc.pluginframework.translate;
 
+import com.publicuhc.pluginframework.configuration.Configurator;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginLogger;
 import org.junit.Before;
@@ -36,6 +38,7 @@ import java.util.Locale;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Matchers.anyString;
 import static org.powermock.api.mockito.PowerMockito.mock;
 import static org.powermock.api.mockito.PowerMockito.when;
 
@@ -91,10 +94,16 @@ public class DefaultTranslateTest {
         when(reflection.getLocaleForPlayer(englishPlayer)).thenReturn("en_US");
         when(reflection.getLocaleForPlayer(frenchPlayer)).thenReturn("fr");
 
+        Configurator configurator = mock(Configurator.class);
+        FileConfiguration configuration = mock(FileConfiguration.class);
+        when(configuration.getString(anyString())).thenReturn("en_US");
+        when(configurator.getConfig(anyString())).thenReturn(configuration);
+
         translate = new DefaultTranslate(
                 reflection,
                 new YamlControl(dataFolder),
-                mock(PluginLogger.class)
+                mock(PluginLogger.class),
+                configurator
         );
     }
 
