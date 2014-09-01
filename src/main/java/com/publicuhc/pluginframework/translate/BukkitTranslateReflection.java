@@ -28,7 +28,8 @@ public class BukkitTranslateReflection implements TranslateReflection
         try {
             Class craftPlayerClass = Class.forName(craftPlayerClassName);
             playerHandleMethod = craftPlayerClass.getMethod("getHandle");
-            localeField = playerHandleMethod.getReturnType().getField("locale");
+            localeField = playerHandleMethod.getReturnType().getDeclaredField("locale");
+            localeField.setAccessible(true);
         } catch(NoSuchMethodException e) {
             throw new UnknownDependencyException("Handle method not found");
         } catch(ClassNotFoundException e) {
