@@ -54,4 +54,9 @@ public interface Translate {
      * @return the locale name
      */
     Locale getLocaleForSender(CommandSender sender);
+
+    /**
+     * @return the locale for broadcasts
+     */
+    Locale getBroadcastLocale();
 }

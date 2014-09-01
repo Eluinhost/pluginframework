@@ -22,23 +22,41 @@
 package com.publicuhc.pluginframework.translate;
 
 import com.google.inject.Inject;
+import com.publicuhc.pluginframework.configuration.Configurator;
 import org.apache.commons.lang.LocaleUtils;
 import org.bukkit.ChatColor;
+import org.bukkit.command.BlockCommandSender;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.ConsoleCommandSender;
+import org.bukkit.command.RemoteConsoleCommandSender;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginLogger;
 
-import java.util.*;
+import java.util.Locale;
+import java.util.MissingResourceException;
+import java.util.ResourceBundle;
 
 public class DefaultTranslate implements Translate {
 
     private final TranslateReflection locales;
     private final YamlControl controller;
 
+    private final Locale commandBlockLocale;
+    private final Locale remoteConsoleLocale;
+    private final Locale consoleLocale;
+    private final Locale broadcastLocale;
+
     @Inject
-    protected DefaultTranslate(TranslateReflection locales, YamlControl controller, PluginLogger logger) {
+    protected DefaultTranslate(TranslateReflection locales, YamlControl controller, PluginLogger logger, Configurator configurator)
+    {
         this.locales = locales;
         this.controller = controller;
+        FileConfiguration config = configurator.getConfig("locales");
+        commandBlockLocale = LocaleUtils.toLocale(config.getString("commandBlock", "en_US"));
+        remoteConsoleLocale = LocaleUtils.toLocale(config.getString("remoteConsole", "en_US"));
+        consoleLocale = LocaleUtils.toLocale(config.getString("console", "en_US"));
+        broadcastLocale = LocaleUtils.toLocale(config.getString("broadcast", "en_US"));
     }
 
     protected ResourceBundle getConfigForLocale(Locale locale)
@@ -74,11 +92,25 @@ public class DefaultTranslate implements Translate {
     }
 
     @Override
-    public Locale getLocaleForSender(CommandSender sender) {
-        //TODO separate settings for remoteconsole/console/commandblock/broadcast
+    public Locale getLocaleForSender(CommandSender sender)
+    {
+        if(sender instanceof BlockCommandSender)
+            return commandBlockLocale;
+
+        if(sender instanceof ConsoleCommandSender)
+            return consoleLocale;
+
+        if(sender instanceof RemoteConsoleCommandSender)
+            return remoteConsoleLocale;
+
         if(sender instanceof Player)
             return LocaleUtils.toLocale(locales.getLocaleForPlayer((Player) sender));
-        else
-            return Locale.ENGLISH;
+
+        return broadcastLocale;
+    }
+
+    @Override
+    public Locale getBroadcastLocale() {
+        return broadcastLocale;
     }
 }
