@@ -61,7 +61,7 @@ public class DefaultTranslate implements Translate {
 
     protected ResourceBundle getConfigForLocale(Locale locale)
     {
-        return YamlResourceBundle.getBundle("lang", locale, controller);
+        return YamlResourceBundle.getBundle("translations.lang", locale, controller);
     }
 
     @Override

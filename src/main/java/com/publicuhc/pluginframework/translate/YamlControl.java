@@ -3,12 +3,8 @@ package com.publicuhc.pluginframework.translate;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import org.apache.commons.lang.Validate;
-import org.bukkit.configuration.InvalidConfigurationException;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.Arrays;
@@ -16,65 +12,92 @@ import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
-public class YamlControl extends ResourceBundle.Control
-{
-    private final File dataFolder;
+public class YamlControl extends ResourceBundle.Control {
+
+    private final File dataDir;
 
     @Inject
-    public YamlControl(@Named("dataFolder") File file)
+    public YamlControl(@Named("dataFolder") File dataDir)
     {
-        dataFolder = file;
+        this.dataDir = dataDir;
     }
 
     @Override
-    public List<String> getFormats(String base)
+    public List<String> getFormats(String baseName)
     {
-        Validate.notNull(base);
-        return Arrays.asList("yml");
+        Validate.notNull(baseName);
+        return Arrays.asList("yml", "java.properties");
     }
 
     @Override
-    public ResourceBundle newBundle(String base, Locale locale, String format, ClassLoader loader, boolean reload) throws IllegalAccessException, InstantiationException, IOException
+    public ResourceBundle newBundle(String baseName, Locale locale, String format, ClassLoader loader, boolean reload) throws IllegalAccessException, InstantiationException, IOException
     {
-        Validate.notNull(base);
+        Validate.notNull(baseName);
         Validate.notNull(locale);
         Validate.notNull(format);
         Validate.notNull(loader);
 
-        String bundleName = toBundleName(base, locale);
-        String resourceName = toResourceName(bundleName, format);
-        File file = new File(dataFolder, resourceName);
+        System.out.println(baseName);
+        System.out.println(locale);
+        System.out.println(format);
 
-        InputStream is = null;
+        String bundleName = toBundleName(baseName, locale);
+
+        System.out.println(bundleName);
+
         ResourceBundle bundle = null;
+        if (format.equals("yml")) {
+            String resourceName = toResourceName(bundleName, format);
+            System.out.println(resourceName);
 
-        try {
-            if(file.isFile()) {
-                is = new FileInputStream(file);
-            } else {
-                if(reload) {
-                    URL url = loader.getResource("translations/" + resourceName);
-                    if(url != null) {
+            if (dataDir != null) {
+                FileInputStream fis = null;
+                InputStreamReader reader = null;
+
+                try {
+                    File file = new File(dataDir, resourceName);
+                    if (file.isFile()) {
+                        fis = new FileInputStream(file);
+                        reader = new InputStreamReader(fis, "UTF-8");
+                        bundle = new YamlResourceBundle(reader);
+                    }
+                } finally {
+                    if (reader != null)
+                        reader.close();
+                    if (fis != null)
+                        fis.close();
+                }
+            }
+
+            if (bundle == null) {
+                InputStream stream = null;
+                if (reload) {
+                    URL url = loader.getResource(resourceName);
+                    if (url != null) {
                         URLConnection connection = url.openConnection();
-                        if(connection != null) {
+                        if (connection != null) {
                             connection.setUseCaches(false);
-                            is = connection.getInputStream();
+                            stream = connection.getInputStream();
                         }
                     }
                 } else {
-                    is = loader.getResourceAsStream("translations/" + resourceName);
+                    stream = loader.getResourceAsStream(resourceName);
+                }
+
+                if (stream != null) {
+                    BufferedInputStream bis = null;
+                    try {
+                        bis = new BufferedInputStream(stream);
+                        bundle = new YamlResourceBundle(bis);
+                    } finally {
+                        if(bis != null) {
+                            bis.close();
+                        }
+                    }
                 }
             }
-            try {
-                bundle = new YamlResourceBundle(is);
-            } catch (InvalidConfigurationException e) {
-                e.printStackTrace();
-            }
-
-        } finally {
-            if(is != null) {
-                is.close();
-            }
+        } else {
+            bundle = super.newBundle(bundleName, locale, format, loader, reload);
         }
         return bundle;
     }
