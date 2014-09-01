@@ -21,6 +21,9 @@
 
 package com.publicuhc.pluginframework.routing;
 
+import com.google.common.base.Function;
+import com.google.common.base.Joiner;
+import com.google.common.collect.Collections2;
 import com.publicuhc.pluginframework.routing.exception.CommandInvocationException;
 import com.publicuhc.pluginframework.routing.proxy.MethodProxy;
 import com.publicuhc.pluginframework.routing.tester.CommandTester;
@@ -28,12 +31,16 @@ import joptsimple.OptionException;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 import joptsimple.OptionSpec;
+import mkremins.fanciful.FancyMessage;
+import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 
+import javax.annotation.Nullable;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 
 public class DefaultCommandRoute implements CommandRoute
@@ -115,7 +122,27 @@ public class DefaultCommandRoute implements CommandRoute
                 proxy.invoke(parameters);
             }
         } catch(OptionException e) {
-            printHelpFor(sender);
+            Collection<String> helpOptions = Collections2.<String, String>transform(helpSpec.options(), new Function<String, String>()
+            {
+                @Override
+                public String apply(@Nullable String option)
+                {
+                    return "-" + option;
+                }
+            });
+
+            FancyMessage message =
+                    new FancyMessage("Failed to run command: ")
+                            .color(ChatColor.RED)
+                    .then(e.getCause() == null ? e.getMessage() : e.getCause().getMessage())
+                            .color(ChatColor.BLUE)
+                    .then(" To check the syntax run: ")
+                            .color(ChatColor.RED)
+                    .then("/" + command.getName() + " " + Joiner.on(" OR ").join(helpOptions))
+                        .style(ChatColor.UNDERLINE)
+                        .suggest("/"+command.getName() + " -" + helpOptions.iterator().next());
+
+            message.send(sender);
         } catch(Throwable e) {
             throw new CommandInvocationException("Exception thrown when running the command " + command.getName(), e);
         }
