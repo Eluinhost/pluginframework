@@ -28,10 +28,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginLogger;
 
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Map;
-import java.util.ResourceBundle;
+import java.util.*;
 
 public class DefaultTranslate implements Translate {
 
@@ -63,7 +60,11 @@ public class DefaultTranslate implements Translate {
     public String translate(String key, Locale locale, Map<String, String> vars) {
         ResourceBundle configuration = getConfigForLocale(locale);
 
-        String value = configuration.getString(key);
+        String value = null;
+        try {
+            value = configuration.getString(key);
+        }
+        catch (MissingResourceException ignored){}
 
         if (null == value) {
             value = key;
