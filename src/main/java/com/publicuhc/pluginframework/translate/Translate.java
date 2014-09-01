@@ -22,8 +22,8 @@
 package com.publicuhc.pluginframework.translate;
 
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 
+import java.util.Locale;
 import java.util.Map;
 
 public interface Translate {
@@ -35,7 +35,7 @@ public interface Translate {
      * @param locale the locale to use
      * @return the translated string
      */
-    String translate(String key, String locale);
+    String translate(String key, Locale locale);
 
     /**
      * Translate the string with the key given
@@ -54,7 +54,7 @@ public interface Translate {
      * @param vars   the map of keys=>values to replace
      * @return the translated string
      */
-    String translate(String key, String locale, Map<String, String> vars);
+    String translate(String key, Locale locale, Map<String, String> vars);
 
     /**
      * Translate the string and replace the vars with the values given
@@ -75,7 +75,7 @@ public interface Translate {
      * @param locale the locale to use
      * @return the translated string
      */
-    String translate(String key, String locale, String var, String value);
+    String translate(String key, Locale locale, String var, String value);
 
     /**
      * Utility function for translating with 1 var
@@ -94,13 +94,5 @@ public interface Translate {
      * @param sender the sender
      * @return the locale name
      */
-    String getLocaleForSender(CommandSender sender);
-
-    /**
-     * Set the locale for the given player
-     *
-     * @param p    the player
-     * @param code the locale code
-     */
-    void setLocaleForPlayer(Player p, String code);
+    Locale getLocaleForSender(CommandSender sender);
 }
