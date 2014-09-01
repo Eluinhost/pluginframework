@@ -21,16 +21,23 @@
 
 package com.publicuhc.pluginframework.testplugins;
 
+import com.google.inject.AbstractModule;
 import com.google.inject.Inject;
 import com.google.inject.Module;
+import com.google.inject.util.Modules;
 import com.publicuhc.pluginframework.FrameworkJavaPlugin;
+import com.publicuhc.pluginframework.translate.TranslateModule;
+import com.publicuhc.pluginframework.translate.TranslateReflection;
 import org.bukkit.Server;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginLoader;
 
 import java.io.File;
+import java.util.Iterator;
 import java.util.List;
+
+import static org.powermock.api.mockito.PowerMockito.mock;
 
 public class TestPluginDefaultModules extends FrameworkJavaPlugin {
 
@@ -49,7 +56,24 @@ public class TestPluginDefaultModules extends FrameworkJavaPlugin {
     @Override
     protected void initialModules(List<Module> modules)
     {
-        modules.addAll(getDefaultModules());
+        List<Module> defaults = getDefaultModules();
+        //mock out the reflection class to stop tests not finding the package
+        Iterator<Module> iterator = defaults.iterator();
+        Module toInsert = null;
+        while(iterator.hasNext()) {
+            Module module = iterator.next();
+            if(module instanceof TranslateModule) {
+                iterator.remove();
+                toInsert = Modules.override(module).with(new AbstractModule() {
+                    @Override
+                    protected void configure() {
+                        bind(TranslateReflection.class).toInstance(mock(TranslateReflection.class));
+                    }
+                });
+            }
+        }
+        modules.addAll(defaults);
+        modules.add(toInsert);
     }
 
     @Inject
