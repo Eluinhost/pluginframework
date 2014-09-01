@@ -29,6 +29,6 @@ public class MetricsModule extends AbstractModule
     @Override
     protected void configure()
     {
-        bind(Metrics.class).to(PluginMetrics.class);
+        bind(Metrics.class).to(PluginMetrics.class).asEagerSingleton();
     }
 }

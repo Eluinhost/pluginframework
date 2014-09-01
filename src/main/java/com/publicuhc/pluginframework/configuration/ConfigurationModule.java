@@ -33,7 +33,7 @@ public class ConfigurationModule extends AbstractModule {
 
     @Override
     protected void configure() {
-        bind(Configurator.class).to(DefaultConfigurator.class);
+        bind(Configurator.class).to(DefaultConfigurator.class).asEagerSingleton();
         bind(ClassLoader.class).toInstance(m_classLoader);
     }
 }
