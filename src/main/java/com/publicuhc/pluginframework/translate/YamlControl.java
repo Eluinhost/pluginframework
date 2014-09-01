@@ -3,6 +3,7 @@ package com.publicuhc.pluginframework.translate;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import org.apache.commons.lang.Validate;
+import org.bukkit.configuration.InvalidConfigurationException;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -64,7 +65,11 @@ public class YamlControl extends ResourceBundle.Control
                     is = loader.getResourceAsStream("translations/" + resourceName);
                 }
             }
-            bundle = new YamlResourceBundle(is);
+            try {
+                bundle = new YamlResourceBundle(is);
+            } catch (InvalidConfigurationException e) {
+                e.printStackTrace();
+            }
 
         } finally {
             if(is != null) {
