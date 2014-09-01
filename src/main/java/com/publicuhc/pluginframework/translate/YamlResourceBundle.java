@@ -26,11 +26,6 @@ public class YamlResourceBundle extends ResourceBundle {
         }
     }
 
-    public FileConfiguration getCached()
-    {
-        return cache;
-    }
-
     @Override
     public Enumeration<String> getKeys()
     {
