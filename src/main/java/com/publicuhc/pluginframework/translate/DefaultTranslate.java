@@ -42,17 +42,23 @@ public class DefaultTranslate implements Translate {
     private final TranslateReflection locales;
     private final YamlControl controller;
 
-    private final Locale commandBlockLocale;
-    private final Locale remoteConsoleLocale;
-    private final Locale consoleLocale;
-    private final Locale broadcastLocale;
+    private Locale commandBlockLocale = Locale.ENGLISH;
+    private Locale remoteConsoleLocale = Locale.ENGLISH;
+    private Locale consoleLocale = Locale.ENGLISH;
+    private Locale broadcastLocale = Locale.ENGLISH;
 
     @Inject
-    protected DefaultTranslate(TranslateReflection locales, YamlControl controller, PluginLogger logger, Configurator configurator)
+    protected DefaultTranslate(TranslateReflection locales, YamlControl controller, PluginLogger logger)
     {
         this.locales = locales;
         this.controller = controller;
+    }
+
+    @Inject(optional = true)
+    protected void setConfigurator(Configurator configurator)
+    {
         FileConfiguration config = configurator.getConfig("locales");
+
         commandBlockLocale = LocaleUtils.toLocale(config.getString("commandBlock", "en_US"));
         remoteConsoleLocale = LocaleUtils.toLocale(config.getString("remoteConsole", "en_US"));
         consoleLocale = LocaleUtils.toLocale(config.getString("console", "en_US"));

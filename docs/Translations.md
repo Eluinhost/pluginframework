@@ -5,7 +5,8 @@ The translations module can be used by specifying the `TranslationModule` when s
 
 This allows you to inject the service `Translate` which can be used to translate strings based on locales.
 
-*THE TRANSLATE MODULE REQUIRES YOU TO ALSO HAVE THE CONFIGURATION MODULE LOADED*
+*The non-player commandsenders will default to 'en' as their locale unless the ConfigurationModule is also loaded which
+adds a locales.yml to the plugin which allows setting the locale per sender type*
 
 ```
 @Inject
