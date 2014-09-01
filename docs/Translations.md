@@ -36,3 +36,7 @@ If the key is not found then the method will return the key itself.
 
 Returns the stored Locale for the given CommandSender. If it is a player it is pulled from the NMS Player object which
 is set from the client itself. If it is any other kind of sender it will be set to the locale from the config file.
+
+### getBroadcastLocale()
+
+Returns the locale to use for server broadcasts
