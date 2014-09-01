@@ -89,7 +89,7 @@ public class DefaultRoutingMethodParserTest
 
         method = testMethods.getMethod();
         route = parser.parseCommandMethodAnnotation(method, testMethods);
-        assertThat(route.getOptionDetails().recognizedOptions().keySet()).containsExactly("?", "[arguments]"); //will have the ? and [arguments] automatically added
+        assertThat(route.getOptionDetails().recognizedOptions().keySet()).containsOnly("?", "[arguments]"); //will have the ? and [arguments] automatically added
     }
 
     @Test
