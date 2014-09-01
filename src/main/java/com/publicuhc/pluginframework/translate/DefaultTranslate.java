@@ -22,22 +22,16 @@
 package com.publicuhc.pluginframework.translate;
 
 import com.google.inject.Inject;
+import org.apache.commons.lang.LocaleUtils;
 import org.bukkit.ChatColor;
-import org.bukkit.command.BlockCommandSender;
 import org.bukkit.command.CommandSender;
-import org.bukkit.command.ConsoleCommandSender;
-import org.bukkit.command.RemoteConsoleCommandSender;
-import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginLogger;
 
-import java.io.File;
-import java.net.URL;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.ResourceBundle;
-import java.util.logging.Level;
 
 public class DefaultTranslate implements Translate {
 
@@ -67,7 +61,7 @@ public class DefaultTranslate implements Translate {
 
     @Override
     public String translate(String key, Locale locale, Map<String, String> vars) {
-        FileConfiguration configuration = m_configurator.getConfig("translations:" + locale);
+        ResourceBundle configuration = getConfigForLocale(locale);
 
         String value = configuration.getString(key);
 
@@ -103,30 +97,10 @@ public class DefaultTranslate implements Translate {
 
     @Override
     public Locale getLocaleForSender(CommandSender sender) {
-        FileConfiguration locales = m_configurator.getConfig("locales");
-
-        String locale = null;
-
-        if (sender instanceof RemoteConsoleCommandSender) {
-            locale = locales.getString("remoteConsole");
-        } else if (sender instanceof ConsoleCommandSender) {
-            locale = locales.getString("console");
-        } else if (sender instanceof BlockCommandSender) {
-            locale = locales.getString("commandBlock");
-        } else if (sender instanceof Player) {
-            locale = locales.getString("players." + ((Player) sender).getUniqueId());
-        }
-
-        if (null == locale) {
-            locale = locales.getString("default");
-        }
-        return locale;
-    }
-
-    @Override
-    public void setLocaleForPlayer(Player p, String code) {
-        FileConfiguration configuration = m_configurator.getConfig("locales");
-        configuration.set("players." + p.getUniqueId().toString(), code);
-        m_configurator.saveConfig("locales");
+        //TODO separate settings for remoteconsole/console/commandblock/broadcast
+        if(sender instanceof Player)
+            return LocaleUtils.toLocale(locales.getLocaleForPlayer((Player) sender));
+        else
+            return Locale.ENGLISH;
     }
 }
