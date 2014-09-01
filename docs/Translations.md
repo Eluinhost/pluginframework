@@ -5,6 +5,8 @@ The translations module can be used by specifying the `TranslationModule` when s
 
 This allows you to inject the service `Translate` which can be used to translate strings based on locales.
 
+*THE TRANSLATE MODULE REQUIRES YOU TO ALSO HAVE THE CONFIGURATION MODULE LOADED*
+
 ```
 @Inject
 public void setTranslate(Translate translate)
