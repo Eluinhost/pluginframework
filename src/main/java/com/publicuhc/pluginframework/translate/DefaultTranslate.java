@@ -37,10 +37,12 @@ import java.util.Map;
 public class DefaultTranslate implements Translate {
 
     private final Configurator m_configurator;
+    private final TranslateReflection locales;
 
     @Inject
-    protected DefaultTranslate(Configurator configurator) {
+    protected DefaultTranslate(Configurator configurator, TranslateReflection locales) {
         m_configurator = configurator;
+        this.locales = locales;
     }
 
     @Override

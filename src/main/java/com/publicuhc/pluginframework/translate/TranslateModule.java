@@ -27,5 +27,6 @@ public class TranslateModule extends AbstractModule {
     @Override
     protected void configure() {
         bind(Translate.class).to(DefaultTranslate.class).asEagerSingleton();
+        bind(TranslateReflection.class).to(BukkitTranslateReflection.class);
     }
 }
