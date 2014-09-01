@@ -37,18 +37,11 @@ public class YamlControl extends ResourceBundle.Control {
         Validate.notNull(format);
         Validate.notNull(loader);
 
-        System.out.println(baseName);
-        System.out.println(locale);
-        System.out.println(format);
-
         String bundleName = toBundleName(baseName, locale);
-
-        System.out.println(bundleName);
 
         ResourceBundle bundle = null;
         if (format.equals("yml")) {
             String resourceName = toResourceName(bundleName, format);
-            System.out.println(resourceName);
 
             if (dataDir != null) {
                 FileInputStream fis = null;
