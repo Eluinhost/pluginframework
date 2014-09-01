@@ -1,6 +1,3 @@
-default: en
-players:
-  048fa310-30de-44fe-9f5e-c7443e91ad46: en
-console: en
-remoteConsole: en
-commandBlock: en
+console: en_US
+remoteConsole: en_US
+commandBlock: en_US
