@@ -21,6 +21,7 @@
 
 package com.publicuhc.pluginframework.translate;
 
+import com.google.common.base.Optional;
 import com.google.inject.Inject;
 import com.publicuhc.pluginframework.configuration.Configurator;
 import org.apache.commons.lang.LocaleUtils;
@@ -36,6 +37,7 @@ import org.bukkit.plugin.PluginLogger;
 import java.util.Locale;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
 
 public class DefaultTranslate implements Translate {
 
@@ -55,14 +57,20 @@ public class DefaultTranslate implements Translate {
     }
 
     @Inject(optional = true)
-    protected void setConfigurator(Configurator configurator)
+    protected void setConfigurator(Configurator configurator, PluginLogger logger)
     {
-        FileConfiguration config = configurator.getConfig("locales");
+        Optional<FileConfiguration> configurationOptional = configurator.getConfig("locales");
 
-        commandBlockLocale = LocaleUtils.toLocale(config.getString("commandBlock", "en_US"));
-        remoteConsoleLocale = LocaleUtils.toLocale(config.getString("remoteConsole", "en_US"));
-        consoleLocale = LocaleUtils.toLocale(config.getString("console", "en_US"));
-        broadcastLocale = LocaleUtils.toLocale(config.getString("broadcast", "en_US"));
+        if(configurationOptional.isPresent()) {
+            FileConfiguration config = configurationOptional.get();
+
+            commandBlockLocale = LocaleUtils.toLocale(config.getString("commandBlock", "en_US"));
+            remoteConsoleLocale = LocaleUtils.toLocale(config.getString("remoteConsole", "en_US"));
+            consoleLocale = LocaleUtils.toLocale(config.getString("console", "en_US"));
+            broadcastLocale = LocaleUtils.toLocale(config.getString("broadcast", "en_US"));
+        } else {
+            logger.log(Level.SEVERE, "Failed to load the locales.yml config file, assuming en_US as defaults for all");
+        }
     }
 
     protected ResourceBundle getConfigForLocale(Locale locale)
