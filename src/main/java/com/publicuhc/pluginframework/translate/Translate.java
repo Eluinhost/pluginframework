@@ -48,15 +48,27 @@ public interface Translate {
     String translate(String key, CommandSender sender, Object... params);
 
     /**
-     * Get the locale for the sender or the default if not found
+     * Send a translated key to the sender
      *
-     * @param sender the sender
-     * @return the locale name
+     * @param key    the key to lookup
+     * @param sender the sender whose locale will be used
+     * @param params the values to use in String.format
      */
-    Locale getLocaleForSender(CommandSender sender);
+    void sendMessage(String key, CommandSender sender, Object... params);
 
     /**
-     * @return the locale for broadcasts
+     * Send a message to all players using their own locale
+     *
+     * @param key    the key to lookup
+     * @param params the values to use in String.format
      */
-    Locale getBroadcastLocale();
+    void broadcastMessage(String key, Object... params);
+
+    /**
+     * Send a message to all players with the permission using their own locale
+     *
+     * @param key    the key to lookup
+     * @param params the values to use in String.format
+     */
+    void broadcastMessageForPermission(String permission, String key, Object... params);
 }

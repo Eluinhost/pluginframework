@@ -21,67 +21,65 @@
 
 package com.publicuhc.pluginframework.translate;
 
-import com.google.common.base.Optional;
 import com.google.inject.Inject;
-import com.publicuhc.pluginframework.configuration.Configurator;
-import org.apache.commons.lang.LocaleUtils;
+import com.publicuhc.pluginframework.locale.LocaleProvider;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.command.BlockCommandSender;
 import org.bukkit.command.CommandSender;
-import org.bukkit.command.ConsoleCommandSender;
-import org.bukkit.command.RemoteConsoleCommandSender;
-import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginLogger;
 
 import java.util.Locale;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
-import java.util.logging.Level;
 
 public class DefaultTranslate implements Translate {
 
-    private final TranslateReflection locales;
+    private final LocaleProvider locales;
     private final YamlControl controller;
-
-    private Locale commandBlockLocale = Locale.ENGLISH;
-    private Locale remoteConsoleLocale = Locale.ENGLISH;
-    private Locale consoleLocale = Locale.ENGLISH;
-    private Locale broadcastLocale = Locale.ENGLISH;
+    private final ClassLoader loader;
 
     @Inject
-    protected DefaultTranslate(TranslateReflection locales, YamlControl controller, PluginLogger logger)
+    protected DefaultTranslate(LocaleProvider localeProvider, YamlControl controller, PluginLogger logger, Plugin plugin)
     {
-        this.locales = locales;
+        this.locales = localeProvider;
         this.controller = controller;
-    }
-
-    @Inject(optional = true)
-    protected void setConfigurator(Configurator configurator, PluginLogger logger)
-    {
-        Optional<FileConfiguration> configurationOptional = configurator.getConfig("locales");
-
-        if(configurationOptional.isPresent()) {
-            FileConfiguration config = configurationOptional.get();
-
-            commandBlockLocale = LocaleUtils.toLocale(config.getString("commandBlock", "en_US"));
-            remoteConsoleLocale = LocaleUtils.toLocale(config.getString("remoteConsole", "en_US"));
-            consoleLocale = LocaleUtils.toLocale(config.getString("console", "en_US"));
-            broadcastLocale = LocaleUtils.toLocale(config.getString("broadcast", "en_US"));
-        } else {
-            logger.log(Level.SEVERE, "Failed to load the locales.yml config file, assuming en_US as defaults for all");
-        }
+        this.loader = plugin.getClass().getClassLoader();
     }
 
     protected ResourceBundle getConfigForLocale(Locale locale)
     {
-        return YamlResourceBundle.getBundle("translations.lang", locale, controller);
+        return YamlResourceBundle.getBundle("translations.lang", locale, loader, controller);
     }
 
     @Override
     public String translate(String key, CommandSender sender, Object... params)
     {
-        return translate(key, getLocaleForSender(sender), params);
+        return translate(key, locales.localeForCommandSender(sender), params);
+    }
+
+    @Override
+    public void sendMessage(String key, CommandSender sender, Object... params)
+    {
+        sender.sendMessage(translate(key, sender, params));
+    }
+
+    @Override
+    public void broadcastMessage(String key, Object... params)
+    {
+        broadcastMessageForPermission("", key, params);
+    }
+
+    @Override
+    public void broadcastMessageForPermission(String permission, String key, Object... params)
+    {
+        boolean checkPermissions = !permission.isEmpty();
+        for(Player player : Bukkit.getOnlinePlayers()) {
+            if(checkPermissions && player.hasPermission(permission)) {
+                sendMessage(key, player, params);
+            }
+        }
     }
 
     @Override
@@ -103,28 +101,5 @@ public class DefaultTranslate implements Translate {
         value = ChatColor.translateAlternateColorCodes('&', value);
 
         return value;
-    }
-
-    @Override
-    public Locale getLocaleForSender(CommandSender sender)
-    {
-        if(sender instanceof BlockCommandSender)
-            return commandBlockLocale;
-
-        if(sender instanceof ConsoleCommandSender)
-            return consoleLocale;
-
-        if(sender instanceof RemoteConsoleCommandSender)
-            return remoteConsoleLocale;
-
-        if(sender instanceof Player)
-            return LocaleUtils.toLocale(locales.getLocaleForPlayer((Player) sender));
-
-        return broadcastLocale;
-    }
-
-    @Override
-    public Locale getBroadcastLocale() {
-        return broadcastLocale;
     }
 }

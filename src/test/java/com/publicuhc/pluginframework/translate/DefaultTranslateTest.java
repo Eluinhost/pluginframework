@@ -21,9 +21,11 @@
 
 package com.publicuhc.pluginframework.translate;
 
+import com.publicuhc.pluginframework.locale.LocaleProvider;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginLogger;
 import org.junit.Before;
 import org.junit.Test;
@@ -85,16 +87,17 @@ public class DefaultTranslateTest {
         }
         dataFolder.mkdir();
 
-        TranslateReflection reflection = mock(TranslateReflection.class);
         englishPlayer = mock(Player.class);
         frenchPlayer = mock(Player.class);
-        when(reflection.getLocaleForPlayer(englishPlayer)).thenReturn("en_US");
-        when(reflection.getLocaleForPlayer(frenchPlayer)).thenReturn("fr");
+        LocaleProvider provider = mock(LocaleProvider.class);
+        when(provider.localeForCommandSender(englishPlayer)).thenReturn(Locale.ENGLISH);
+        when(provider.localeForCommandSender(frenchPlayer)).thenReturn(Locale.FRENCH);
 
         translate = new DefaultTranslate(
-                reflection,
+                provider,
                 new YamlControl(dataFolder),
-                mock(PluginLogger.class)
+                mock(PluginLogger.class),
+                mock(Plugin.class)
         );
     }
 

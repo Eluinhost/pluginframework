@@ -22,6 +22,7 @@
 package com.publicuhc.pluginframework;
 
 import com.google.inject.AbstractModule;
+import com.google.inject.Provides;
 import com.google.inject.name.Names;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginLogger;
@@ -36,10 +37,15 @@ public class PluginModule extends AbstractModule {
         m_plugin = plugin;
     }
 
+    @Provides
+    public Plugin getPlugin()
+    {
+        return m_plugin;
+    }
+
     @Override
     protected void configure() {
         bind(File.class).annotatedWith(Names.named("dataFolder")).toInstance(m_plugin.getDataFolder());
-        bind(Plugin.class).toInstance(m_plugin);
         bind(PluginLogger.class).to(PluginLoggerInjectable.class);
     }
 }
