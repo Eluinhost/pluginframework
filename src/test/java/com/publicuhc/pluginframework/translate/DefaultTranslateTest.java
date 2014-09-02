@@ -24,6 +24,7 @@ package com.publicuhc.pluginframework.translate;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginLogger;
 import org.junit.Before;
 import org.junit.Test;
@@ -94,7 +95,8 @@ public class DefaultTranslateTest {
         translate = new DefaultTranslate(
                 reflection,
                 new YamlControl(dataFolder),
-                mock(PluginLogger.class)
+                mock(PluginLogger.class),
+                mock(Plugin.class)
         );
     }
 

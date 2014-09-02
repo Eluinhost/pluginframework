@@ -32,6 +32,7 @@ import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.command.RemoteConsoleCommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginLogger;
 
 import java.util.Locale;
@@ -42,16 +43,18 @@ public class DefaultTranslate implements Translate {
 
     private final TranslateReflection locales;
     private final YamlControl controller;
+    private final ClassLoader loader;
 
     private Locale commandBlockLocale = Locale.ENGLISH;
     private Locale remoteConsoleLocale = Locale.ENGLISH;
     private Locale consoleLocale = Locale.ENGLISH;
 
     @Inject
-    protected DefaultTranslate(TranslateReflection locales, YamlControl controller, PluginLogger logger)
+    protected DefaultTranslate(TranslateReflection locales, YamlControl controller, PluginLogger logger, Plugin plugin)
     {
         this.locales = locales;
         this.controller = controller;
+        this.loader = plugin.getClass().getClassLoader();
     }
 
     @Inject(optional = true)
@@ -66,7 +69,7 @@ public class DefaultTranslate implements Translate {
 
     protected ResourceBundle getConfigForLocale(Locale locale)
     {
-        return YamlResourceBundle.getBundle("translations.lang", locale, controller);
+        return YamlResourceBundle.getBundle("translations.lang", locale, loader, controller);
     }
 
     @Override
