@@ -19,8 +19,8 @@ public class BukkitLocaleProvider implements LocaleProvider
     private final LocaleFetcher fetcher;
 
     private Locale commandBlockLocale;
-    private Locale remoteConsoleLocale = Locale.ENGLISH;
-    private Locale consoleLocale = Locale.ENGLISH;
+    private Locale remoteConsoleLocale;
+    private Locale consoleLocale;
 
     @Inject
     public BukkitLocaleProvider(LocaleFetcher fetcher, @Named("defaultLocale") Locale defaultLocale)
