@@ -1,5 +1,6 @@
 package com.publicuhc.pluginframework.locale;
 
+import com.google.common.base.Optional;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import com.publicuhc.pluginframework.configuration.Configurator;
@@ -33,11 +34,14 @@ public class BukkitLocaleProvider implements LocaleProvider
     @Inject(optional = true)
     protected void setConfigurator(Configurator configurator)
     {
-        FileConfiguration config = configurator.getConfig("locales");
+        Optional<FileConfiguration> configurationOptional = configurator.getConfig("locales");
 
-        commandBlockLocale = LocaleUtils.toLocale(config.getString("commandBlock", "en_US"));
-        remoteConsoleLocale = LocaleUtils.toLocale(config.getString("remoteConsole", "en_US"));
-        consoleLocale = LocaleUtils.toLocale(config.getString("console", "en_US"));
+        if(configurationOptional.isPresent()) {
+            FileConfiguration config = configurationOptional.get();
+            commandBlockLocale = LocaleUtils.toLocale(config.getString("commandBlock", "en_US"));
+            remoteConsoleLocale = LocaleUtils.toLocale(config.getString("remoteConsole", "en_US"));
+            consoleLocale = LocaleUtils.toLocale(config.getString("console", "en_US"));
+        }
     }
 
     @Override
