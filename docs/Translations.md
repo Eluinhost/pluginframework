@@ -38,6 +38,14 @@ If the key is not found then the method will return the key itself.
 Returns the stored Locale for the given CommandSender. If it is a player it is pulled from the NMS Player object which
 is set from the client itself. If it is any other kind of sender it will be set to the locale from the config file.
 
-### getBroadcastLocale()
+### sendMessage(String key, CommandSender sender, Object... params)
 
-Returns the locale to use for server broadcasts
+Utility method that translates the key with translate() and sends the result to the sender
+
+### broadcastMessage(String key, Object... params)
+
+Utility method that sends a message to all online players in their locale
+
+### broadcastMessageForPermission(String permission, String key, Object... params)
+
+Same as broadcastMessage(String, Object...) but only sends  to players with the given permission

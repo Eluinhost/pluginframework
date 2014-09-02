@@ -46,7 +46,6 @@ public class DefaultTranslate implements Translate {
     private Locale commandBlockLocale = Locale.ENGLISH;
     private Locale remoteConsoleLocale = Locale.ENGLISH;
     private Locale consoleLocale = Locale.ENGLISH;
-    private Locale broadcastLocale = Locale.ENGLISH;
 
     @Inject
     protected DefaultTranslate(TranslateReflection locales, YamlControl controller, PluginLogger logger)
@@ -63,7 +62,6 @@ public class DefaultTranslate implements Translate {
         commandBlockLocale = LocaleUtils.toLocale(config.getString("commandBlock", "en_US"));
         remoteConsoleLocale = LocaleUtils.toLocale(config.getString("remoteConsole", "en_US"));
         consoleLocale = LocaleUtils.toLocale(config.getString("console", "en_US"));
-        broadcastLocale = LocaleUtils.toLocale(config.getString("broadcast", "en_US"));
     }
 
     protected ResourceBundle getConfigForLocale(Locale locale)
@@ -136,11 +134,6 @@ public class DefaultTranslate implements Translate {
         if(sender instanceof Player)
             return LocaleUtils.toLocale(locales.getLocaleForPlayer((Player) sender));
 
-        return broadcastLocale;
-    }
-
-    @Override
-    public Locale getBroadcastLocale() {
-        return broadcastLocale;
+        return Locale.ENGLISH;
     }
 }
