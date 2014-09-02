@@ -33,11 +33,6 @@ This offers a way to translate a key into the specified locale or the locale of 
 
 If the key is not found then the method will return the key itself.
 
-### getLocaleForSender(CommandSender sender)
-
-Returns the stored Locale for the given CommandSender. If it is a player it is pulled from the NMS Player object which
-is set from the client itself. If it is any other kind of sender it will be set to the locale from the config file.
-
 ### sendMessage(String key, CommandSender sender, Object... params)
 
 Utility method that translates the key with translate() and sends the result to the sender
@@ -49,3 +44,18 @@ Utility method that sends a message to all online players in their locale
 ### broadcastMessageForPermission(String permission, String key, Object... params)
 
 Same as broadcastMessage(String, Object...) but only sends  to players with the given permission
+
+Locales
+=======
+
+You can get the locale for a particular commandsender by injecting a LocaleProvider object which allows the use of the
+method `localeForCommandSender(CommandSender)`.
+
+
+### localeForCommandSender(CommandSender sender)
+
+Returns the stored Locale for the given CommandSender. If it is a player it is pulled from the NMS Player object which
+is set from the client itself. If it is any other kind of sender it will be set to the locale from the config file.
+
+*The non-player commandsenders will default to 'en' as their locale unless the ConfigurationModule is also loaded which
+adds a locales.yml to the plugin which allows setting the locale per sender type*

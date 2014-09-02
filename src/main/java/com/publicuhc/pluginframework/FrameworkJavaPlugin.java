@@ -25,6 +25,7 @@ import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.Module;
 import com.publicuhc.pluginframework.configuration.ConfigurationModule;
+import com.publicuhc.pluginframework.locale.LocaleModule;
 import com.publicuhc.pluginframework.metrics.MetricsModule;
 import com.publicuhc.pluginframework.routing.RoutingModule;
 import com.publicuhc.pluginframework.translate.TranslateModule;
@@ -79,6 +80,7 @@ public abstract class FrameworkJavaPlugin extends JavaPlugin {
     {
         List<Module> defaults = new ArrayList<Module>();
         defaults.add(new PluginModule(this));
+        defaults.add(new LocaleModule());
         defaults.add(new TranslateModule());
         defaults.add(new MetricsModule());
         defaults.add(new ConfigurationModule(this.getClassLoader()));

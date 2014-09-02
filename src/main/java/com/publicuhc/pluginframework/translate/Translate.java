@@ -71,12 +71,4 @@ public interface Translate {
      * @param params the values to use in String.format
      */
     void broadcastMessageForPermission(String permission, String key, Object... params);
-
-    /**
-     * Get the locale for the sender or the default if not found
-     *
-     * @param sender the sender
-     * @return the locale name
-     */
-    Locale getLocaleForSender(CommandSender sender);
 }
