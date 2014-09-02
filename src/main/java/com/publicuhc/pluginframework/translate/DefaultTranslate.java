@@ -24,6 +24,7 @@ package com.publicuhc.pluginframework.translate;
 import com.google.inject.Inject;
 import com.publicuhc.pluginframework.configuration.Configurator;
 import org.apache.commons.lang.LocaleUtils;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.BlockCommandSender;
 import org.bukkit.command.CommandSender;
@@ -74,6 +75,29 @@ public class DefaultTranslate implements Translate {
     public String translate(String key, CommandSender sender, Object... params)
     {
         return translate(key, getLocaleForSender(sender), params);
+    }
+
+    @Override
+    public void sendMessage(String key, CommandSender sender, Object... params)
+    {
+        sender.sendMessage(translate(key, sender, params));
+    }
+
+    @Override
+    public void broadcastMessage(String key, Object... params)
+    {
+        broadcastMessageForPermission("", key, params);
+    }
+
+    @Override
+    public void broadcastMessageForPermission(String permission, String key, Object... params)
+    {
+        boolean checkPermissions = !permission.isEmpty();
+        for(Player player : Bukkit.getOnlinePlayers()) {
+            if(checkPermissions && player.hasPermission(permission)) {
+                sendMessage(key, player, params);
+            }
+        }
     }
 
     @Override
