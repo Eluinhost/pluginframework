@@ -21,6 +21,7 @@
 
 package com.publicuhc.pluginframework.translate;
 
+import com.publicuhc.pluginframework.locale.LocaleFetcher;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -86,7 +87,7 @@ public class DefaultTranslateTest {
         }
         dataFolder.mkdir();
 
-        TranslateReflection reflection = mock(TranslateReflection.class);
+        LocaleFetcher reflection = mock(LocaleFetcher.class);
         englishPlayer = mock(Player.class);
         frenchPlayer = mock(Player.class);
         when(reflection.getLocaleForPlayer(englishPlayer)).thenReturn("en_US");

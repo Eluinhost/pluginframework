@@ -23,6 +23,7 @@ package com.publicuhc.pluginframework.translate;
 
 import com.google.inject.Inject;
 import com.publicuhc.pluginframework.configuration.Configurator;
+import com.publicuhc.pluginframework.locale.LocaleFetcher;
 import org.apache.commons.lang.LocaleUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -41,7 +42,7 @@ import java.util.ResourceBundle;
 
 public class DefaultTranslate implements Translate {
 
-    private final TranslateReflection locales;
+    private final LocaleFetcher locales;
     private final YamlControl controller;
     private final ClassLoader loader;
 
@@ -50,7 +51,7 @@ public class DefaultTranslate implements Translate {
     private Locale consoleLocale = Locale.ENGLISH;
 
     @Inject
-    protected DefaultTranslate(TranslateReflection locales, YamlControl controller, PluginLogger logger, Plugin plugin)
+    protected DefaultTranslate(LocaleFetcher locales, YamlControl controller, PluginLogger logger, Plugin plugin)
     {
         this.locales = locales;
         this.controller = controller;

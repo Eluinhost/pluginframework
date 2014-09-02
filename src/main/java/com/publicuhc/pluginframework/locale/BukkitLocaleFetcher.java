@@ -1,4 +1,4 @@
-package com.publicuhc.pluginframework.translate;
+package com.publicuhc.pluginframework.locale;
 
 import com.google.inject.Inject;
 import org.bukkit.entity.Player;
@@ -9,14 +9,14 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
-public class BukkitTranslateReflection implements TranslateReflection
+public class BukkitLocaleFetcher implements LocaleFetcher
 {
     private Method playerHandleMethod;
     private Field localeField;
 
     @Inject
     @SuppressWarnings("unchecked")
-    public BukkitTranslateReflection(Plugin plugin)
+    public BukkitLocaleFetcher(Plugin plugin)
     {
         // Get full package string of CraftServer.
         // org.bukkit.craftbukkit.version

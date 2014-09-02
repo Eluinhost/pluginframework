@@ -26,8 +26,8 @@ import com.google.inject.Inject;
 import com.google.inject.Module;
 import com.google.inject.util.Modules;
 import com.publicuhc.pluginframework.FrameworkJavaPlugin;
+import com.publicuhc.pluginframework.locale.LocaleFetcher;
 import com.publicuhc.pluginframework.translate.TranslateModule;
-import com.publicuhc.pluginframework.translate.TranslateReflection;
 import org.bukkit.Server;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginDescriptionFile;
@@ -67,7 +67,7 @@ public class TestPluginDefaultModules extends FrameworkJavaPlugin {
                 toInsert = Modules.override(module).with(new AbstractModule() {
                     @Override
                     protected void configure() {
-                        bind(TranslateReflection.class).toInstance(mock(TranslateReflection.class));
+                        bind(LocaleFetcher.class).toInstance(mock(LocaleFetcher.class));
                     }
                 });
             }

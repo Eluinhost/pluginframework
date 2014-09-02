@@ -22,11 +22,13 @@
 package com.publicuhc.pluginframework.translate;
 
 import com.google.inject.AbstractModule;
+import com.publicuhc.pluginframework.locale.BukkitLocaleFetcher;
+import com.publicuhc.pluginframework.locale.LocaleFetcher;
 
 public class TranslateModule extends AbstractModule {
     @Override
     protected void configure() {
         bind(Translate.class).to(DefaultTranslate.class).asEagerSingleton();
-        bind(TranslateReflection.class).to(BukkitTranslateReflection.class);
+        bind(LocaleFetcher.class).to(BukkitLocaleFetcher.class);
     }
 }

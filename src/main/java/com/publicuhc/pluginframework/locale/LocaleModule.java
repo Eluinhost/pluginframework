@@ -8,5 +8,6 @@ public class LocaleModule extends AbstractModule
     protected void configure()
     {
         bind(LocaleProvider.class).to(BukkitLocaleProvider.class);
+        bind(LocaleFetcher.class).to(BukkitLocaleFetcher.class);
     }
 }
