@@ -1,0 +1,4 @@
+testkeynovars: frenchnovars
+testkeyonevar: test key %1$s var
+testkeymultivar: test %1$s %2$s %1$s test
+testkeycolour: "&ctest key"

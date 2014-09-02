@@ -21,9 +21,9 @@
 
 package com.publicuhc.pluginframework.translate;
 
-import com.google.common.base.Optional;
 import com.google.inject.Inject;
 import com.publicuhc.pluginframework.configuration.Configurator;
+import org.apache.commons.lang.LocaleUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.command.BlockCommandSender;
 import org.bukkit.command.CommandSender;
@@ -31,106 +31,92 @@ import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.command.RemoteConsoleCommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.PluginLogger;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Locale;
+import java.util.MissingResourceException;
+import java.util.ResourceBundle;
 
 public class DefaultTranslate implements Translate {
 
-    private final Configurator m_configurator;
+    private final TranslateReflection locales;
+    private final YamlControl controller;
+
+    private Locale commandBlockLocale = Locale.ENGLISH;
+    private Locale remoteConsoleLocale = Locale.ENGLISH;
+    private Locale consoleLocale = Locale.ENGLISH;
+    private Locale broadcastLocale = Locale.ENGLISH;
 
     @Inject
-    protected DefaultTranslate(Configurator configurator) {
-        m_configurator = configurator;
+    protected DefaultTranslate(TranslateReflection locales, YamlControl controller, PluginLogger logger)
+    {
+        this.locales = locales;
+        this.controller = controller;
+    }
+
+    @Inject(optional = true)
+    protected void setConfigurator(Configurator configurator)
+    {
+        FileConfiguration config = configurator.getConfig("locales");
+
+        commandBlockLocale = LocaleUtils.toLocale(config.getString("commandBlock", "en_US"));
+        remoteConsoleLocale = LocaleUtils.toLocale(config.getString("remoteConsole", "en_US"));
+        consoleLocale = LocaleUtils.toLocale(config.getString("console", "en_US"));
+        broadcastLocale = LocaleUtils.toLocale(config.getString("broadcast", "en_US"));
+    }
+
+    protected ResourceBundle getConfigForLocale(Locale locale)
+    {
+        return YamlResourceBundle.getBundle("translations.lang", locale, controller);
     }
 
     @Override
-    public String translate(String key, String locale) {
-        return translate(key, locale, new HashMap<String, String>());
+    public String translate(String key, CommandSender sender, Object... params)
+    {
+        return translate(key, getLocaleForSender(sender), params);
     }
 
     @Override
-    public String translate(String key, CommandSender sender) {
-        return translate(key, getLocaleForSender(sender));
-    }
+    public String translate(String key, Locale locale, Object... params)
+    {
+        ResourceBundle configuration = getConfigForLocale(locale);
 
-    @Override
-    public String translate(String key, String locale, Map<String, String> vars) {
-        Optional<FileConfiguration> configuration = m_configurator.getConfig("translations:" + locale);
-
-        if(!configuration.isPresent()) {
-            return key;
+        String value = null;
+        try {
+            value = configuration.getString(key);
         }
-
-        String value = configuration.get().getString(key);
+        catch (MissingResourceException ignored){}
 
         if (null == value) {
             value = key;
         }
 
-        for (String s : vars.keySet()) {
-            value = value.replaceAll("%" + s + "%", vars.get(s));
-        }
-
+        value = String.format(locale, value, params);
         value = ChatColor.translateAlternateColorCodes('&', value);
 
         return value;
     }
 
     @Override
-    public String translate(String key, CommandSender sender, Map<String, String> vars) {
-        return translate(key, getLocaleForSender(sender), vars);
+    public Locale getLocaleForSender(CommandSender sender)
+    {
+        if(sender instanceof BlockCommandSender)
+            return commandBlockLocale;
+
+        if(sender instanceof ConsoleCommandSender)
+            return consoleLocale;
+
+        if(sender instanceof RemoteConsoleCommandSender)
+            return remoteConsoleLocale;
+
+        if(sender instanceof Player)
+            return LocaleUtils.toLocale(locales.getLocaleForPlayer((Player) sender));
+
+        return broadcastLocale;
     }
 
     @Override
-    public String translate(String key, String locale, String var, String value) {
-        HashMap<String, String> map = new HashMap<String, String>();
-        map.put(var, value);
-        return translate(key, locale, map);
-    }
-
-    @Override
-    public String translate(String key, CommandSender sender, String var, String value) {
-        return translate(key, getLocaleForSender(sender), var, value);
-    }
-
-    @Override
-    public String getLocaleForSender(CommandSender sender) {
-        Optional<FileConfiguration> localesOptional = m_configurator.getConfig("locales");
-
-        if(!localesOptional.isPresent()) {
-            throw new IllegalStateException("Cannot find the locales configuration file");
-        }
-
-        FileConfiguration locales = localesOptional.get();
-
-        String locale = null;
-
-        if (sender instanceof RemoteConsoleCommandSender) {
-            locale = locales.getString("remoteConsole");
-        } else if (sender instanceof ConsoleCommandSender) {
-            locale = locales.getString("console");
-        } else if (sender instanceof BlockCommandSender) {
-            locale = locales.getString("commandBlock");
-        } else if (sender instanceof Player) {
-            locale = locales.getString("players." + ((Player) sender).getUniqueId());
-        }
-
-        if (null == locale) {
-            locale = locales.getString("default");
-        }
-        return locale;
-    }
-
-    @Override
-    public void setLocaleForPlayer(Player p, String code) {
-        Optional<FileConfiguration> configuration = m_configurator.getConfig("locales");
-
-        if(!configuration.isPresent()) {
-            throw new IllegalStateException("Cannot find the locales configuration file");
-        }
-
-        configuration.get().set("players." + p.getUniqueId().toString(), code);
-        m_configurator.saveConfig("locales");
+    public Locale getBroadcastLocale() {
+        return broadcastLocale;
     }
 }
