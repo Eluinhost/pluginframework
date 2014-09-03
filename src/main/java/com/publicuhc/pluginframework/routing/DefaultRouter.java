@@ -21,11 +21,10 @@
 
 package com.publicuhc.pluginframework.routing;
 
-import com.google.common.base.Joiner;
 import com.google.common.base.Optional;
-import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.HashMultimap;
-import com.google.common.collect.Multimap;
+import com.google.common.base.Preconditions;
+import com.google.common.base.Predicate;
+import com.google.common.collect.*;
 import com.google.inject.AbstractModule;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
@@ -282,49 +281,45 @@ public class DefaultRouter implements Router
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String label, String[] args)
     {
-        System.out.println(args.length + Joiner.on(",").useForNull("null").join(args));
+        Preconditions.checkArgument(args.length > 0);
+        List<String> tabCompleteList = Lists.newArrayList();
+
+        List<String> arguments = Lists.newArrayList(args);
 
         //get the item to tab complete
-        String partial = args[args.length - 1];
+        String partial = arguments.get(arguments.size() - 1);
 
-        String[] withoutPartial;
-        if(args.length > 1) {
-            //remove the partial from original list
-            withoutPartial = Arrays.copyOfRange(args, 0, args.length - 2);
-        } else {
-            withoutPartial = new String[0];
+        boolean checkOptions = false;
+
+        //check if already have any flags
+        int index = Iterables.indexOf(arguments, new Predicate<String>() {
+            @Override
+            public boolean apply(String input) {
+                return input.startsWith("-");
+            }
+        });
+
+        if(index > -1) {
+            checkOptions = true;
         }
 
-        //get all the routes that apply
-        PriorityQueue<CommandRoute> allRoutes = getWithSubcommands(command, withoutPartial, false);
 
-        List<String> options = new ArrayList<String>();
-
-        if(allRoutes.size() == 0) {
-            return options;
-        }
-
-        CommandRoute current = allRoutes.poll();
-
-        if(!partial.isEmpty() && partial.charAt(0) == '-') {
-            for(String key : current.getOptionDetails().recognizedOptions().keySet()) {
-                if(!key.equals("[arguments]")) {
-                    options.add("-" + key);
+        if(checkOptions) {
+            List<String> selectedRoute = arguments.subList(0, index);
+            Optional<CommandRoute> matching = getMostApplicableRoute(command, (String[]) selectedRoute.toArray());
+            if(matching.isPresent()) {
+                for (String key : matching.get().getOptionDetails().recognizedOptions().keySet()) {
+                    if (!key.equals("[arguments]")) {
+                        tabCompleteList.add("-" + key);
+                    }
                 }
             }
+        } else {
+            //TODO get the list of subroutes for the current args
         }
 
-        if(allRoutes.size() > 0) {
-            for(CommandRoute route : allRoutes) {
-                String[] startsWith = route.getStartsWith();
-                startsWith = Arrays.copyOfRange(startsWith, withoutPartial.length, startsWith.length);
-                Collections.addAll(options, startsWith);
-            }
-        }
-
-        List<String> actual = new LinkedList<String>();
-        StringUtil.copyPartialMatches(partial, options, actual);
-
-        return actual;
+        List<String> actualComplete = Lists.newArrayList();
+        StringUtil.copyPartialMatches(partial, tabCompleteList, actualComplete);
+        return actualComplete;
     }
 }
