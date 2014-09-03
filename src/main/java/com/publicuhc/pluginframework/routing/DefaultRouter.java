@@ -137,7 +137,6 @@ public class DefaultRouter implements Router
 
                 logger.log(Level.INFO, "Loading command '" + route.getCommandName() + "' from: " + method.getName());
             }
-            //TODO tab complete
         }
 
         logger.log(Level.INFO, "Loaded all commands from class: " + object.getClass().getName());
