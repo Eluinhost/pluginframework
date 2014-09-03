@@ -138,6 +138,12 @@
         </dependency>
         <dependency>
             <groupId>org.sonatype.sisu.inject</groupId>
+            <artifactId>guice-assistedinject</artifactId>
+            <version>${sisu-guice.version}</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.sonatype.sisu.inject</groupId>
             <artifactId>guice-multibindings</artifactId>
             <version>${sisu-guice.version}</version>
             <scope>compile</scope>
@@ -227,6 +233,7 @@
                         <includes>
                             <include>org.sonatype.sisu:sisu-guice</include>
                             <include>org.sonatype.sisu.inject:guice-multibindings</include>
+                            <include>org.sonatype.sisu.inject:guice-assistedinject</include>
                             <include>javax.inject:javax.inject</include>
                             <include>aopalliance:aopalliance</include>
                             <include>org.mcstats.bukkit:metrics</include>
