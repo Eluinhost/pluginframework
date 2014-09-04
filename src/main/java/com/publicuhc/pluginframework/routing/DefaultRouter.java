@@ -150,12 +150,8 @@ public class DefaultRouter implements Router
     @Override
     public void setDefaultMessageForCommand(String commandName, String message)
     {
-        //create a list of size 1 with the message
-        ArrayList<String> mes = new ArrayList<String>(1);
-        mes.add(message);
-
-        //run the regular command
-        setDefaultMessageForCommand(commandName, mes);
+        //run the regular method
+        setDefaultMessageForCommand(commandName, Lists.newArrayList(message));
     }
 
     /**
