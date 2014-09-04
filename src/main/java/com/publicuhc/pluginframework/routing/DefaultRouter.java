@@ -186,7 +186,7 @@ public class DefaultRouter implements Router
     {
         Collection<CommandRoute> allRoutes = commands.get(command.getName());
 
-        return Lists.newArrayList(Collections2.filter(allRoutes, new ApplicableRoutePredicate(args)));
+        return Lists.newArrayList(Collections2.filter(allRoutes, new ApplicableRoutePredicate(args, false)));
     }
 
     @Override

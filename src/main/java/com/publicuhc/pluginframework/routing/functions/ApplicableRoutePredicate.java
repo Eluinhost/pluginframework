@@ -9,14 +9,17 @@ import javax.annotation.Nullable;
 public class ApplicableRoutePredicate implements Predicate<CommandRoute>
 {
     private final String actual;
+    private final boolean subcommands;
 
     /**
      * Fetches all routes whose startsWith match the given args
      * @param args the arguments to match against
+     * @param subcommands whether to show the route + subcommands (true) or route + parents (false)
      */
-    public ApplicableRoutePredicate(String[] args)
+    public ApplicableRoutePredicate(String[] args, boolean subcommands)
     {
         actual = Joiner.on(" ").join(args).toLowerCase();
+        this.subcommands = subcommands;
     }
 
     @Override
@@ -28,6 +31,6 @@ public class ApplicableRoutePredicate implements Predicate<CommandRoute>
 
         String startsWith = Joiner.on(" ").join(commandRoute.getStartsWith());
 
-        return actual.startsWith(startsWith);
+        return subcommands ? startsWith.startsWith(actual) : actual.startsWith(startsWith);
     }
 }
