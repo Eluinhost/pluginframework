@@ -30,6 +30,7 @@ import com.google.inject.Inject;
 import com.google.inject.Injector;
 import com.publicuhc.pluginframework.routing.exception.CommandInvocationException;
 import com.publicuhc.pluginframework.routing.exception.CommandParseException;
+import com.publicuhc.pluginframework.routing.functions.ApplicableRoutePredicate;
 import com.publicuhc.pluginframework.routing.parser.RoutingMethodParser;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
@@ -163,76 +164,29 @@ public class DefaultRouter implements Router
      */
     private Optional<CommandRoute> getMostApplicableRoute(Command command, String[] args)
     {
-        PriorityQueue<CommandRoute> routes = getApplicableRoutes(command, args, true);
-        return Optional.fromNullable(routes.peek());
-    }
+        List<CommandRoute> routes = getApplicableRoutes(command, args);
 
-    private PriorityQueue<CommandRoute> getWithSubcommands(Command command, String[] args, boolean mostApplicable)
-    {
-        Collection<CommandRoute> routes = commands.get(command.getName());
-
-        PriorityQueue<CommandRoute> applicable = new PriorityQueue<CommandRoute>(Math.max(routes.size(), 1), new SubcommandLengthComparator(mostApplicable));
-
-        for(CommandRoute route : routes) {
-            String[] routeStarts = route.getStartsWith();
-
-            if(routeStarts.length < args.length) {
-                continue;
-            }
-
-            String[] routeStartsApplicable = Arrays.copyOfRange(routeStarts, 0, args.length);
-            boolean matched = true;
-            for(int i = 0; i < routeStartsApplicable.length; i++) {
-                if(!routeStartsApplicable[i].equalsIgnoreCase(args[i])) {
-                    matched = false;
-                }
-            }
-
-            if(matched) {
-                applicable.add(route);
-            }
+        if(routes.size() == 0) {
+            return Optional.absent();
         }
 
-        return applicable;
+        Collections.sort(routes, new SubcommandLengthComparator(true));
+
+        return Optional.of(routes.get(0));
     }
 
     /**
-     * Get all routes that apply for the given command and argument list. Orders by longest subcommand first. e.g.
-     * Running 'feature list' would not contain 'feature list subcommand' but would contain 'feature list' and 'feature'
-     * in that order
+     * Get a list of all of the routes for the command filtered to all routes that apply to the given args
      *
-     * @param command the command to check for
+     * @param command the command to check the route of
      * @param args the argument list to check for subcommands from
-     * @param mostApplicable whether to order by the most applicable first (true) or least applicable first (false)
-     * @return queue with the first element the most applicable (longest subcommand string)
+     * @return collection of routes that match
      */
-    private PriorityQueue<CommandRoute> getApplicableRoutes(Command command, String[] args, boolean mostApplicable)
+    private List<CommandRoute> getApplicableRoutes(Command command, String[] args)
     {
-        Collection<CommandRoute> routes = commands.get(command.getName());
+        Collection<CommandRoute> allRoutes = commands.get(command.getName());
 
-        List<String> argsList = Arrays.asList(args);
-        PriorityQueue<CommandRoute> applicable = new PriorityQueue<CommandRoute>(Math.max(routes.size(), 1), new SubcommandLengthComparator(mostApplicable));
-
-        for(CommandRoute route : routes) {
-            String[] routeStarts = route.getStartsWith();
-
-            //if no starts with it always applies
-            if(routeStarts.length == 0) {
-                applicable.add(route);
-                continue;
-            }
-
-            // skip invalid subcommands
-            if(routeStarts.length <= argsList.size()) {
-                List<String> routeStartsList = Arrays.asList(routeStarts);
-                List<String> argsSubList = argsList.subList(0, routeStarts.length);
-                if(routeStartsList.equals(argsSubList)) {
-                    applicable.add(route);
-                }
-            }
-        }
-
-        return applicable;
+        return Lists.newArrayList(Collections2.filter(allRoutes, new ApplicableRoutePredicate(args)));
     }
 
     @Override
