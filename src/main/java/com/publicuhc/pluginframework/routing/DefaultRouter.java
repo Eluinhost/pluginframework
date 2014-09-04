@@ -21,9 +21,7 @@
 
 package com.publicuhc.pluginframework.routing;
 
-import com.google.common.base.Optional;
-import com.google.common.base.Preconditions;
-import com.google.common.base.Predicate;
+import com.google.common.base.*;
 import com.google.common.collect.*;
 import com.google.inject.AbstractModule;
 import com.google.inject.Inject;
@@ -31,6 +29,8 @@ import com.google.inject.Injector;
 import com.publicuhc.pluginframework.routing.exception.CommandInvocationException;
 import com.publicuhc.pluginframework.routing.exception.CommandParseException;
 import com.publicuhc.pluginframework.routing.functions.ApplicableRoutePredicate;
+import com.publicuhc.pluginframework.routing.functions.ExactRouteMatchPredicate;
+import com.publicuhc.pluginframework.routing.functions.SubroutePredicate;
 import com.publicuhc.pluginframework.routing.parser.RoutingMethodParser;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
@@ -234,38 +234,46 @@ public class DefaultRouter implements Router
         Preconditions.checkArgument(args.length > 0);
         List<String> tabCompleteList = Lists.newArrayList();
 
-        List<String> arguments = Lists.newArrayList(args);
+        List<String> route = Lists.newArrayList(args);
 
-        //get the item to tab complete
-        String partial = arguments.get(arguments.size() - 1);
-
-        boolean checkOptions = false;
+        //get the item to tab complete and remove it from the list
+        String partial = route.get(route.size() - 1);
+        route = route.subList(0, route.size() - 1);
 
         //check if already have any flags
-        int index = Iterables.indexOf(arguments, new Predicate<String>() {
+        int index = Iterables.indexOf(route, new Predicate<String>() {
             @Override
             public boolean apply(String input) {
                 return input.startsWith("-");
             }
         });
 
+        //if there are any options remove everything past the first one
         if(index > -1) {
-            checkOptions = true;
+            route = route.subList(0, index);
         }
 
+        //get all of the routes for the command
+        Collection<CommandRoute> allRoutes = commands.get(command.getName());
 
-        if(checkOptions) {
-            List<String> selectedRoute = arguments.subList(0, index);
-            Optional<CommandRoute> matching = getMostApplicableRoute(command, (String[]) selectedRoute.toArray());
-            if(matching.isPresent()) {
-                for (String key : matching.get().getOptionDetails().recognizedOptions().keySet()) {
-                    if (!key.equals("[arguments]")) {
-                        tabCompleteList.add("-" + key);
-                    }
+        //all of the subroutes
+        Collection<CommandRoute> subroutes = Collections2.filter(allRoutes, new SubroutePredicate(route));
+
+        //exact matches
+        Collection<CommandRoute> exacts = Collections2.filter(allRoutes, new ExactRouteMatchPredicate(route));
+
+        for(CommandRoute r : exacts) {
+            for (String key : r.getOptionDetails().recognizedOptions().keySet()) {
+                if (!key.equals("[arguments]")) {
+                    tabCompleteList.add("-" + key);
                 }
             }
-        } else {
-            //TODO get the list of subroutes for the current args
+        }
+
+        for(CommandRoute r : subroutes) {
+            //this should pass as the predicate makes sure there is a next arg
+            String nextInSubroute = r.getStartsWith()[route.size()];
+            tabCompleteList.add(nextInSubroute);
         }
 
         List<String> actualComplete = Lists.newArrayList();
