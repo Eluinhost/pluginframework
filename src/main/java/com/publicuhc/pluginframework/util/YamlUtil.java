@@ -103,14 +103,13 @@ public class YamlUtil
     }
 
     /**
-     * Loads the config from the hard drive and sets it's defaults from the JAR. If it doesn't
-     * exist on the harddrive it will be written to it with it's defaults.
+     * Loads the given file from the harddrive with it's defaults set to the JAR version (and saved to the HDD)
      *
      * @param path the path to the file to load
      * @param loader the classloader to load from
      * @param dataDir the directory to save/load from
      *
-     * @return optional configuration. Present if found and complete. Absent if not found in JAR
+     * @return optional fileconfiguration. Absent if jar AND hdd version don't exist
      * @throws IOException
      * @throws InvalidConfigurationException if HDD or JAR file failed to parse
      */
@@ -118,15 +117,19 @@ public class YamlUtil
     {
         Optional<YamlConfiguration> jarOptional = YamlUtil.loadYamlFromJAR(path, loader);
 
-        if(!jarOptional.isPresent()) {
+        Optional<YamlConfiguration> hardDriveOptional = YamlUtil.loadYamlFromDir(path, dataDir);
+
+        if(!hardDriveOptional.isPresent() && !jarOptional.isPresent()) {
             return Optional.absent();
         }
 
-        YamlConfiguration jar = jarOptional.get();
-        YamlConfiguration hardDrive = YamlUtil.loadYamlFromDir(path, dataDir).or(new YamlConfiguration());
+        YamlConfiguration hardDrive = hardDriveOptional.or(new YamlConfiguration());
 
-        hardDrive.setDefaults(jar);
-        hardDrive.options().copyDefaults(true);
+        if(jarOptional.isPresent()) {
+            YamlConfiguration jar = jarOptional.get();
+            hardDrive.setDefaults(jar);
+            hardDrive.options().copyDefaults(true);
+        }
 
         YamlUtil.saveConfiguration(hardDrive, dataDir, path);
 
