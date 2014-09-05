@@ -69,7 +69,6 @@ public class YamlUtil
      */
     public static Optional<YamlConfiguration> loadYamlFromDir(String path, File dir) throws IOException, InvalidConfigurationException
     {
-        Validate.isTrue(dir.isDirectory(), "Provided directory is not a directory");
         Validate.notNull(path, "Path to file cannot be null");
 
         File file = new File(dir, path);
@@ -95,7 +94,6 @@ public class YamlUtil
         Validate.notNull(configuration);
         Validate.notNull(dataDir);
         Validate.notNull(path);
-        Validate.isTrue(dataDir.isDirectory());
 
         try {
             configuration.save(new File(dataDir, path));
