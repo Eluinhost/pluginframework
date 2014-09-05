@@ -21,17 +21,23 @@
 
 package com.publicuhc.pluginframework.routing;
 
+import com.google.common.base.*;
+import com.google.common.collect.*;
 import com.google.inject.AbstractModule;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
 import com.publicuhc.pluginframework.routing.exception.CommandInvocationException;
 import com.publicuhc.pluginframework.routing.exception.CommandParseException;
+import com.publicuhc.pluginframework.routing.functions.ApplicableRoutePredicate;
+import com.publicuhc.pluginframework.routing.functions.ExactRouteMatchPredicate;
+import com.publicuhc.pluginframework.routing.functions.SubroutePredicate;
 import com.publicuhc.pluginframework.routing.parser.RoutingMethodParser;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.plugin.PluginLogger;
+import org.bukkit.util.StringUtil;
 
 import java.lang.reflect.Method;
 import java.util.*;
@@ -43,7 +49,7 @@ public class DefaultRouter implements Router
     /**
      * Stores the message to send a player if a route wasn't found for the given command and parameters
      */
-    protected final HashMap<String, List<String>> noRouteMessages = new HashMap<String, List<String>>();
+    protected final Multimap<String, String> noRouteMessages = ArrayListMultimap.create();
 
     /**
      * Used to inject all parameters needed to the command classes when added
@@ -58,7 +64,7 @@ public class DefaultRouter implements Router
     /**
      * Stores map of command name -> routes for invocation later on
      */
-    protected final HashMap<String, List<CommandRoute>> commands = new HashMap<String, List<CommandRoute>>();
+    protected final Multimap<String, CommandRoute> commands = HashMultimap.create();
 
     private final PluginLogger logger;
 
@@ -127,15 +133,10 @@ public class DefaultRouter implements Router
                 command.setTabCompleter(this);
 
                 //add to command map
-                List<CommandRoute> routes = commands.get(route.getCommandName());
-                if(null == routes) {
-                    routes = new ArrayList<CommandRoute>();
-                    commands.put(route.getCommandName(), routes);
-                }
-                routes.add(route);
+                commands.put(route.getCommandName(), route);
+
                 logger.log(Level.INFO, "Loading command '" + route.getCommandName() + "' from: " + method.getName());
             }
-            //TODO tab complete
         }
 
         logger.log(Level.INFO, "Loaded all commands from class: " + object.getClass().getName());
@@ -144,55 +145,57 @@ public class DefaultRouter implements Router
     @Override
     public void setDefaultMessageForCommand(String commandName, List<String> message)
     {
-        noRouteMessages.put(commandName, message);
+        noRouteMessages.replaceValues(commandName, message);
     }
 
     @Override
     public void setDefaultMessageForCommand(String commandName, String message)
     {
-        //create a list of size 1 with the message
-        ArrayList<String> mes = new ArrayList<String>(1);
-        mes.add(message);
+        //run the regular method
+        setDefaultMessageForCommand(commandName, Lists.newArrayList(message));
+    }
 
-        //run the regular command
-        setDefaultMessageForCommand(commandName, mes);
+    /**
+     * Fetches the most applicable route (the routes that matches with the longest subcommand string)
+     *
+     * @param command the command to check for
+     * @param args the argument list to check for subcommands from
+     * @return the most applicable route
+     */
+    private Optional<CommandRoute> getMostApplicableRoute(Command command, String[] args)
+    {
+        List<CommandRoute> routes = getApplicableRoutes(command, args);
+
+        if(routes.size() == 0) {
+            return Optional.absent();
+        }
+
+        Collections.sort(routes, new SubcommandLengthComparator(true));
+
+        return Optional.of(routes.get(0));
+    }
+
+    /**
+     * Get a list of all of the routes for the command filtered to all routes that apply to the given args
+     *
+     * @param command the command to check the route of
+     * @param args the argument list to check for subcommands from
+     * @return collection of routes that match
+     */
+    private List<CommandRoute> getApplicableRoutes(Command command, String[] args)
+    {
+        Collection<CommandRoute> allRoutes = commands.get(command.getName());
+
+        return Lists.newArrayList(Collections2.filter(allRoutes, new ApplicableRoutePredicate(args, false)));
     }
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args)
     {
-        String commandName = command.getName();
-        List<CommandRoute> routes = commands.get(commandName);
-        if(routes == null) {
-            routes = new ArrayList<CommandRoute>();
-            commands.put(commandName, routes);
-        }
+        Optional<CommandRoute> routeOptional = getMostApplicableRoute(command, args);
 
-        List<String> argsList = Arrays.asList(args);
-        PriorityQueue<CommandRoute> applicable = new PriorityQueue<CommandRoute>(Math.max(routes.size(), 1), new SubcommandLengthComparator());
-
-        for(CommandRoute route : routes) {
-            String[] routeStarts = route.getStartsWith();
-
-            //if no starts with it always applies
-            if(routeStarts.length == 0) {
-                applicable.add(route);
-                continue;
-            }
-
-            // skip invalid subcommands
-            if(routeStarts.length <= argsList.size()) {
-                List<String> routeStartsList = Arrays.asList(routeStarts);
-                List<String> argsSubList = argsList.subList(0, routeStarts.length);
-                if(routeStartsList.equals(argsSubList)) {
-                    applicable.add(route);
-                }
-            }
-        }
-
-        if(applicable.size() > 0) {
-            //grab the one with the longest argument list (deepest subcommand)
-            CommandRoute route = applicable.peek();
+        if(routeOptional.isPresent()) {
+            CommandRoute route = routeOptional.get();
 
             String[] subcommandArgs = Arrays.copyOfRange(args, route.getStartsWith().length, args.length);
 
@@ -208,10 +211,10 @@ public class DefaultRouter implements Router
         //we did't know how to handle this command
 
         //get the list of messages set as the defaults for the command
-        List<String> messages = noRouteMessages.get(command.getName());
+        Collection<String> messages = noRouteMessages.get(command.getName());
 
         //if none are set use the one set in the plugin.yml via bukkit
-        if(null == messages) {
+        if(messages.isEmpty()) {
             return false;
         }
 
@@ -222,10 +225,59 @@ public class DefaultRouter implements Router
         return true;
     }
 
+    /**
+     * On tab complete. The final arg is the one we want to match against, can be empty
+     */
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String label, String[] args)
     {
-        //TODO tab complete
-        return new ArrayList<String>();
+        Preconditions.checkArgument(args.length > 0);
+        List<String> tabCompleteList = Lists.newArrayList();
+
+        List<String> route = Lists.newArrayList(args);
+
+        //get the item to tab complete and remove it from the list
+        String partial = route.get(route.size() - 1);
+        route = route.subList(0, route.size() - 1);
+
+        //check if already have any flags
+        int index = Iterables.indexOf(route, new Predicate<String>() {
+            @Override
+            public boolean apply(String input) {
+                return input.startsWith("-");
+            }
+        });
+
+        //if there are any options remove everything past the first one
+        if(index > -1) {
+            route = route.subList(0, index);
+        }
+
+        //get all of the routes for the command
+        Collection<CommandRoute> allRoutes = commands.get(command.getName());
+
+        //all of the subroutes
+        Collection<CommandRoute> subroutes = Collections2.filter(allRoutes, new SubroutePredicate(route));
+
+        //exact matches
+        Collection<CommandRoute> exacts = Collections2.filter(allRoutes, new ExactRouteMatchPredicate(route));
+
+        for(CommandRoute r : exacts) {
+            for (String key : r.getOptionDetails().recognizedOptions().keySet()) {
+                if (!key.equals("[arguments]")) {
+                    tabCompleteList.add("-" + key);
+                }
+            }
+        }
+
+        for(CommandRoute r : subroutes) {
+            //this should pass as the predicate makes sure there is a next arg
+            String nextInSubroute = r.getStartsWith()[route.size()];
+            tabCompleteList.add(nextInSubroute);
+        }
+
+        List<String> actualComplete = Lists.newArrayList();
+        StringUtil.copyPartialMatches(partial, tabCompleteList, actualComplete);
+        return actualComplete;
     }
 }

@@ -21,6 +21,7 @@
 
 package com.publicuhc.pluginframework.configuration;
 
+import com.google.common.base.Optional;
 import org.bukkit.configuration.file.FileConfiguration;
 
 public interface Configurator {
@@ -31,9 +32,9 @@ public interface Configurator {
      * If file not found saves the file id.yml from the jar to the data dir
      *
      * @param id the id to look for
-     * @return the config, null if loading the config file failed
+     * @return the config
      */
-    FileConfiguration getConfig(String id);
+    Optional<FileConfiguration> getConfig(String id);
 
     /**
      * Save the config with the given id.
@@ -48,5 +49,5 @@ public interface Configurator {
      *
      * @param id the id to look for
      */
-    FileConfiguration reloadConfig(String id);
+    Optional<FileConfiguration> reloadConfig(String id);
 }

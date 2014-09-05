@@ -48,7 +48,7 @@ public class SubcommandLengthComparatorTest
         CommandRoute routeLength2 = mock(CommandRoute.class);
         when(routeLength2.getStartsWith()).thenReturn(new String[]{"", ""});
 
-        SubcommandLengthComparator comparator = new SubcommandLengthComparator();
+        SubcommandLengthComparator comparator = new SubcommandLengthComparator(true);
 
         //test
         assertThat(comparator.compare(routeLength0, routeLength1)).isEqualTo(1);
@@ -69,5 +69,21 @@ public class SubcommandLengthComparatorTest
 
         Collections.sort(routeList, comparator);
         assertThat(routeList).containsExactly(routeLength2, routeLength1, routeLength1, routeLength0);
+
+        comparator = new SubcommandLengthComparator(false);
+
+        //test
+        assertThat(comparator.compare(routeLength0, routeLength1)).isEqualTo(-1);
+        assertThat(comparator.compare(routeLength1, routeLength0)).isEqualTo(1);
+        assertThat(comparator.compare(routeLength1, routeLength2)).isEqualTo(-1);
+        assertThat(comparator.compare(routeLength2, routeLength1)).isEqualTo(1);
+        assertThat(comparator.compare(routeLength2, routeLength0)).isEqualTo(1);
+        assertThat(comparator.compare(routeLength0, routeLength2)).isEqualTo(-1);
+        assertThat(comparator.compare(routeLength1, routeLength1)).isEqualTo(0);
+        assertThat(comparator.compare(routeLength2, routeLength2)).isEqualTo(0);
+        assertThat(comparator.compare(routeLength0, routeLength0)).isEqualTo(0);
+
+        Collections.sort(routeList, comparator);
+        assertThat(routeList).containsExactly(routeLength0, routeLength1, routeLength1, routeLength2);
     }
 }

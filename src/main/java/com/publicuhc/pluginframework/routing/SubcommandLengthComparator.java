@@ -25,21 +25,20 @@ import java.util.Comparator;
 
 class SubcommandLengthComparator implements Comparator<CommandRoute>
 {
+
+    private boolean mostApplicable;
+
+    public SubcommandLengthComparator(boolean mostApplicable)
+    {
+        this.mostApplicable = mostApplicable;
+    }
+
     @Override
     public int compare(CommandRoute route1, CommandRoute route2)
     {
         int r1 = route1.getStartsWith().length;
         int r2 = route2.getStartsWith().length;
 
-        if(r1 == r2)
-            return 0;
-
-        if(r1 > r2)
-            return -1;
-
-        if(r2 > r1)
-            return 1;
-
-        throw new IllegalStateException();
+        return mostApplicable ? Integer.compare(r2, r1) : Integer.compare(r1, r2);
     }
 }

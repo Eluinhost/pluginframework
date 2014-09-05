@@ -73,7 +73,9 @@ public class DefaultCommandOptionsParserTest
         assertThat(set.valueOf("b")).isEqualTo("b");
         assertThat(set.valueOf("d")).isEqualTo("d");
 
-        assertThat(set.nonOptionArguments()).containsExactly("extra", "args");
+        assertThat(set.nonOptionArguments()).hasSize(2);
+        assertThat(set.nonOptionArguments().get(0)).isEqualTo("extra");
+        assertThat(set.nonOptionArguments().get(1)).isEqualTo("args");
     }
 
     @Test(expected = OptionException.class)

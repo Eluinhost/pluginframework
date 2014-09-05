@@ -34,7 +34,7 @@ public class OnlinePlayerValueConverter implements ValueConverter<Player[]> {
         @SuppressWarnings("deprecation")
         Player p = Bukkit.getPlayer(value);
         if(null == p)
-            throw new ValueConversionException("Player is not online: " + value);
+            throw new ValueConversionException("Player " + value + " is not online");
         return new Player[]{p};
     }
 
@@ -47,7 +47,7 @@ public class OnlinePlayerValueConverter implements ValueConverter<Player[]> {
     @Override
     public String valuePattern()
     {
-        return null;
+        return allowStar ? "playerName/*" : "playerName" ;
     }
 
     /**

@@ -21,6 +21,7 @@
 
 package com.publicuhc.pluginframework.routing;
 
+import com.publicuhc.pluginframework.WithSelfAnswer;
 import com.publicuhc.pluginframework.routing.exception.CommandInvocationException;
 import com.publicuhc.pluginframework.routing.proxy.MethodProxy;
 import com.publicuhc.pluginframework.routing.tester.CommandTester;
@@ -31,6 +32,7 @@ import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 import joptsimple.OptionSpec;
 import junit.framework.AssertionFailedError;
+import mkremins.fanciful.FancyMessage;
 import org.bukkit.command.BlockCommandSender;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -38,16 +40,23 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Matchers;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
+import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.*;
+import static org.powermock.api.mockito.PowerMockito.doAnswer;
+import static org.powermock.api.mockito.PowerMockito.whenNew;
 
 @RunWith(PowerMockRunner.class)
+@PrepareForTest(DefaultCommandRoute.class)
 public class DefaultCommandRouteTest
 {
     private OptionParser parser;
@@ -58,10 +67,21 @@ public class DefaultCommandRouteTest
     private List<CommandTester> defaultTesters;
 
     @Before
-    public void onStartup() throws NoSuchMethodException
+    public void onStartup() throws Exception
     {
         parser = mock(OptionParser.class);
         help = mock(OptionSpec.class);
+        when(help.options()).thenReturn(Arrays.asList("?"));
+        FancyMessage mockedMessage = mock(FancyMessage.class, new WithSelfAnswer(FancyMessage.class));
+        whenNew(FancyMessage.class).withAnyArguments().thenReturn(mockedMessage);
+        doAnswer(new Answer<Object>() {
+            @Override
+            public Object answer(InvocationOnMock invocation) throws Throwable
+            {
+                ((CommandSender) invocation.getArguments()[0]).sendMessage("");
+                return null;
+            }
+        }).when(mockedMessage).send(any(CommandSender.class));
         command = mock(Command.class);
         proxy = mock(MethodProxy.class);
         set = mock(OptionSet.class);
