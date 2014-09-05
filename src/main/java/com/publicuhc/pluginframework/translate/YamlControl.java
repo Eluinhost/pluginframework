@@ -1,16 +1,16 @@
 package com.publicuhc.pluginframework.translate;
 
+import com.google.common.base.Optional;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
+import com.publicuhc.pluginframework.util.YamlUtil;
 import org.apache.commons.lang.Validate;
+import org.bukkit.configuration.InvalidConfigurationException;
+import org.bukkit.configuration.file.FileConfiguration;
 
-import java.io.*;
-import java.net.URL;
-import java.net.URLConnection;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Locale;
-import java.util.ResourceBundle;
+import java.io.File;
+import java.io.IOException;
+import java.util.*;
 
 public class YamlControl extends ResourceBundle.Control {
 
@@ -40,59 +40,27 @@ public class YamlControl extends ResourceBundle.Control {
         String bundleName = toBundleName(baseName, locale);
 
         ResourceBundle bundle = null;
-        if (format.equals("yml")) {
-            String resourceName = toResourceName(bundleName, format);
 
-            if (dataDir != null) {
-                FileInputStream fis = null;
-                InputStreamReader reader = null;
-
-                try {
-                    File file = new File(dataDir, resourceName);
-                    if (file.isFile()) {
-                        fis = new FileInputStream(file);
-                        reader = new InputStreamReader(fis, "UTF-8");
-                        bundle = new YamlResourceBundle(reader);
-                    }
-                } finally {
-                    if (reader != null)
-                        reader.close();
-                    if (fis != null)
-                        fis.close();
-                }
-            }
-
-            if (bundle == null) {
-                InputStream stream = null;
-                if (reload) {
-                    URL url = loader.getResource(resourceName);
-                    if (url != null) {
-                        URLConnection connection = url.openConnection();
-                        if (connection != null) {
-                            connection.setUseCaches(false);
-                            stream = connection.getInputStream();
-                        }
-                    }
-                } else {
-                    stream = loader.getResourceAsStream(resourceName);
-                }
-
-                if (stream != null) {
-                    BufferedInputStream bis = null;
-                    try {
-                        bis = new BufferedInputStream(stream);
-                        bundle = new YamlResourceBundle(bis);
-                    } finally {
-                        if(bis != null) {
-                            bis.close();
-                        }
-                    }
-                }
-            }
-        } else {
-            bundle = super.newBundle(bundleName, locale, format, loader, reload);
+        //we only know how to handle yml, if its a properties send to parent method
+        if (!format.equals("yml")) {
+            return super.newBundle(bundleName, locale, format, loader, reload);
         }
-        return bundle;
-    }
 
+        //get the actual name of the file
+        String resourceName = toResourceName(bundleName, format);
+
+        try {
+            Optional<FileConfiguration> file = YamlUtil.loadConfigWithDefaults(resourceName, loader, dataDir);
+
+            if(!file.isPresent()) {
+                //say we couldn't find it
+                return null;
+            }
+
+            return new YamlResourceBundle(file.get());
+
+        } catch(InvalidConfigurationException e) {
+            throw new InvalidPropertiesFormatException(e);
+        }
+    }
 }
