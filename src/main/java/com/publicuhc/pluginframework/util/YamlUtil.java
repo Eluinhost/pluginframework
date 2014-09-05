@@ -116,7 +116,7 @@ public class YamlUtil
      * @throws IOException
      * @throws InvalidConfigurationException if HDD or JAR file failed to parse
      */
-    protected Optional<FileConfiguration> loadConfigWithDefaults(String path, ClassLoader loader, File dataDir) throws IOException, InvalidConfigurationException
+    public static Optional<FileConfiguration> loadConfigWithDefaults(String path, ClassLoader loader, File dataDir) throws IOException, InvalidConfigurationException
     {
         Optional<YamlConfiguration> jarOptional = YamlUtil.loadYamlFromJAR(path, loader);
 

@@ -28,7 +28,6 @@ import com.publicuhc.pluginframework.configuration.events.ConfigFileReloadedEven
 import com.publicuhc.pluginframework.util.YamlUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
 import java.util.HashMap;
@@ -67,7 +66,7 @@ public class DefaultConfigurator implements Configurator {
     public Optional<FileConfiguration> reloadConfig(String id)
     {
         try {
-            Optional<YamlConfiguration> config = YamlUtil.loadYamlFromJAR(id + ".yml", classLoader);
+            Optional<FileConfiguration> config = YamlUtil.loadConfigWithDefaults(id + ".yml", classLoader, dataFolder);
 
             if(!config.isPresent()) {
                 return Optional.absent();
@@ -76,10 +75,10 @@ public class DefaultConfigurator implements Configurator {
             ConfigFileReloadedEvent event = new ConfigFileReloadedEvent(id, config.get());
             Bukkit.getPluginManager().callEvent(event);
 
-            YamlConfiguration configuration = config.get();
+            FileConfiguration configuration = config.get();
             m_configs.put(id, configuration);
 
-            return Optional.of((FileConfiguration) configuration);
+            return Optional.of(configuration);
         } catch(Throwable e) {
             e.printStackTrace();
             return Optional.absent();
