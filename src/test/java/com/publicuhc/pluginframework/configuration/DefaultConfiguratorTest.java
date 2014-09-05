@@ -33,7 +33,6 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
 import java.io.File;
-import java.io.InputStream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Matchers.any;
@@ -46,83 +45,65 @@ import static org.powermock.api.mockito.PowerMockito.*;
 @PrepareForTest(Bukkit.class)
 public class DefaultConfiguratorTest {
 
-    private DefaultConfigurator m_configurator;
-    private File m_dataFolder;
+    private DefaultConfigurator configurator;
+    private File dataFolder;
+    private PluginManager manager;
 
     @Test
-    public void testGetResource() {
-        Optional<InputStream> stream = m_configurator.getResource("test.yml");
-        assertThat(stream.isPresent()).isTrue();
-        assertThat(stream.get()).isNotNull();
-
-        stream = m_configurator.getResource("nonexisting.yml");
-        assertThat(stream.isPresent()).isFalse();
-
-        stream = m_configurator.getResource("testfolder:subtest.yml");
-        assertThat(stream.isPresent()).isTrue();
-        assertThat(stream.get()).isNotNull();
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void testNullGetResource() {
-        m_configurator.getResource(null);
-    }
-
-    @Test
-    public void testLoadConfig() {
-        Optional<FileConfiguration> configuration = m_configurator.loadConfig("test");
+    public void test_load_config() {
+        Optional<FileConfiguration> configuration = configurator.reloadConfig("test");
         assertThat(configuration.isPresent()).isTrue();
         assertThat(configuration.get().getString("testString")).isEqualTo("teststring");
 
-        configuration = m_configurator.loadConfig("testfolder:subtest");
+        configuration = configurator.reloadConfig("testfolder/subtest");
         assertThat(configuration.isPresent()).isTrue();
         assertThat(configuration.get().getInt("test1")).isEqualTo(20);
     }
 
     @Test
-    public void testSaveConfig() {
-        m_configurator.loadConfig("test");
-        m_configurator.saveConfig("test");
-        File configFile = new File(m_dataFolder, "test.yml");
+    public void test_save_config() {
+        configurator.reloadConfig("test");
+        configurator.saveConfig("test");
+        File configFile = new File(dataFolder, "test.yml");
         assertThat(configFile.exists()).isTrue();
 
-        m_configurator.loadConfig("testfolder:subtest");
-        m_configurator.saveConfig("testfolder:subtest");
-        configFile = new File(m_dataFolder, "testfolder" + File.separator + "subtest.yml");
+        configurator.reloadConfig("testfolder/subtest");
+        configurator.saveConfig("testfolder/subtest");
+        configFile = new File(dataFolder, "testfolder/subtest.yml");
         assertThat(configFile.exists()).isTrue();
     }
 
     @Test
-    public void testGetConfig() {
-        Optional<FileConfiguration> configuration = m_configurator.getConfig("test");
+    public void test_get_config() {
+        Optional<FileConfiguration> configuration = configurator.getConfig("test");
         assertThat(configuration.get().getString("testString")).isEqualTo("teststring");
 
-        configuration = m_configurator.getConfig("testfolder:subtest");
+        configuration = configurator.getConfig("testfolder/subtest");
         assertThat(configuration.get().getInt("test1")).isEqualTo(20);
     }
 
     @Test
-    public void testReloadConfig() {
-        mockStatic(Bukkit.class);
-        PluginManager manager = mock(PluginManager.class);
-        when(Bukkit.getPluginManager()).thenReturn(manager);
+    public void test_reload_config() {
+        Optional<FileConfiguration> configuration = configurator.getConfig("test");
 
-        Optional<FileConfiguration> configuration = m_configurator.getConfig("test");
+        configurator.reloadConfig("test");
 
-        m_configurator.reloadConfig("test");
-
-        assertThat(m_configurator.getConfig("test")).isNotSameAs(configuration);
-        verify(manager, times(1)).callEvent(any(ConfigFileReloadedEvent.class));
+        assertThat(configurator.getConfig("test")).isNotSameAs(configuration);
+        //should be called twice, 1 for initial load and another for the reload
+        verify(manager, times(2)).callEvent(any(ConfigFileReloadedEvent.class));
     }
 
     @Before
     public void onSetUp() throws Exception {
-        m_dataFolder = new File("target" + File.separator + "testdatafolder");
-        if (m_dataFolder.exists()) {
-            deleteDirectory(m_dataFolder);
+        dataFolder = new File("target/testdatafolder");
+        if (dataFolder.exists()) {
+            deleteDirectory(dataFolder);
         }
-        m_dataFolder.mkdir();
-        m_configurator = new DefaultConfigurator(m_dataFolder, getClass().getClassLoader());
+        dataFolder.mkdir();
+        configurator = new DefaultConfigurator(dataFolder, getClass().getClassLoader());
+        mockStatic(Bukkit.class);
+        manager = mock(PluginManager.class);
+        when(Bukkit.getPluginManager()).thenReturn(manager);
     }
 
     public boolean deleteDirectory(File path) {

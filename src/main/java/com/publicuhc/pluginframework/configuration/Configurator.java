@@ -28,8 +28,8 @@ public interface Configurator {
 
     /**
      * Get the config with the given name
-     * Loads from the file id.yml in the data dir.
-     * If file not found saves the file id.yml from the jar to the data dir
+     * Loads from the file id + ".yml" in the data dir.
+     * Saves defaults from the jar to the data dir version
      *
      * @param id the id to look for
      * @return the config
