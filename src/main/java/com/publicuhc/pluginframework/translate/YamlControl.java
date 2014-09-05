@@ -39,8 +39,6 @@ public class YamlControl extends ResourceBundle.Control {
 
         String bundleName = toBundleName(baseName, locale);
 
-        ResourceBundle bundle = null;
-
         //we only know how to handle yml, if its a properties send to parent method
         if (!format.equals("yml")) {
             return super.newBundle(bundleName, locale, format, loader, reload);
