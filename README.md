@@ -64,8 +64,10 @@ Allows for saving/reloading files by ID too.
 ###Translate
 
 Allows for the translation of messages based on different locales based on the sender.
-The framework adds a config file to change the locale for the console, remote console, command blocks and broadcast.
+The framework adds a config file to change the locale for the console, remote console, command blocks.
+Broadcasts send messages to all players in their own locales.
 It fetches the locale per played based on their ingame settings and selects the most relevant translation for their locale
+based on ResourceBundle
 
 Extra parameters are passed into String.format on the key provided.
 
