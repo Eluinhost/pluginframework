@@ -93,6 +93,8 @@ Extra parameters are passed into String.format on the key provided.
     //broadcast for permission
     translate.broadcastMessageForPermission("translation.message", "TEST.PERMISSION");
 
+[Translate Documentation](docs/Translations.md)
+
 ###Dependency Injection
 
 Allows for the plugin class to be injected with it's dependencies. All registered command classes are also injected.
