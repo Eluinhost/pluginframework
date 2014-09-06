@@ -67,18 +67,20 @@ Allows for the translation of messages based on different locales based on the s
 The framework adds a config file to change the locale for the console, remote console, command blocks and broadcast.
 It fetches the locale per played based on their ingame settings and selects the most relevant translation for their locale
 
-####Example
-    //translate a basic message with the english locale
-    translate.translate("translation.message", Locale.ENGLISH);
+Extra parameters are passed into String.format on the key provided.
 
-    //translate a message with 1 replacement variable with the french locale
-    translate.translate("translation.message", Locale.FRENCH, "variable");
+####Example
+    //translate a basic message
+    translate.sendMessage("translation.message", sender);
+
+    //translate a message with 1 variable
+    translate.translate("translation.message", sender, "variable");
     
-    //works with commandsenders too
-    translate.translate("translation.message", sender);
-    
-    //get the broadcast locale
-    translate.getBroadcastLocale();
+    //works with broadcasts
+    translate.broadcastMessage("translation.message");
+
+    //broadcast for permission
+    translate.broadcastMessageForPermission("translation.message", "TEST.PERMISSION");
 
 ###Dependency Injection
 
