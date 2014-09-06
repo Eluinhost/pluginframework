@@ -6,7 +6,7 @@ This is a framework used to give extra features to [Bukkit](http://www.bukkit.or
 
 ##[Usage + Documentation](docs/Usage.md)
 
-**DOCUMENTATION IS PROGRESS, NOT COMPLETE**
+**DOCUMENTATION IN PROGRESS, NOT COMPLETE**
 
 ##Features
 
