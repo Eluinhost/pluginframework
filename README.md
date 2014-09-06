@@ -72,10 +72,17 @@ based on ResourceBundle
 Extra parameters are passed into String.format on the key provided.
 
 ####Example
-    //translate a basic message
+
+    //returns translated message for the sender
+    translate.translate("message", sender);
+
+    //returns translated message for the Locale, with 1 var
+    translate.translate("message", Locale.FRENCH, 20);
+
+    //send a translated message
     translate.sendMessage("translation.message", sender);
 
-    //translate a message with 1 variable
+    //send a translated message with 1 variable
     translate.translate("translation.message", sender, "variable");
     
     //works with broadcasts
