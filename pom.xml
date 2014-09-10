@@ -49,7 +49,7 @@
 
     <licenses>
         <license>
-            <name>GNU General Public License 3.0</name>
+            <name>MIT</name>
             <url>src/main/resources/LICENSE</url>
             <distribution>repo</distribution>
             <comments>License for PluginFramework</comments>
