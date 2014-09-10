@@ -80,6 +80,10 @@
             <url>http://repo.bukkit.org/content/groups/public/</url>
         </repository>
         <repository>
+            <id>uhc-public</id>
+            <url>http://nexus.publicuhc.com/content/groups/public</url>
+        </repository>
+        <repository>
             <id>Plugin Metrics</id>
             <url>http://repo.mcstats.org/content/repositories/public</url>
         </repository>
