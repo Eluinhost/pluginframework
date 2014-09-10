@@ -1,7 +1,4 @@
 language: java
-cache:
-  directories:
-  - $HOME/.m2
 deploy:
   provider: releases
   all_branches: true
